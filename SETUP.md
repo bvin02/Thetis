@@ -59,7 +59,7 @@ npm run dev     # then open http://localhost:5173
 | `seed/example_hatchery.json` | The example hatchery (12 tanks, 50 checks), already checked against the rules |
 | `tools/gen_slides.py` | Makes synthetic microscope photos with known answers |
 | `fixtures/slides/`, `fixtures/demo/` | Synthetic test photos plus their answer files |
-| `fixtures/real/j006/` | 30 real photos for tests only. **No license: never commit, show or post them** (gitignored) |
+| `fixtures/real/j006/` | 30 real photos for tests only. **No license: never show or post them.** A copy is committed at the owner's request |
 | `fixtures/sources/` | Optional: where more real photos come from, their licenses, and a fetch script. Not needed |
 | `.claude/settings.json` | Stops Claude Code from reading `.env` |
 
@@ -68,5 +68,7 @@ npm run dev     # then open http://localhost:5173
 - **Fresh clone on another computer**: run `npm run setup` once.
 - **Port 5173 or 8000 busy**: close the old `npm run dev` (Ctrl+C), or restart the terminal.
 - **Claude features don't show**: check the key name in `.env` and restart `npm run dev`.
+- **Pages hang at random on a Mac that's been up over 49 days** (check with `uptime`): reboot. It's a macOS bug, and closed
+  connections never clear until you do.
 - **Want more real photos** (optional): `bash fixtures/sources/fetch_sources.sh`. The ZooCAMNet
   part needs a free Hugging Face account.

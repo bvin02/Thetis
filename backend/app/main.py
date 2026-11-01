@@ -8,7 +8,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import config, db
-from app.api import checks, claude, decisions, floor, photos, tanks
+from app.api import advisor, checks, claude, decisions, floor, photos, tanks
 from app.services.uploads import clean_old_uploads
 
 
@@ -31,6 +31,7 @@ def get_health() -> dict:
 
 app.include_router(health)
 app.include_router(floor.router)
+app.include_router(advisor.router)
 app.include_router(tanks.router)
 app.include_router(decisions.router)
 app.include_router(checks.router)

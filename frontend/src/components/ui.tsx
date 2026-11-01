@@ -106,3 +106,9 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
     </div>
   )
 }
+
+/** Text with its tank ids kept whole: "T-07" never breaks across two lines at the hyphen. */
+export function KeepIds({ text }: { text: string }) {
+  return <>{text.split(/(\b[A-Z]-\d{2}\b)/g).map((part, index) => (index % 2 ? <span key={index} className="whitespace-nowrap">{part}</span> : part))}</>
+}
+

@@ -3,9 +3,10 @@ import { chromium } from '@playwright/test'
 const out = process.argv[2] ?? '../data/shots'
 const browser = await chromium.launch()
 const report = []
-const paths = ['/', '/tanks', '/tanks/T-03', '/checks', '/checks/new?tank=T-03', '/decisions', '/photos']
+const paths = ['/', '/advisor', '/tanks', '/tanks/T-03', '/checks', '/checks/new?tank=T-03', '/decisions', '/photos']
 for (const [width, height] of [[900, 800], [899, 800], [660, 800], [390, 844], [320, 640]]) {
   const page = await browser.newPage({ viewport: { width, height } })
+  await page.route('**/api/advisor/analyze', (route) => route.fulfill({ status: 200, contentType: 'text/event-stream', body: '' }))
   const logs = []
   page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) logs.push(m.text().slice(0, 200)) })
   page.on('pageerror', (e) => logs.push(e.message))

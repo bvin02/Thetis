@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import datetime
+from datetime import datetime, time
 
 from sqlmodel import Session, select
 
 from app import models
-from app.rules.actions import PlannedAction, action_text, actions_for
+from app.rules.actions import ANSWER_CREATES_ROW, PlannedAction, action_text, actions_for
+from app.rules.playbook import Playbook, advice_for
 from app.rules.text import fmt_when
 from app.services.world import TankState, World
 
@@ -110,11 +111,14 @@ def undo(session: Session, decision: models.Decision) -> models.Decision:
     return decision
 
 
-def decision_view(decision: models.Decision, now: datetime) -> dict:
+def decision_view(decision: models.Decision, now: datetime, book: Playbook | None = None) -> dict:
+    """One decision as the screens show it. With a playbook, it also says how to carry it out in this plant."""
     text = action_text(decision.action, decision.tank_id, decision.line_id)
     decided_text = None
     if decision.decided_at is not None:
         decided_text = f"{decision.decided_by or 'Someone'} · {fmt_when(decision.decided_at, now)}"
+    how, dose = advice_for(decision.action, decision.tank_id, decision.line_id, book)
+    suggested_by_claude = decision.action == "claude_suggestion"
     return {
         "id": decision.id,
         "scope": decision.scope,
@@ -122,7 +126,7 @@ def decision_view(decision: models.Decision, now: datetime) -> dict:
         "line_id": decision.line_id,
         "check_id": decision.check_id,
         "action": decision.action,
-        "title": text["title"],
+        "title": decision.note if suggested_by_claude and decision.note else text["title"],
         "cta": text["cta"],
         "done_text": text["done"],
         "status": decision.status,
@@ -130,9 +134,85 @@ def decision_view(decision: models.Decision, now: datetime) -> dict:
         "decided_at": decision.decided_at.isoformat() if decision.decided_at else None,
         "decided_by": decision.decided_by,
         "decided_text": decided_text,
-        "note": decision.note,
+        "note": None if suggested_by_claude else decision.note,
         "is_example": decision.is_example,
+        "how": how,
+        "dose": dose,
     }
+
+
+def unanswered_view(plan: PlannedAction, book: Playbook | None) -> dict:
+    """A suggestion nobody has answered yet. It has no row, so its id is None."""
+    text = action_text(plan.action, plan.tank_id, plan.line_id)
+    how, dose = advice_for(plan.action, plan.tank_id, plan.line_id, book)
+    return {
+        "id": None,
+        "scope": plan.scope,
+        "tank_id": plan.tank_id,
+        "line_id": plan.line_id,
+        "check_id": None,
+        "action": plan.action,
+        "title": text["title"],
+        "cta": text["cta"],
+        "done_text": text["done"],
+        "status": "pending",
+        "created_at": None,
+        "decided_at": None,
+        "decided_by": None,
+        "decided_text": None,
+        "note": None,
+        "is_example": False,
+        "how": how,
+        "dose": dose,
+    }
+
+
+def latest_row(decisions: Iterable[models.Decision], plan: PlannedAction, since: datetime | None = None) -> models.Decision | None:
+    """The newest decision for this action. `since` ignores answers given for an earlier batch in the same tank."""
+    rows = [d for d in decisions if _key(d) == plan.key and (since is None or d.created_at >= since)]
+    return max(rows, key=lambda d: (d.created_at, d.id or 0)) if rows else None
+
+
+def step_view(plan: PlannedAction, decisions: Iterable[models.Decision], now: datetime, book: Playbook | None,
+              since: datetime | None = None) -> dict:
+    """One step on an Advisor card: its latest decision, or the unanswered suggestion."""
+    row = latest_row(decisions, plan, since)
+    return decision_view(row, now, book) if row is not None else unanswered_view(plan, book)
+
+
+def answer_suggestion(session: Session, plan: PlannedAction, status: str, user_name: str, text: str | None,
+                      now: datetime | None = None, since: datetime | None = None) -> models.Decision:
+    """A person answered a suggestion that has no row yet. Answering twice returns the first answer."""
+    if plan.action not in ANSWER_CREATES_ROW:
+        raise ValueError(f"{plan.action} isn't a suggestion")
+    rows = session.exec(select(models.Decision).where(models.Decision.action == plan.action))
+    for row in rows:
+        same_target = _key(row) == plan.key
+        same_text = plan.action != "claude_suggestion" or row.note == text
+        same_batch = since is None or row.created_at >= since
+        if same_target and same_text and same_batch:
+            return row
+    now = now or datetime.now()
+    decision = models.Decision(
+        scope=plan.scope, tank_id=plan.tank_id, line_id=plan.line_id, action=plan.action, status=status, created_at=now,
+        decided_at=now, decided_by=user_name, note=text,
+    )
+    session.add(decision)
+    session.commit()
+    session.refresh(decision)
+    return decision
+
+
+def forget_answer(session: Session, decision: models.Decision) -> None:
+    """Undo on a suggestion takes it back to being only a suggestion, not to the waiting list. An answer given for a batch
+    that has since ended is part of the record, and stays."""
+    batch = session.exec(
+        select(models.Batch).where(models.Batch.tank_id == decision.tank_id, models.Batch.status == "active")
+    ).first()
+    if batch is None or decision.created_at < datetime.combine(batch.spawn_date, time.min):
+        raise CannotUndo("That batch is closed, so this decision can't be reopened.")
+    session.delete(decision)
+    session.commit()
 
 
 def all_decisions(session: Session) -> list[models.Decision]:

@@ -31,7 +31,7 @@ await page.getByRole('button', { name: 'Close batch', exact: true }).last().clic
 await page.getByText(/Batch NW-1017 closed/).waitFor()
 await page.waitForTimeout(400)
 await page.screenshot({ path: `${out}/tank-closed.png` })
-await page.getByRole('button', { name: 'Start batch' }).click()
+await page.getByRole('button', { name: 'Start batch' }).first().click()
 await page.waitForTimeout(200)
 await page.locator('#batch-code').fill('NW-2001')
 await page.locator('#stocked').fill('15000000')

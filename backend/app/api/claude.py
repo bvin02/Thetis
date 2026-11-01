@@ -11,7 +11,7 @@ from app import config, models
 from app.analysis.models import Detection as Det
 from app.db import get_session
 from app.rules.assess import LEVEL_LABEL
-from app.rules.text import FORECAST, title_for
+from app.rules.text import FORECAST, fmt_count, title_for
 from app.services import claude, uploads
 from app.services.checks import det_from_row
 from app.services.decisions import actions_for_tank, all_decisions, decision_view
@@ -80,6 +80,10 @@ class ExplainRequest(BaseModel):
     tank_id: str
 
 
+def _round(value: float | None, digits: int = 2) -> float | None:
+    return None if value is None else round(value, digits)
+
+
 def _explain_data(tank_id: str, session: Session) -> tuple[dict, dict]:
     """The assessment, the last 3 checks' key numbers and the recommended actions. Returns (cache key, data)."""
     world = load_world(session)
@@ -98,15 +102,16 @@ def _explain_data(tank_id: str, session: Session) -> tuple[dict, dict]:
         "level": LEVEL_LABEL[a.level],
         "pattern": title_for(a),
         "forecast": FORECAST[a.level],
-        "signals": [s.to_json() for s in a.signals],
-        "growth_um_day": a.growth_um_day,
+        "signals": [{**s.to_json(), "value": _round(s.value), "prev": _round(s.prev)} for s in a.signals],
+        "growth_um_day": _round(a.growth_um_day, 1),
         "expected_growth_um_day": world.cfg["expected_growth_um_day"],
-        "loss_per_day": a.loss_per_day,
-        "survival": a.survival,
+        "loss_pct_per_day": _round(a.loss_per_day * 100 if a.loss_per_day is not None else None, 1),
+        "survival_pct": _round(a.survival * 100 if a.survival is not None else None, 1),
         "last_checks": [
             {
-                "sampled_at": c.sampled_at.isoformat(timespec="minutes"), "live_est": c.live_est, "pct_dead": c.pct_dead,
-                "pct_abnormal": c.pct_abnormal, "mean_len_um": c.mean_len_um, "cv": c.cv, "gut": c.gut,
+                "sampled_at": c.sampled_at.isoformat(timespec="minutes"), "live_est": fmt_count(c.live_est),
+                "pct_dead": _round(c.pct_dead, 1), "pct_abnormal": _round(c.pct_abnormal, 1),
+                "mean_len_um": _round(c.mean_len_um, 1), "cv": _round(c.cv), "gut": _round(c.gut),
                 "omega_arag": c.omega_arag, "ph": c.ph, "temp_c": c.temp_c, "do_mgl": c.do_mgl,
             }
             for c in state.checks[-3:]

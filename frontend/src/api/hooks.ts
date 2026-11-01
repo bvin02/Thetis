@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getJSON, postJSON } from './client'
-import type { DecisionView, Floor, TankDetail } from './types'
+import type { AdvisorPage, DecisionView, Floor, TankDetail } from './types'
 
 export function useFloor() {
   return useQuery({
@@ -24,7 +24,7 @@ export function useInvalidateAll() {
   const client = useQueryClient()
   return () =>
     Promise.all(
-      [['floor'], ['tank'], ['tanks'], ['decisions'], ['checks'], ['check'], ['photos-tree']].map((queryKey) =>
+      [['floor'], ['tank'], ['tanks'], ['decisions'], ['checks'], ['check'], ['photos-tree'], ['advisor']].map((queryKey) =>
         client.invalidateQueries({ queryKey }),
       ),
     )
@@ -35,8 +35,30 @@ export type DecisionVerb = 'approve' | 'dismiss' | 'undo'
 export function useDecide() {
   const invalidate = useInvalidateAll()
   return useMutation({
-    mutationFn: ({ id, verb, note }: { id: number; verb: DecisionVerb; note?: string }) =>
-      postJSON<DecisionView>(`/api/decisions/${id}/${verb}`, verb === 'undo' ? undefined : { note: note ?? null }),
+    mutationFn: ({ action, verb, note }: { action: DecisionView; verb: DecisionVerb; note?: string }) => {
+      if (action.id === null) {
+        // A suggestion gets its row when someone answers it
+        return postJSON<DecisionView>('/api/advisor/answer', {
+          action: action.action,
+          tank_id: action.tank_id,
+          verb,
+          text: action.action === 'claude_suggestion' ? action.title : null,
+        })
+      }
+      return postJSON<DecisionView>(`/api/decisions/${action.id}/${verb}`, verb === 'undo' ? undefined : { note: note ?? null })
+    },
+    onSettled: () => invalidate(),
+  })
+}
+
+export function useAdvisor() {
+  return useQuery({ queryKey: ['advisor'], queryFn: () => getJSON<AdvisorPage>('/api/advisor') })
+}
+
+export function useSetPlant() {
+  const invalidate = useInvalidateAll()
+  return useMutation({
+    mutationFn: (change: { buffer?: string; disinfectant?: string }) => postJSON('/api/advisor/plant', change),
     onSettled: () => invalidate(),
   })
 }

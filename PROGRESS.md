@@ -1,5 +1,57 @@
 # Thetis build progress
 
+## Latest: the Advisor (Nov 1, evening)
+
+**Thetis now does two jobs, and the demo shows both:** photo to count, and what to do about it. `DEMO.md` is rewritten as
+those two parts.
+
+**What's new**
+- **Advisor page** (second in the sidebar), with crash risks, yield suggestions, a forecast, Today's brief and Ask Thetis.
+- **Crash risks:** each with the larvae at stake, the readings over time, why it can turn into a crash, and the steps to
+  head it off. A person approves each step.
+- **Doses in the plant's own chemicals.** Line 2 reads "16 g of sodium carbonate per 1,000 L, 96 g across T-04, T-05 and
+  T-06, Ω 1.4 to 3.0". Switch to sodium hydroxide and it recalculates to 6 g. These come from seawater chemistry code,
+  never from Claude, because a wrong dose can kill a tank.
+- **Yield suggestions and a forecast:** move T-07 to setting, T-02 losing larvae twice as fast as T-01, T-08 overstocked,
+  and larvae on course against larvae possible, tank by tank.
+- **Live Claude:** a brief that reads all 44+ checks, insights no rule was written for, and a chat. Unprompted, it found
+  "T-10 looks like T-03 did before it crashed" and "setting space runs out in about 3 days". Every reading it cites is
+  looked up in the records, and an insight with none that checks out is dropped.
+- **Floor:** a "Do next" line, a "Raise yield" row, and Recommended actions moved above the photo, each saying how.
+- **Removed:** Tanks from the sidebar. The Floor's Table view does the same job, and ⌘K still finds it.
+
+**How it was tested**
+- 371 backend tests pass: the original 276, unchanged, plus 95 new ones. They use a fake Claude client, so they spend nothing.
+- Browser checks: `advisor_check` 69 of 69, `edge_check` 60 of 60, `demo_final` 43 of 43, plus pages and responsive at
+  1440, 900, 660, 390 and 320 px with no sideways scroll or console errors.
+- The whole demo was run click by click in a real browser against the real API (`demo_final.mjs --live`), including
+  Explain, which had only been tested against a fake client before.
+- An independent code review found 10 real bugs, all fixed with tests. The worst: a salinity of 0 on a check crashed every
+  page showing a dose, Undo could delete the record of a closed batch, and an insight kept its text after a reading
+  behind it failed the check.
+- Hatchery guidance was checked against sources: FAO's hatchery manual for density, grading, ration and settlement, and
+  Barton et al. 2015 for Ω and buffering. The chemistry constants match the published check values.
+
+**What you need to know**
+- **Reboot your Mac before the demo.** It had been up 122.9 days on Nov 1, and a macOS bug stops closed connections from
+  clearing after 49.7 days. 9,473 were stuck, so about 1 new connection in 8 to the app hung at random, and pages sat on a
+  spinner with the server idle. It isn't Thetis, and every test passed once run on ports with no stuck connections. It
+  gets worse until the Mac runs out of connections for every app, and only a reboot fixes it.
+- **Doses are estimates.** They're real chemistry but haven't been tried on real water. The app says to try it in a jar
+  first. Have someone who runs a hatchery read the "how" text before this goes in front of customers.
+- **The forecast is rough**, a straight line from the latest rates. On example data it says 36.7M on course against 92.6M
+  possible. Don't present those as real results.
+- **Claude's brief takes 30–40 seconds** the first time for any data, then it's stored. `DEMO.md` says how to show it live
+  or instantly.
+- A brief costs about $0.13 and a chat answer about $0.02–0.05 on `claude-opus-5-5`. Building and testing this used 12 calls,
+  about $0.60 in all.
+- Briefs for both demo states are already stored, so they appear instantly if you follow `DEMO.md` exactly. Click **Run
+  again** to show one being written live.
+- Only the code and docs were committed. The `data/` snapshot in git wasn't refreshed, so run `npm run seed` after a clone.
+- `.env` was not opened, changed or pushed.
+
+---
+
 ## Good morning
 
 **The whole MVP is built and working: all 8 phases, on localhost. Nothing on the SPEC's cut list had to be cut.**

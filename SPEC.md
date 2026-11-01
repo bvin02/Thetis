@@ -1046,3 +1046,65 @@ as found when its (x, y) is inside a detection's contour (`pointPolygonTest ≥ 
 A trained segmenter fed by corrected detections, multiple users and login, a hosted pilot, probe
 CSV import, a backtest of the rules on real hatchery logs, an offline capture queue, seed counting,
 and the "Autopilot" dosing integration.
+
+---
+
+## 16. Advisor (added Nov 1, after the first build)
+
+The product does two jobs: **count** (photo to classified larvae, §1 steps 1–2) and **advise** (what could crash, how to
+head it off, how to raise yield). This section is the second job. It supersedes "a settings UI" in *Not in the MVP*, for
+the plant's chemicals only.
+
+### 16.1 Who does what
+| Part | Comes from | Why |
+|---|---|---|
+| Finding risks and yield suggestions, all arithmetic | Rules (`app/rules/advisor.py`, `facts.py`) | Explainable, testable, works with no API key |
+| How to carry out each step | Rules (`app/rules/playbook.py`) | Same text every time, in the plant's own chemicals |
+| **Chemical doses** | Rules (`app/rules/water.py`) | A wrong dose can kill a tank, so never from a language model |
+| Ranking, the written brief, links across tanks, answering questions | Claude | What rules can't anticipate |
+
+### 16.2 Crash risks
+- A line alert is one risk covering every running tank on the line. Every other tank at Watch or above is its own risk,
+  except a splitting batch at Watch, which costs yield rather than threatening a crash and is a yield suggestion.
+- Each risk shows: level, larvae at stake, forecast sentence, outlook, up to 3 readings over time against their targets,
+  why it can turn into a crash, its source if any, and its steps. Worst level first, then most larvae.
+
+### 16.3 Doses
+- Standard seawater carbonate chemistry (constants from the DOE best-practices guide), from pH, Ω, temperature and
+  salinity. If only one of pH and Ω was measured, alkalinity is assumed from salinity, and the note says so.
+- Target: `buffer_target_omega` (3). Shown per 1,000 L and across the line's running tanks, with the effect on Ω and pH,
+  a note to try it in a jar, and the product's handling warning.
+- Products: sodium carbonate, sodium hydroxide, sodium bicarbonate. The plant's choice lives in `settings.plant`.
+
+### 16.4 Yield suggestions
+| Suggestion | When | Source |
+|---|---|---|
+| Move the largest larvae to setting | Mean length at or past `eyed_um`, level Normal or Watch | FAO 471 §5.4.3 |
+| The batch is losing larvae much faster than the pace batch | ≥ `slow_pace_ratio` × the pace batch, ≥ `pace_min_checks` checks, no crash pattern | |
+| Split the tank | Above `density_limit_per_l`, level Normal or Watch | FAO 471 §5.1.3 |
+
+A suggestion has no decision row until someone answers it, so it never adds to the "waiting" count. Undo takes it back
+to unanswered. An answer only counts for the batch it was given for.
+
+### 16.5 Forecast
+A straight line from each larval tank's latest growth and loss to `eyed_um`. "Not on course" past `project_max_days`.
+"Possible" assumes at least the expected growth and no more than the pace batch's loss. The pace batch is the Normal
+batch with the lowest average loss and ≥ `pace_min_checks` checks. Always labelled "Rules-based" and rough.
+
+### 16.6 Claude
+- `POST /api/advisor/analyze`: reads a snapshot of the whole hatchery (no dates, so a re-seed hits the cache) and returns
+  a headline, a brief, 3 steps to do first, and up to 3 insights the rules didn't state. It runs in a background job, so
+  leaving the page loses nothing and a second request joins the first. Opening the Advisor starts one if the stored one
+  is out of date. A change made while the page is open only marks it out of date.
+- **Insights are checked:** each must cite readings, the server looks each one up in the records, shows the record's
+  value, and drops any insight with none that checks out.
+- Claude's reasoning text is never shown, because its summaries can get details wrong. The page shows only which tanks it
+  has just mentioned.
+- `POST /api/advisor/ask`: a streamed chat answer, from the same snapshot. Plain React nodes, never HTML from the model.
+- Both follow §8.3: cached by input hash, counted against `CLAUDE_DAILY_LIMIT`, every call logged with token counts.
+
+### 16.7 Sources
+FAO Fisheries Technical Paper 471, *Hatchery culture of bivalves* (Helm & Bourne, 2004): density, grading, ration (Table
+13), settlement. Barton et al. 2015, *Oceanography* 28(2): Ω 1.7 as the minimum for viable batches, sodium carbonate
+buffering, afternoon water.
+

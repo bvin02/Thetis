@@ -111,6 +111,12 @@ export interface HistoryDay {
   is_today: boolean
 }
 
+export interface YieldChip {
+  id: string
+  chip: string
+  title: string
+}
+
 export interface Floor extends Shell {
   now: string
   headline: string
@@ -133,6 +139,13 @@ export interface Floor extends Shell {
   lines: LineView[]
   history: { days: HistoryDay[]; rows: HistoryRow[] }
   default_tank: string | null
+  advisor: {
+    n_risks: number
+    n_yield: number
+    next_step: { title: string; card_id: string } | null
+    yield_label: string
+    yield_chips: YieldChip[]
+  }
 }
 
 export type LarvaClass = 'live' | 'abnormal' | 'dead' | 'ignore'
@@ -191,8 +204,19 @@ export interface ConditionRow {
   severity: Severity | 'context' | null
 }
 
+export interface Dose {
+  buffer: string
+  label: string
+  per_1000l_text: string
+  per_1000l_g: number
+  total_text: string | null
+  effect_text: string
+  note: string
+  options: { key: string; label: string }[]
+}
+
 export interface DecisionView {
-  id: number
+  id: number | null // null: a suggestion nobody has answered yet
   scope: 'tank' | 'line'
   tank_id: string | null
   line_id: string | null
@@ -202,12 +226,14 @@ export interface DecisionView {
   cta: string
   done_text: string
   status: 'pending' | 'approved' | 'dismissed'
-  created_at: string
+  created_at: string | null
   decided_at: string | null
   decided_by: string | null
   decided_text: string | null
   note: string | null
   is_example: boolean
+  how: string | null
+  dose: Dose | null
 }
 
 export interface CheckRow {
@@ -290,6 +316,7 @@ export interface TankDetail extends TankSummary {
   expected_growth_um_day: number
   chart_guides: { dead_watch: number; dead_critical: number; omega_target: number }
   actions: DecisionView[]
+  suggestions: DecisionView[]
   actions_left: number
   checks: CheckRow[]
   decision_history: DecisionView[]
@@ -392,4 +419,156 @@ export interface CheckDetail extends CheckRow {
   }
   photos: PhotoView[]
   created_text: string
+}
+
+// The Advisor (backend/app/api/advisor.py)
+
+export interface Tile {
+  key: string
+  label: string
+  tank_id: string
+  points: [number, number][]
+  point_texts: string[]
+  now_text: string
+  target_text: string
+  severity: Severity | null
+  guide: number | null
+  summary: string
+}
+
+export interface RiskCard {
+  id: string
+  level: Level
+  title: string
+  tank_ids: string[]
+  line_id: string | null
+  at_stake: number
+  at_stake_text: string
+  forecast: string
+  why: string
+  source: string | null
+  tiles: Tile[]
+  outlook: string | null
+  steps: DecisionView[]
+  steps_left: number
+}
+
+export interface YieldCard {
+  id: string
+  kind: string
+  title: string
+  chip: string
+  tank_ids: string[]
+  why: string
+  source: string | null
+  stat_text: string
+  stat_label: string
+  gain: number
+  tiles: Tile[]
+  steps: DecisionView[]
+  steps_left: number
+}
+
+export interface ForecastRow {
+  tank_id: string
+  level: Level
+  stage: string | null
+  day: number | null
+  live: number
+  live_text: string
+  when_text: string
+  on_course: number
+  on_course_text: string
+  possible: number
+  possible_text: string
+  gain: number
+  gain_text: string
+}
+
+export interface Forecast {
+  pace: { tank_id: string; loss_pct_per_day: number } | null
+  rows: ForecastRow[]
+  on_course: number
+  on_course_text: string
+  possible: number
+  possible_text: string
+  gain_text: string
+}
+
+export interface VerifiedEvidence {
+  tank_id: string
+  label: string
+  value_text: string
+  when_text: string
+}
+
+export interface InsightCard {
+  kind: 'crash_risk' | 'yield'
+  title: string
+  tank_ids: string[]
+  body: string
+  suggestion: string
+  confidence: 'low' | 'medium' | 'high'
+  evidence: VerifiedEvidence[]
+  step: DecisionView
+}
+
+export interface Priority {
+  ref: string
+  action: string
+  why: string
+}
+
+export interface StoredAnalysis {
+  headline: string
+  brief: string
+  do_first: Priority[]
+  insights: InsightCard[]
+  dropped: number
+  model: string
+  when_text: string
+}
+
+export interface PlantView {
+  buffer: string
+  disinfectant: string
+  buffers: { key: string; label: string }[]
+  disinfectants: { key: string; label: string }[]
+}
+
+export interface AdvisorPage {
+  seeded: boolean
+  now: string
+  headline: string
+  totals: {
+    at_risk: number
+    at_risk_text: string
+    total_live_text: string
+    on_course_text: string
+    possible_text: string
+    gain_text: string
+    steps_waiting: number
+  }
+  risks: RiskCard[]
+  opportunities: YieldCard[]
+  forecast: Forecast
+  plant: PlantView
+  questions: string[]
+  pending_decisions: number
+  analysis: StoredAnalysis | null
+  analysis_fresh: boolean
+  analysis_running: boolean
+  reading_text: string
+  claude: { enabled: boolean; model: string; used_today: number; limit: number }
+}
+
+/** One update from a running analysis. While it runs, `analysis` is whatever has been written so far. */
+export interface AnalysisProgress {
+  status: 'starting' | 'reading' | 'writing' | 'done' | 'failed'
+  looking_at: string[]
+  analysis: Partial<Pick<StoredAnalysis, 'headline' | 'brief'>> & { do_first?: Partial<Priority>[] } | null
+  done: boolean
+  error: string | null
+  model: string
+  cached?: boolean
 }

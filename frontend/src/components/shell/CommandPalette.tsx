@@ -17,6 +17,7 @@ interface Item {
 
 const PAGES: { label: string; to: string; words?: string }[] = [
   { label: 'Floor', to: '/', words: 'home plan overview' },
+  { label: 'Advisor', to: '/advisor', words: 'risks crash yield suggestions ask claude brief forecast' },
   { label: 'Tanks', to: '/tanks' },
   { label: 'Checks', to: '/checks', words: 'history samples' },
   { label: 'Decisions', to: '/decisions', words: 'actions recommended approve' },

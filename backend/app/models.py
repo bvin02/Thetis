@@ -176,7 +176,7 @@ class Decision(SQLModel, table=True):
 class ClaudeCall(SQLModel, table=True):
     __tablename__ = "claude_call"
     id: int | None = Field(default=None, primary_key=True)
-    kind: str  # opinion | explain
+    kind: str  # opinion | explain | analysis | ask
     input_hash: str = Field(index=True)
     model: str = ""
     input_tokens: int = 0

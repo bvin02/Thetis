@@ -2,6 +2,7 @@ import { Link, Route, Routes } from 'react-router-dom'
 import AppShell from './components/shell/AppShell'
 import { TopBar } from './components/shell/TopBar'
 import { EmptyState } from './components/ui'
+import AdvisorPage from './pages/Advisor'
 import CheckDetailPage from './pages/CheckDetail'
 import ChecksListPage from './pages/ChecksList'
 import DecisionsPage from './pages/Decisions'
@@ -27,6 +28,7 @@ export default function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<FloorPage />} />
+        <Route path="advisor" element={<AdvisorPage />} />
         <Route path="tanks" element={<TanksListPage />} />
         <Route path="tanks/:id" element={<TankPage />} />
         <Route path="checks" element={<ChecksListPage />} />

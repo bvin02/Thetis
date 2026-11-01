@@ -33,7 +33,7 @@ function GroupCard({ group }: { group: Group }) {
   const pendingNumbers = new Map<number, number>()
   let n = 0
   for (const item of group.items) {
-    if (item.status === 'pending') {
+    if (item.status === 'pending' && item.id !== null) {
       n += 1
       pendingNumbers.set(item.id, n)
     }
@@ -57,7 +57,7 @@ function GroupCard({ group }: { group: Group }) {
       </div>
       <div className="flex flex-col px-4">
         {group.items.map((item, index) => (
-          <ActionRow key={item.id} action={item} number={pendingNumbers.get(item.id) ?? index + 1} divider={index > 0} showContext />
+          <ActionRow key={item.id} action={item} number={(item.id !== null && pendingNumbers.get(item.id)) || index + 1} divider={index > 0} showContext />
         ))}
       </div>
     </section>

@@ -6,6 +6,7 @@ A localhost web app for shellfish hatcheries:
 - save checks to tanks
 - flag tanks at risk with explainable rules
 - let a manager approve recommended actions
+- advise: what could crash and how to head it off, with doses in the plant's own chemicals, and how to raise yield
 
 The full spec is `SPEC.md`. Build **one phase at a time** (SPEC §14) and stop at the end of each
 phase with a short summary and how to verify it.
@@ -57,12 +58,23 @@ phase with a short summary and how to verify it.
 - **Claude API**: optional, hidden without a key, cached by input hash, capped by
   `CLAUDE_DAILY_LIMIT`, every call logged with token counts (SPEC §8).
 
+## Advisor (SPEC §16)
+- **Doses come only from `app/rules/water.py`.** Claude repeats them and never makes one up. Never show a dose from a model.
+- Rules find the risks and suggestions and do the arithmetic, so the whole page works with no key. Claude adds the brief,
+  insights across tanks, and answers.
+- Anything Claude wrote is labelled. An insight's evidence is looked up in the records (`verify_analysis`), and the page
+  shows the record's value. Never show Claude's reasoning text.
+- Non-obvious guidance carries a source (`SOURCE_*` in `rules/advisor.py`). Don't add a hatchery figure you haven't checked.
+- Browser checks in `frontend/scripts` mock Claude and spend nothing. Only `demo_final.mjs --live` uses real credits.
+
 ## UI
 - Match `design/` exactly:
   - `design/screens/*.png` show what it looks like
   - `design/html/*.html` give the exact CSS
   - `design/README.md` has the tokens and component rules
 - Screens that aren't designed reuse the same components.
+- Deliberate changes since the design (Nov 1): the Floor has a "Do next" line and a "Raise yield" row, the inspector shows
+  Recommended actions before the photo, and Tanks left the sidebar because the Floor's Table view does the same job.
 - No gradients, glows, neon, emoji or illustrations. Status colours are only for problems; Normal
   is grey.
 - After building a screen, take a Playwright screenshot at 1440 px wide and compare it with the

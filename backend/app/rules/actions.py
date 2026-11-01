@@ -60,6 +60,29 @@ CATALOG: dict[str, dict[str, str]] = {
     },
 }
 
+# Suggestions from the Advisor (SPEC §16). Worked out fresh each time: a row exists only once a person answers one,
+# so they never add to the "waiting" count on their own.
+SUGGESTIONS: dict[str, dict[str, str]] = {
+    "move_to_setting": {
+        "title": "Grade {T} and move the largest larvae to setting",
+        "cta": "Schedule grading", "done": "Grading scheduled",
+    },
+    "split_tank": {
+        "title": "Split {T} into a second tank to bring density down",
+        "cta": "Schedule split", "done": "Split scheduled",
+    },
+    "review_handling": {
+        "title": "Compare {T}'s handling with the best batch",
+        "cta": "Request review", "done": "Review requested",
+    },
+    # A step Claude suggested. The row's note holds its text.
+    "claude_suggestion": {
+        "title": "Suggested by Claude",
+        "cta": "Approve", "done": "Approved",
+    },
+}
+ANSWER_CREATES_ROW = frozenset(SUGGESTIONS)
+
 
 def line_number(line_id: str | None) -> str:
     """"L2" -> "2"."""
@@ -67,7 +90,7 @@ def line_number(line_id: str | None) -> str:
 
 
 def action_text(action: str, tank_id: str | None, line_id: str | None) -> dict[str, str]:
-    entry = CATALOG[action]
+    entry = CATALOG.get(action) or SUGGESTIONS[action]
     return {
         "title": entry["title"].format(T=tank_id or "this tank", n=line_number(line_id)),
         "cta": entry["cta"],

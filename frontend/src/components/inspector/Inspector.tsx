@@ -22,7 +22,7 @@ export function LatestCheck({ tank }: { tank: TankDetail }) {
   if (!latest) return null
   const photo = latest.photo
   return (
-    <section aria-label="Latest check" className="flex flex-col gap-2 px-4 pb-4">
+    <section aria-label="Latest check" className="flex flex-col gap-2 border-t border-divider p-4">
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-[13px] font-semibold">Latest check</h3>
         <span className="text-xs text-ink-4">{latest.when_text}</span>
@@ -61,7 +61,7 @@ export function LatestCheck({ tank }: { tank: TankDetail }) {
 export function RiskForecast({ tank }: { tank: TankDetail }) {
   const empty = tank.level === 'empty'
   return (
-    <section aria-label="Risk forecast" className="flex flex-col gap-3 border-t border-divider p-4">
+    <section aria-label="Risk forecast" className="flex flex-col gap-3 border-t border-divider p-4 first:border-t-0">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-[13px] font-semibold">Risk forecast</h3>
         <span className="tag">Rules-based</span>
@@ -158,7 +158,8 @@ export function SurvivalChart({ tank }: { tank: TankDetail }) {
 }
 
 export function RecommendedActions({ tank }: { tank: TankDetail }) {
-  if (tank.actions.length === 0) return null
+  const steps = [...tank.actions, ...tank.suggestions]
+  if (steps.length === 0) return null
   const left = tank.actions_left
   return (
     <section aria-label="Recommended actions" className="flex flex-col border-t border-divider px-4 pt-4 pb-2">
@@ -166,8 +167,8 @@ export function RecommendedActions({ tank }: { tank: TankDetail }) {
         <h3 className="text-[13px] font-semibold">Recommended actions</h3>
         <span className="text-xs text-ink-4">{left === 0 ? 'All decided' : `${left} to decide`}</span>
       </div>
-      {tank.actions.map((action, index) => (
-        <ActionRow key={action.id} action={action} number={index + 1} divider={index > 0} />
+      {steps.map((action, index) => (
+        <ActionRow key={action.id ?? action.action} action={action} number={index + 1} divider={index > 0} />
       ))}
     </section>
   )
@@ -192,11 +193,11 @@ export function Inspector({ tank, showOpenLink = true }: { tank: TankDetail; sho
   return (
     <>
       <InspectorHeader tank={tank} />
-      <LatestCheck tank={tank} />
       <RiskForecast tank={tank} />
-      <ConditionTable tank={tank} />
-      <SurvivalChart tank={tank} />
       <RecommendedActions tank={tank} />
+      <ConditionTable tank={tank} />
+      <LatestCheck tank={tank} />
+      <SurvivalChart tank={tank} />
       {showOpenLink && (
         <Link to={`/tanks/${tank.id}`} className="rowbtn mt-auto flex items-center justify-between rounded-b-card border-t border-divider px-4 py-3 text-[13px] font-medium no-underline">
           Open {tank.id}

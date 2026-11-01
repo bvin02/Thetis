@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useFloor, useTank } from '../api/hooks'
 import { FloorPlanCard, type PlanView } from '../components/floor/FloorPlanCard'
 import { HistoryCard } from '../components/floor/HistoryCard'
@@ -97,6 +97,7 @@ export default function FloorPage() {
   const visibleTanks = floor.tanks.filter((t) => visibleIds.has(t.id))
   const actNow = floor.act_now.filter((c) => visibleIds.has(c.id))
   const monitor = floor.monitor.filter((c) => visibleIds.has(c.id))
+  const yieldChips = floor.advisor.yield_chips.filter((c) => visibleIds.has(c.id))
   const clearRoom = () => {
     const next = new URLSearchParams(params)
     next.delete('room')
@@ -110,6 +111,12 @@ export default function FloorPage() {
       <section aria-label="Summary" className="flex flex-col gap-3 px-7 pt-7 max-[660px]:px-4 max-[660px]:pt-5">
         <h1 className="text-[28px] leading-[1.15] font-semibold tracking-[-0.025em] [text-wrap:balance]">{floor.headline}</h1>
         <p className="m-0 max-w-[72ch] text-[15px] leading-[1.55] text-ink-2">{floor.summary}</p>
+        {floor.advisor.next_step && (
+          <p className="m-0 max-w-[72ch] text-[15px] leading-[1.55] text-ink">
+            <span className="font-semibold">Do next:</span> {floor.advisor.next_step.title.replace(/\.$/, '')}.{' '}
+            <Link to={`/advisor#${floor.advisor.next_step.card_id}`} className="whitespace-nowrap text-brand underline-offset-2">See how</Link>
+          </p>
+        )}
         {room && (
           <div className="flex flex-wrap items-center gap-2 text-[13px] text-ink-3">
             <span>Showing {room.name}</span>
@@ -122,6 +129,7 @@ export default function FloorPage() {
         <UrgencyCard
           actNow={actNow} actLabel={room ? `${actNow.length} in this room` : floor.act_label}
           monitor={monitor} monitorLabel={room ? `${monitor.length} on watch here` : floor.monitor_label}
+          yieldLabel={room ? `${yieldChips.length} in this room` : floor.advisor.yield_label} yieldChips={yieldChips}
           selected={selectedId} onPick={pick}
         />
         <Metrics metrics={floor.metrics} />

@@ -10,17 +10,21 @@ import hashlib
 import json
 import logging
 import os
-from collections.abc import Sequence
+import re
+import threading
+import time as clock
+from collections.abc import Callable, Iterator, Sequence
 from datetime import datetime, time
 from typing import Literal
 
 import anthropic
 import cv2
+import jiter
 import numpy as np
 from pydantic import BaseModel, SecretStr
 from sqlmodel import Session, func, select
 
-from app import config, models
+from app import config, db, models
 from app.analysis.models import Detection as Det
 
 logger = logging.getLogger("thetis.claude")
@@ -41,6 +45,63 @@ EXPLAIN_SYSTEM = (
 )
 
 
+ADVISOR_SYSTEM = """You are Thetis, the advisor inside a shellfish hatchery's operations app. You help a hatchery manager decide
+what to do today: how to head off crashes and how to get more larvae through to the eyed stage.
+
+You will get a JSON snapshot of the hatchery. It has every running tank with each check over time, the free tanks, past batches,
+what the rules engine already found, and the log of past decisions. In that snapshot:
+- day counts from the batch's spawn, and days_ago counts back from today.
+- live_est is the estimated live larvae in the tank. density_per_l is larvae per litre.
+- gut is gut fullness from 0 to 1. cv is the size spread. omega_arag is Ω aragonite. Readings that weren't taken are left out, and
+  a missing reading is not a zero.
+- running_tanks with kind "setting" are already in the setting room.
+
+Rules for everything you write:
+- Use only numbers from the snapshot, or simple arithmetic on them. Never invent a reading, a count or a source.
+- Chemical doses are calculated by the app and appear under rules_found. Repeat them exactly. Never change one or give a dose of
+  your own, and never suggest antibiotics.
+- Use the chemicals in plant_chemicals, because those are what this plant uses.
+- Say "pattern matches", never "diagnosis". A pattern is not proof, and one check can be noise, so say so when it matters.
+- Everything you suggest is for a person to approve. Nothing acts on equipment.
+- Write for a busy hatchery manager: plain words, short sentences, specific tanks and numbers. No hype and no filler.
+- Write counts the way the app does: 56.9M, 344k."""
+
+ANALYSIS_TASK = """Write today's brief for the manager.
+
+headline: The one thing that matters most today, as a sentence of at most 14 words.
+
+brief: 2 or 3 short sentences on where the hatchery stands and what matters most. Name the larvae at stake.
+
+do_first: The 3 most useful steps today, in order. These can come from rules_found or from your own insights. For each one:
+- ref: the id of the matching card under rules_found, or an empty string if it comes from your own insights.
+- action: what to do, as an instruction of at most 10 words.
+- why: at most 18 words, with the number that makes it urgent.
+
+insights: Up to 3 things the rules have NOT already said, which a busy manager would otherwise miss. Look for:
+- a tank that now looks like another tank did just before it went wrong
+- a difference between lines, rooms, stocking densities or batches that points to something worth changing
+- a clash coming up in the next few days, such as more eyed larvae than free setting tanks, or two suggestions wanting the same
+  free tank
+- a decision in the log that doesn't seem to have worked
+Return fewer if there is nothing real to add. An empty list is fine, and repeating rules_found is not.
+For each insight:
+- kind: "crash_risk" if it could lead to a crash, "yield" if it would raise yield.
+- title: at most 10 words.
+- tank_ids: the tanks involved.
+- body: at most 2 short sentences, under 45 words in all, on what you noticed and why it matters.
+- suggestion: one instruction of at most 20 words, starting with a verb. A manager will press Approve on it, so don't say "approve".
+- confidence: low, medium or high, being honest about how few checks it rests on.
+- evidence: 2 to 4 readings that back it up. For each one give tank_id, metric and value. Metric must be a field of a check in
+  that tank (live_est, pct_dead, pct_abnormal, length_um, cv, gut, growth_um_day, loss_pct_per_day, survival_pct, ph, omega_arag,
+  temp_c, do_mgl) or density_per_l. Copy the value exactly as it appears in the snapshot, because the app checks each one against
+  the records and removes any insight that fails."""
+
+ASK_TASK = """The manager is asking you questions in a chat beside the hatchery's data. Lead with the answer. Keep it under 120 words unless
+they ask for more detail. Name specific tanks and numbers. Use a short numbered list for steps, and otherwise plain sentences,
+with no headings. If the snapshot doesn't have what you'd need, say what's missing and what reading or check would settle it. If
+you're asked about something outside running this hatchery, say briefly that you can only help with the hatchery."""
+
+
 class Opinion(BaseModel):
     object: int
     cls: Literal["live", "abnormal", "dead", "not_larva"]
@@ -50,6 +111,41 @@ class Opinion(BaseModel):
 
 class Opinions(BaseModel):
     opinions: list[Opinion]
+
+
+EvidenceMetric = Literal[
+    "live_est", "pct_dead", "pct_abnormal", "length_um", "cv", "gut", "growth_um_day", "loss_pct_per_day", "survival_pct", "ph",
+    "omega_arag", "temp_c", "do_mgl", "density_per_l",
+]
+
+
+class Evidence(BaseModel):
+    tank_id: str
+    metric: EvidenceMetric
+    value: float
+
+
+class Priority(BaseModel):
+    ref: str
+    action: str
+    why: str
+
+
+class Insight(BaseModel):
+    kind: Literal["crash_risk", "yield"]
+    title: str
+    tank_ids: list[str]
+    body: str
+    suggestion: str
+    confidence: Literal["low", "medium", "high"]
+    evidence: list[Evidence]
+
+
+class Analysis(BaseModel):
+    headline: str
+    brief: str
+    do_first: list[Priority]
+    insights: list[Insight]
 
 
 class ClaudeOff(Exception):
@@ -83,10 +179,8 @@ def daily_limit() -> int:
     return config.env_int("CLAUDE_DAILY_LIMIT", config.CLAUDE_DAILY_LIMIT_DEFAULT)
 
 
-def _make_client() -> anthropic.Anthropic:
-    return anthropic.Anthropic(
-        api_key=_api_key().get_secret_value(), timeout=config.CLAUDE_TIMEOUT_S, max_retries=config.CLAUDE_MAX_RETRIES
-    )
+def _make_client(timeout_s: float = config.CLAUDE_TIMEOUT_S) -> anthropic.Anthropic:
+    return anthropic.Anthropic(api_key=_api_key().get_secret_value(), timeout=timeout_s, max_retries=config.CLAUDE_MAX_RETRIES)
 
 
 def used_today(session: Session, now: datetime | None = None) -> int:
@@ -116,6 +210,17 @@ def _request_options(model: str, max_tokens: int, effort: str) -> dict:
     return {"max_tokens": max_tokens}
 
 
+def _streaming_options(model: str, max_tokens: int, effort: str) -> dict:
+    """For the Advisor's streaming calls, which have room to think and show a summary of the reasoning."""
+    if model.startswith(("claude-opus-5", "claude-sonnet-5", "claude-haiku-5", "claude-fable", "claude-mythos")):
+        return {
+            "max_tokens": max_tokens,
+            "thinking": {"type": "adaptive", "display": "summarized"},
+            "output_config": {"effort": effort},
+        }
+    return {"max_tokens": max_tokens}
+
+
 # ---------------------------------------------------------------- budget guard
 
 
@@ -139,13 +244,16 @@ def _guard(session: Session) -> None:
         raise OverDailyLimit("Daily Claude limit reached")
 
 
+_INPUT_TOKEN_FIELDS = ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")
+
+
 def _log_call(session: Session, kind: str, input_hash: str, model: str, usage: object | None, result: dict | None,
               error: str | None) -> models.ClaudeCall:
     row = models.ClaudeCall(
         kind=kind,
         input_hash=input_hash,
         model=model,
-        input_tokens=getattr(usage, "input_tokens", 0) or 0,
+        input_tokens=sum(getattr(usage, name, 0) or 0 for name in _INPUT_TOKEN_FIELDS),
         output_tokens=getattr(usage, "output_tokens", 0) or 0,
         created_at=datetime.now(),
         result=result,
@@ -306,3 +414,252 @@ def explain(session: Session, cache_key: dict, data: dict) -> dict:
 
     _log_call(session, "explain", input_hash, model, usage, {"text": text}, None)
     return {"text": text, "cached": False, "model": model}
+
+
+# ---------------------------------------------------------------- the Advisor's analysis (SPEC §16)
+
+
+class AnalysisJob:
+    """One analysis running in the background. It outlives the page that started it, so someone can click away and
+    come back, and a second request joins the first instead of paying twice."""
+
+    def __init__(self, input_hash: str, model: str):
+        self.input_hash = input_hash
+        self.model = model
+        self.state: dict = {"status": "starting", "looking_at": [], "analysis": None, "done": False, "error": None, "model": model}
+        self.version = 0
+        self._condition = threading.Condition()
+
+    def update(self, **fields: object) -> None:
+        with self._condition:
+            self.state = {**self.state, **fields}
+            self.version += 1
+            self._condition.notify_all()
+
+    def follow(self, keepalive_s: float = 10.0) -> Iterator[dict | None]:
+        """Yields the job's state each time it changes, and None as a keep-alive."""
+        seen = -1
+        while True:
+            with self._condition:
+                if self.version == seen:
+                    self._condition.wait(timeout=keepalive_s)
+                if self.version == seen:
+                    state = None
+                else:
+                    seen = self.version
+                    state = self.state
+            yield state
+            if state is not None and (state["done"] or state["error"]):
+                return
+
+
+_TANK_ID = re.compile(r"\b[A-Z]-\d{2}\b")
+_jobs: dict[str, AnalysisJob] = {}
+_jobs_lock = threading.Lock()
+
+
+def running_job() -> AnalysisJob | None:
+    with _jobs_lock:
+        return next((job for job in _jobs.values() if not (job.state["done"] or job.state["error"])), None)
+
+
+def _analysis_hash(model: str, analysis_key: dict) -> str:
+    """The data and the instructions: improving the prompt should give a new answer, not the stored one."""
+    return _hash_input("analysis", model, {"prompt": ADVISOR_SYSTEM + ANALYSIS_TASK, "data": analysis_key})
+
+
+def stored_analysis(session: Session, analysis_key: dict) -> tuple[models.ClaudeCall | None, bool]:
+    """The analysis to show, and whether it was written from the current data."""
+    hit = _cached(session, _analysis_hash(model_name(), analysis_key))
+    if hit is not None:
+        return hit, True
+    newest = session.exec(
+        select(models.ClaudeCall)
+        .where(models.ClaudeCall.kind == "analysis", models.ClaudeCall.error == None)  # noqa: E711
+        .order_by(models.ClaudeCall.id.desc())
+    ).first()
+    return newest, False
+
+
+def _snapshot_blocks(snapshot: dict) -> list[dict]:
+    """The stable part of the prompt. It's cached, so follow-up questions pay about a tenth for it."""
+    return [
+        {"type": "text", "text": ADVISOR_SYSTEM},
+        {
+            "type": "text",
+            "text": "Hatchery snapshot:\n" + json.dumps(snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+            "cache_control": {"type": "ephemeral"},
+        },
+    ]
+
+
+def _partial_json(text: str) -> dict | None:
+    if not text.strip():
+        return None
+    try:
+        parsed = jiter.from_json(text.encode(), partial_mode="trailing-strings")
+    except ValueError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _tanks_in_focus(reasoning: str, limit: int = 3) -> list[str]:
+    """Which tanks Claude's reasoning has just mentioned. The page shows these and never the reasoning itself: its
+    summaries are a rough sketch and can get details wrong, and nothing on screen should be unchecked."""
+    seen: list[str] = []
+    for tank_id in reversed(_TANK_ID.findall(reasoning[-400:])):
+        if tank_id not in seen:
+            seen.append(tank_id)
+        if len(seen) == limit:
+            break
+    return list(reversed(seen))
+
+
+def _run_analysis(job: AnalysisJob, snapshot: dict, verify: Callable[[dict, dict], dict]) -> None:
+    """Whatever goes wrong, the job ends: a page must never wait forever on a thread that has died."""
+    try:
+        _analyze(job, snapshot, verify)
+    except Exception as error:
+        logger.error("analysis stopped: %s", type(error).__name__)
+    finally:
+        if not job.state["done"] and not job.state["error"]:
+            job.update(status="failed", error="The analysis stopped before it finished. Try again.")
+
+
+def _analyze(job: AnalysisJob, snapshot: dict, verify: Callable[[dict, dict], dict]) -> None:
+    usage = None
+    model = job.model
+    try:
+        job.update(status="reading")
+        last_update = 0.0
+        with _make_client(config.CLAUDE_STREAM_TIMEOUT_S).messages.stream(
+            model=model,
+            system=_snapshot_blocks(snapshot),
+            messages=[{"role": "user", "content": ANALYSIS_TASK}],
+            output_format=Analysis,
+            **_streaming_options(model, config.CLAUDE_ANALYSIS_MAX_TOKENS, "medium"),
+        ) as stream:
+            for event in stream:
+                due = clock.monotonic() - last_update >= config.CLAUDE_STREAM_UPDATE_S
+                if event.type == "thinking" and due:
+                    job.update(status="reading", looking_at=_tanks_in_focus(event.snapshot))
+                    last_update = clock.monotonic()
+                elif event.type == "text" and due:
+                    partial = _partial_json(event.snapshot)
+                    if partial is not None:
+                        job.update(status="writing", analysis=partial)
+                        last_update = clock.monotonic()
+            response = stream.get_final_message()
+        usage = response.usage
+        if response.stop_reason in ("refusal", "max_tokens"):
+            raise ClaudeFailed(_empty_answer_text(response.stop_reason))
+        text = "".join(block.text for block in response.content if block.type == "text")
+        result = verify(Analysis.model_validate_json(text).model_dump(), snapshot)
+    except anthropic.APIError as error:
+        _finish_failed(job, usage, type(error).__name__, _describe_failure(error))
+        return
+    except ClaudeFailed as error:
+        _finish_failed(job, usage, str(error), str(error))
+        return
+    except Exception as error:  # a stream cut short, or an answer that doesn't fit the schema
+        _finish_failed(job, usage, type(error).__name__, "Claude's answer couldn't be read. Try again.")
+        return
+
+    try:
+        with Session(db.get_engine()) as session:
+            _log_call(session, "analysis", job.input_hash, model, usage, result, None)
+    finally:
+        # A paid answer is worth showing even if the log couldn't take it
+        job.update(status="done", analysis=result, done=True, looking_at=[], cached=False)
+
+
+def _finish_failed(job: AnalysisJob, usage: object | None, logged: str, shown: str) -> None:
+    try:
+        with Session(db.get_engine()) as session:
+            _log_call(session, "analysis", job.input_hash, job.model, usage, None, logged)
+    finally:
+        job.update(status="failed", error=shown)
+
+
+def start_analysis(session: Session, analysis_key: dict, snapshot: dict, verify: Callable[[dict, dict], dict],
+                   force: bool = False) -> AnalysisJob:
+    """Join the analysis already running for this data, return the stored one, or start a new one."""
+    if not is_enabled():
+        raise ClaudeOff("Claude isn't set up on this computer.")
+    model = model_name()
+    input_hash = _analysis_hash(model, analysis_key)
+    with _jobs_lock:
+        running = _jobs.get(input_hash)
+        if running is not None and not (running.state["done"] or running.state["error"]):
+            return running
+        hit = None if force else _cached(session, input_hash)
+        if hit is not None:
+            job = AnalysisJob(input_hash, hit.model)
+            job.update(status="done", analysis=hit.result, done=True, cached=True)
+            return job
+        _guard(session)
+        job = AnalysisJob(input_hash, model)
+        # Finished jobs have nothing more to give: the result is in the database
+        for key in [k for k, old_job in _jobs.items() if old_job.state["done"] or old_job.state["error"]]:
+            del _jobs[key]
+        _jobs[input_hash] = job
+    threading.Thread(target=_run_analysis, args=(job, snapshot, verify), daemon=True, name="thetis-analysis").start()
+    return job
+
+
+# ---------------------------------------------------------------- ask Thetis (SPEC §16)
+
+
+def stream_answer(snapshot: dict, messages: list[dict]) -> Iterator[dict]:
+    """A chat answer as it's written. Identical data and conversation return the stored answer, with no API call."""
+    model = model_name()
+    input_hash = _hash_input("ask", model, {"prompt": ADVISOR_SYSTEM + ASK_TASK, "snapshot": snapshot, "messages": messages})
+    with Session(db.get_engine()) as session:
+        hit = _cached(session, input_hash)
+        if hit is None:
+            try:
+                _guard(session)
+            except (ClaudeOff, OverDailyLimit) as error:
+                yield {"type": "error", "message": str(error)}
+                return
+    if hit is not None:
+        yield {"type": "delta", "text": hit.result["text"]}
+        yield {"type": "done", "cached": True, "model": hit.model}
+        return
+
+    usage = None
+    finished = False
+    failure: str | None = "cancelled"
+    text = ""
+    try:
+        with _make_client(config.CLAUDE_STREAM_TIMEOUT_S).messages.stream(
+            model=model,
+            system=[*_snapshot_blocks(snapshot), {"type": "text", "text": ASK_TASK}],
+            messages=messages,
+            **_streaming_options(model, config.CLAUDE_ASK_MAX_TOKENS, "low"),
+        ) as stream:
+            for delta in stream.text_stream:
+                text += delta
+                yield {"type": "delta", "text": delta}
+            response = stream.get_final_message()
+        usage = response.usage
+        if not text.strip() or response.stop_reason in ("refusal", "max_tokens"):
+            raise ClaudeFailed(_empty_answer_text(response.stop_reason))
+        failure = None
+        finished = True
+    except anthropic.APIError as error:
+        failure = type(error).__name__
+        yield {"type": "error", "message": _describe_failure(error)}
+    except ClaudeFailed as error:
+        failure = str(error)
+        yield {"type": "error", "message": str(error)}
+    except GeneratorExit:  # the page went away mid-answer. Still counts against the day's calls
+        raise
+    except Exception as error:  # a stream cut short
+        failure = type(error).__name__
+        yield {"type": "error", "message": "Claude's answer was cut off. Try again."}
+    finally:
+        with Session(db.get_engine()) as session:
+            _log_call(session, "ask", input_hash, model, usage, {"text": text} if finished else None, failure)
+    if finished:
+        yield {"type": "done", "cached": False, "model": model}

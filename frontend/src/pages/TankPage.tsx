@@ -33,13 +33,13 @@ export default function TankPage() {
   const tank = query.data && query.data.id === id ? query.data : null
   const [dialog, setDialog] = useState<'start' | 'close' | null>(null)
 
-  if (query.isError) return <><TopBar crumbs={['Tanks', id ?? '']} /><ErrorState error={query.error} onRetry={() => query.refetch()} /></>
-  if (!tank) return <><TopBar crumbs={['Tanks', id ?? '']} /><LoadingState /></>
+  if (query.isError) return <><TopBar crumbs={['Floor', id ?? '']} /><ErrorState error={query.error} onRetry={() => query.refetch()} /></>
+  if (!tank) return <><TopBar crumbs={['Floor', id ?? '']} /><LoadingState /></>
 
   const empty = tank.level === 'empty'
   return (
     <>
-      <TopBar crumbs={['Tanks', tank.id]} newCheckHref={empty ? '/checks/new' : `/checks/new?tank=${tank.id}`} hideNewCheck />
+      <TopBar crumbs={['Floor', tank.id]} newCheckHref={empty ? '/checks/new' : `/checks/new?tank=${tank.id}`} hideNewCheck />
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-7 pt-6 pb-5 max-[660px]:px-4">
         <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-1">
           <div className="flex flex-wrap items-center gap-3">
@@ -93,12 +93,12 @@ export default function TankPage() {
         </div>
 
         <aside aria-label={`${tank.id} details`} className="flex min-w-0 flex-[1_1_378px] flex-col rounded-card border border-line min-[1220px]:max-w-[402px]">
-          {tank.latest_check && <div className="pt-4"><LatestCheck tank={tank} /></div>}
           <RiskForecast tank={tank} />
           <ExplainBlock tankId={tank.id} checkId={tank.latest_check_id} />
-          <ConditionTable tank={tank} />
-          <SurvivalChart tank={tank} />
           <RecommendedActions tank={tank} />
+          <ConditionTable tank={tank} />
+          <LatestCheck tank={tank} />
+          <SurvivalChart tank={tank} />
           {tank.decision_history.length > 0 && (
             <section aria-label="Decision history" className="flex flex-col border-t border-divider px-4 pt-4 pb-1.5">
               <h3 className="pb-1 text-[13px] font-semibold">Decision history</h3>

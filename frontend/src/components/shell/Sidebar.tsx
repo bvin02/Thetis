@@ -11,8 +11,8 @@ const NAV: { to: string; label: string; end?: boolean; icon: ReactNode }[] = [
     icon: <svg {...ICON}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2.5" /><circle cx="15.5" cy="9" r="2.5" /><path d="M3 14h18" /></svg>,
   },
   {
-    to: '/tanks', label: 'Tanks',
-    icon: <svg {...ICON}><ellipse cx="12" cy="6" rx="8" ry="3" /><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6" /></svg>,
+    to: '/advisor', label: 'Advisor',
+    icon: <svg {...ICON}><path d="M9.5 18h5M10.5 21h3" /><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1.3 1.6 1.4 2.5h5.2c.1-.9.6-1.7 1.4-2.5A6 6 0 0 0 12 3z" /></svg>,
   },
   {
     to: '/checks', label: 'Checks',

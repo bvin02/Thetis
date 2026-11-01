@@ -179,6 +179,29 @@ DEFAULTS: dict = {
     "discard_dead_pct": 40.0,
     # Save-time estimate warning
     "overstock_warning_ratio": 1.1,
+    # What this plant uses. Doses and steps name these. A hatchery's `settings` JSON overrides them.
+    "plant": {"buffer": "sodium_carbonate", "disinfectant": "sodium_hypochlorite"},
+    # Advisor: buffering
+    "buffer_target_omega": 3.0,
+    "assumed_alkalinity_umol_kg_at_35": 2300.0,  # used only when one of pH and Ω is missing
+    "default_salinity_ppt": 30.0,
+    # Readings outside these aren't seawater a dose can be worked out for (a typo, or a salinity of 0): no dose, no guess
+    "dose_valid_salinity_ppt": (5.0, 45.0),
+    "dose_valid_temp_c": (0.0, 40.0),
+    "dose_valid_ph": (6.5, 9.5),
+    "dose_valid_omega": (0.05, 15.0),
+    # Advisor: yield. Guidance figures are from FAO Fisheries Technical Paper 471 (Helm & Bourne, 2004).
+    "eyed_um": 260.0,
+    "density_limit_per_l": 20000.0,  # §5.1.3: top of the 15,000 to 20,000 per L range for oyster D-larvae
+    "density_range_low_per_l": 15000.0,
+    "setting_density_per_l": 5000.0,  # §5.4.3: top of the 2,000 to 5,000 per L range at settlement
+    "grade_mesh_um": 240,  # §5.4.3: retains the largest larvae, ready to settle
+    "feed_cells_per_larva_day": ((100, 2800), (200, 41900), (280, 73100)),  # Table 13, C. gigas, by shell length in µm
+    "cull_quantile": 0.15,
+    "pace_min_checks": 3,  # a batch needs this many checks before it can set the pace for others
+    "slow_pace_ratio": 1.5,  # losing this many times as fast as the pace batch is worth raising
+    "project_max_days": 21,  # beyond this a batch isn't on course to reach the eyed stage
+    "forecast_min_gain": 50000,  # a smaller gap isn't worth showing against a rough forecast
 }
 
 
@@ -199,6 +222,20 @@ CLAUDE_CROP_MAX_PX = 256
 CLAUDE_CROP_JPEG_QUALITY = 85
 CLAUDE_OPINION_MAX_TOKENS = 1500
 CLAUDE_EXPLAIN_MAX_TOKENS = 400
+CLAUDE_ANALYSIS_MAX_TOKENS = 8000  # includes thinking
+CLAUDE_ASK_MAX_TOKENS = 3000  # includes thinking
+CLAUDE_ASK_MAX_TURNS = 20
+CLAUDE_ASK_MAX_CHARS = 2000
+CLAUDE_STREAM_TIMEOUT_S = 300.0
+CLAUDE_STREAM_UPDATE_S = 0.12  # how often a running analysis updates the page
+CLAUDE_MAX_INSIGHTS = 3
+CLAUDE_MAX_PRIORITIES = 3
+# How far a reading Claude cites may be from the record: enough for rounding as the app shows it, and no more
+CLAUDE_EVIDENCE_TOLERANCE = {
+    "pct_dead": 0.6, "pct_abnormal": 0.6, "survival_pct": 0.6, "length_um": 0.6, "cv": 0.006, "gut": 0.006, "growth_um_day": 0.06,
+    "loss_pct_per_day": 0.06, "ph": 0.006, "omega_arag": 0.06, "temp_c": 0.06, "do_mgl": 0.06,
+}
+CLAUDE_EVIDENCE_COUNT_TOLERANCE = 0.01  # counts are often written roundly: 16.5M for 16,482,000
 # Models that always think spend part of max_tokens on thinking. This keeps the visible answer whole.
 CLAUDE_THINKING_HEADROOM_TOKENS = 1500
 CLAUDE_TIMEOUT_S = 60.0

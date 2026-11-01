@@ -33,6 +33,7 @@ from app.rules.text import (
     summary_for,
     title_for,
 )
+from app.services.advisor import floor_summary, playbook_for, suggestions_for_tank
 from app.services.decisions import actions_for_tank, all_decisions, decision_view, pending_count, touches_tank
 from app.services.world import TankState, World, load_world
 
@@ -283,6 +284,7 @@ def build_floor(session: Session) -> dict:
         "lines": [_line_view(line, world, session) for line in world.lines.values()],
         "history": {"days": history_days(world.now.date()), "rows": rows},
         "default_tank": worst.id if worst else None,
+        "advisor": floor_summary(world, decisions),
     }
 
 
@@ -452,8 +454,10 @@ def build_tank(tank_id: str, session: Session) -> dict | None:
             "hist": check.hist,
         }
 
-    actions = [decision_view(d, world.now) for d in actions_for_tank(state, world, decisions)]
-    left = sum(1 for a in actions if a["status"] == "pending")
+    book = playbook_for(world)
+    actions = [decision_view(d, world.now, book) for d in actions_for_tank(state, world, decisions)]
+    suggestions = suggestions_for_tank(state, world, decisions, book)
+    left = sum(1 for a in actions + suggestions if a["status"] == "pending")
 
     batches = {b.id: b for b in state.all_batches}
     photo_counts: dict[int, int] = {}
@@ -468,7 +472,7 @@ def build_tank(tank_id: str, session: Session) -> dict | None:
 
     # What this tank has been told and what was done about it, newest first
     history = [
-        decision_view(d, world.now)
+        decision_view(d, world.now, book)
         for d in sorted(
             (d for d in decisions if touches_tank(d, state) and d.status != "pending"),
             key=lambda d: d.decided_at or d.created_at,
@@ -504,6 +508,7 @@ def build_tank(tank_id: str, session: Session) -> dict | None:
             "omega_target": world.cfg["omega_arag"][0],
         },
         "actions": actions,
+        "suggestions": suggestions,
         "actions_left": left,
         "checks": check_rows,
         "decision_history": history,
