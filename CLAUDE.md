@@ -71,5 +71,7 @@ phase with a short summary and how to verify it.
 - Check 390 px wide: no horizontal page scroll.
 
 ## Git
-Commit at the end of each phase with a clear message. `data/`, `.env` and `fixtures/real/` are
-gitignored: keep it that way.
+Commit at the end of each phase with a clear message. `.env` and `fixtures/real/` are gitignored:
+keep it that way. A snapshot of `data/` is committed because the owner asked for it, while new files
+in it stay ignored. Running or seeding the app shows that snapshot as changed: don't commit the
+churn unless asked. The GitHub repo is public, so check before pushing anything new.

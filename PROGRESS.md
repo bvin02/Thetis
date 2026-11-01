@@ -37,7 +37,8 @@ another day, stop it and run `npm run seed`**, because "Today" and "Day 9" are r
    abnormal larvae, because no such open photos exist. Its accuracy there is unknown.
 
 **Good to know**
-- Everything is committed on branch `build/mvp`. `main` holds only the starter pack. Nothing was pushed.
+- Everything is on branch `build/mvp`, pushed to the public repo https://github.com/bvin02/Thetis along with a snapshot of
+  `data/`. Local `main` holds only the starter pack and wasn't pushed. `fixtures/real/` and `.env` were not pushed.
 - The engine misses one faint dead shell in the demo slide (14 of 15 found). The demo uses that as its "fix a wrong
   call" moment.
 - I went beyond or against the SPEC in a few places, on purpose: four extra engine rules (needed to pass the J006
@@ -53,7 +54,7 @@ Autonomous overnight build of `SPEC.md`. Newest phase last.
 ## Working notes (read me first after a context reset)
 
 - Product name is **Thetis** (the starter pack said "Hatchery Autopilot"; renamed in docs and code).
-- Work happens on git branch `build/mvp`. `main` holds only the starter pack. Nothing is pushed.
+- Work happens on git branch `build/mvp`, pushed to https://github.com/bvin02/Thetis (public). `main` holds only the starter pack.
 - Never open `.env`. Debug images only under `data/` (gitignored).
 - Use absolute paths in shell commands: the shell's working directory can drift between calls.
 - Screenshot helper: `cd frontend && node scripts/shot.mjs <path> ../data/shots/x.png <w> <h> [--full]`.
