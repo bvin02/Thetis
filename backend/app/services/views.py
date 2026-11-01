@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from sqlmodel import Session, select
 
@@ -130,7 +130,11 @@ def line_water(line_id: str | None, world: World, session: Session) -> dict | No
     )
     values: dict[str, float | None] = dict.fromkeys(("temp_c", "salinity_ppt", "ph", "omega_arag", "do_mgl"))
     newest = None
+    window = timedelta(hours=world.cfg["line_reading_window_h"])
     for check in rows:
+        # Fill gaps from checks close to the newest reading, never from old water chemistry
+        if newest is not None and newest - check.sampled_at > window:
+            break
         for key in values:
             reading = getattr(check, key)
             if values[key] is None and reading is not None:
@@ -394,7 +398,7 @@ def check_row(check: models.Check, batch: models.Batch | None, world: World, n_p
 # ---------------------------------------------------------------- tank page and inspector
 
 
-def _series(state: TankState) -> dict:
+def _series(state: TankState, cfg: dict) -> dict:
     """Points for the survival sparkline and the tank page's trend charts."""
     batch = state.batch
     if batch is None:
@@ -405,7 +409,8 @@ def _series(state: TankState) -> dict:
     }]
     spawn_at = batch.spawn_date
     for check in state.checks:
-        elapsed = (check.sampled_at.date() - spawn_at).days + (check.sampled_at.hour + check.sampled_at.minute / 60 - 12) / 24
+        hour = check.sampled_at.hour + check.sampled_at.minute / 60
+        elapsed = (check.sampled_at.date() - spawn_at).days + (hour - cfg["spawn_hour"]) / 24
         points.append({
             "day": round(max(elapsed, 0.01), 3),
             "day_label": f"Day {day_of(check.sampled_at, spawn_at)}",
@@ -491,8 +496,13 @@ def build_tank(tank_id: str, session: Session) -> dict | None:
         "growth_um_day": state.assessment.growth_um_day if state.assessment else None,
         "loss_per_day": state.assessment.loss_per_day if state.assessment else None,
         "rules_version": state.assessment.rules_version if state.assessment else None,
-        "series": _series(state),
+        "series": _series(state, world.cfg),
         "expected_growth_um_day": world.cfg["expected_growth_um_day"],
+        "chart_guides": {
+            "dead_watch": world.cfg["dead_pct"][0],
+            "dead_critical": world.cfg["dead_pct"][2],
+            "omega_target": world.cfg["omega_arag"][0],
+        },
         "actions": actions,
         "actions_left": left,
         "checks": check_rows,

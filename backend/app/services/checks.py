@@ -4,6 +4,7 @@ from __future__ import annotations
 import shutil
 from collections.abc import Iterable, Sequence
 from datetime import datetime
+from pathlib import Path
 
 from sqlmodel import Session, select
 
@@ -27,11 +28,15 @@ def _stocked_estimate(live_est: float | None, stocked: int | None, cfg: dict) ->
     return {"live_est": live_est, "survival": survival, "stocked": stocked, "over_stocked": over}
 
 
-def compute_estimate(dets: Sequence[Det], volume_ml: float | None, sample: dict, stocked: int | None, cfg: dict) -> dict:
+def compute_estimate(dets: Sequence[Det], volume_ml: float | None, sample: dict, stocked: int | None, cfg: dict,
+                     estimate_dets: Sequence[Det] | None = None) -> dict:
+    """`estimate_dets` are the detections from photos with a scale, when some photos have none: a photo with no
+    volume can't add larvae to a count that gets divided by volume."""
     summary = summarize(dets, 1.0 if any(d.length_um is not None for d in dets) else None, cfg)
     bucket_l = float(sample.get("bucket_l") or cfg["bucket_l"])
     concentration = float(sample.get("concentration") or cfg["concentration"])
-    live_est = estimate_live(summary.count_for_estimate, volume_ml, bucket_l, concentration)
+    count = summary.count_for_estimate if estimate_dets is None else summarize(estimate_dets, None, cfg).count_for_estimate
+    live_est = estimate_live(count, volume_ml, bucket_l, concentration)
     return {"summary": summary.model_dump(), "estimate": _stocked_estimate(live_est, stocked, cfg)}
 
 
@@ -71,8 +76,8 @@ def det_from_row(row: models.Detection) -> Det:
     )
 
 
-def _apply_summary(check: models.Check, dets: Iterable[Det], um_per_px: float | None, cfg: dict) -> float:
-    """Copy counts and sizes onto the check. Returns count_for_estimate."""
+def _apply_summary(check: models.Check, dets: Iterable[Det], um_per_px: float | None, cfg: dict) -> None:
+    """Copy counts and sizes onto the check."""
     summary = summarize(list(dets), um_per_px, cfg)
     check.n_live = summary.n_live
     check.n_abnormal = summary.n_abnormal
@@ -87,7 +92,6 @@ def _apply_summary(check: models.Check, dets: Iterable[Det], um_per_px: float | 
     check.gut = summary.gut
     check.stage = summary.stage
     check.hist = summary.hist
-    return summary.count_for_estimate
 
 
 def reassess_batch(session: Session, batch: models.Batch, tank_kind: str, cfg: dict, from_time: datetime | None = None) -> None:
@@ -155,7 +159,7 @@ def save_check(session: Session, *, tank_id: str, sampled_at: datetime | None, p
     room = session.get(models.Room, tank.room_id)
     now = datetime.now()
     when = sampled_at or now
-    if when > now.replace(microsecond=0) and (when - now).total_seconds() > 300:
+    if (when - now).total_seconds() > config.FUTURE_SAMPLE_TOLERANCE_S:
         raise CheckError("Sampled at can't be in the future.")
     if when.date() < batch.spawn_date:
         raise CheckError(f"Sampled at is before batch {batch.code} was spawned.")
@@ -185,11 +189,14 @@ def save_check(session: Session, *, tank_id: str, sampled_at: datetime | None, p
 
     bucket_l = float(sample.get("bucket_l") or cfg["bucket_l"])
     concentration = float(sample.get("concentration") or cfg["concentration"])
+    # Only photos with a scale have a volume, so only they count towards the estimate
     total_volume = None
     um_per_px_any = None
-    for meta in metas:
+    scaled_dets: list[Det] = []
+    for meta, dets in zip(metas, photo_dets, strict=True):
         if meta.get("photo_volume_ml"):
             total_volume = (total_volume or 0.0) + float(meta["photo_volume_ml"])
+            scaled_dets.extend(dets)
         if meta.get("um_per_px"):
             um_per_px_any = float(meta["um_per_px"])
 
@@ -212,13 +219,40 @@ def save_check(session: Session, *, tank_id: str, sampled_at: datetime | None, p
         is_example=False,
     )
     if photos:
-        count = _apply_summary(check, all_dets, um_per_px_any, cfg)
+        _apply_summary(check, all_dets, um_per_px_any, cfg)
+        count = summarize(scaled_dets, um_per_px_any, cfg).count_for_estimate
         check.live_est = estimate_live(count, total_volume, bucket_l, concentration)
     else:
         check.live_est = live_est
     session.add(check)
     session.flush()
 
+    # Photos are copied now and the uploads removed only after the commit: a failure below must leave the
+    # upload in place, so the tech can press Save again without losing their corrections.
+    copied: list[Path] = []
+    try:
+        created = _store_and_decide(session, check, batch, tank_id, room, cfg, metas, photo_dets, tokens, copied, when, now)
+        session.commit()
+    except Exception:
+        session.rollback()
+        for path in copied:
+            path.unlink(missing_ok=True)
+        raise
+
+    session.refresh(check)
+    for decision in created:
+        session.refresh(decision)
+    for token in tokens:
+        uploads.image_path(token).unlink(missing_ok=True)
+        (config.uploads_dir() / f"{token}.json").unlink(missing_ok=True)
+    world = load_world(session)
+    return _result(check, world.tanks[tank_id], created, decision_service.all_decisions(session))
+
+
+def _store_and_decide(session: Session, check: models.Check, batch: models.Batch, tank_id: str, room: models.Room | None, cfg: dict,
+                      metas: list[dict], photo_dets: list[list[Det]], tokens: list[str], copied: list[Path],
+                      when: datetime, now: datetime) -> list[models.Decision]:
+    """The part of a save that can fail: photo files and rows, the risk snapshot, and new decisions."""
     for meta, dets, token in zip(metas, photo_dets, tokens, strict=True):
         photo = models.Photo(
             check_id=check.id,
@@ -238,7 +272,8 @@ def save_check(session: Session, *, tank_id: str, sampled_at: datetime | None, p
         folder = config.photos_dir() / str(check.id)
         folder.mkdir(parents=True, exist_ok=True)
         target = folder / f"{photo.id}.jpg"
-        shutil.move(str(uploads.image_path(token)), target)
+        shutil.copyfile(uploads.image_path(token), target)
+        copied.append(target)
         photo.path = str(target.relative_to(config.data_dir()))
         session.add(photo)
         for det in dets:
@@ -252,14 +287,7 @@ def save_check(session: Session, *, tank_id: str, sampled_at: datetime | None, p
     session.expire_all()
     world = load_world(session)
     state = world.tanks[tank_id]
-    created = decision_service.create_missing(session, state, world, check.id, now=now)
-    session.commit()
-    session.refresh(check)
-    for decision in created:
-        session.refresh(decision)
-    for token in tokens:
-        (config.uploads_dir() / f"{token}.json").unlink(missing_ok=True)
-    return _result(check, state, created, decision_service.all_decisions(session))
+    return decision_service.create_missing(session, state, world, check.id, now=now)
 
 
 def update_detections(session: Session, check: models.Check, photo: models.Photo, dets: list[Det]) -> None:
@@ -269,14 +297,18 @@ def update_detections(session: Session, check: models.Check, photo: models.Photo
     all_photos = list(session.exec(select(models.Photo).where(models.Photo.check_id == check.id)))
     um_per_px = next((p.um_per_px for p in all_photos if p.um_per_px), None)
 
-    def detections_of_check() -> list[Det]:
+    def detections_of(photos_wanted: list[models.Photo]) -> list[Det]:
         found: list[Det] = []
-        for each in all_photos:
+        for each in photos_wanted:
             rows = session.exec(select(models.Detection).where(models.Detection.photo_id == each.id))
             found.extend(det_from_row(row) for row in rows)
         return found
 
-    old_count = summarize(detections_of_check(), um_per_px, cfg).count_for_estimate
+    def count_for_estimate() -> float:
+        # A photo with no scale has no volume, so it isn't part of the estimate
+        return summarize(detections_of([p for p in all_photos if p.volume_ml]), um_per_px, cfg).count_for_estimate
+
+    old_count = count_for_estimate()
     for row in session.exec(select(models.Detection).where(models.Detection.photo_id == photo.id)):
         session.delete(row)
     session.flush()
@@ -284,7 +316,8 @@ def update_detections(session: Session, check: models.Check, photo: models.Photo
         session.add(_detection_row(photo.id, det))
     session.flush()
 
-    new_count = _apply_summary(check, detections_of_check(), um_per_px, cfg)
+    _apply_summary(check, detections_of(all_photos), um_per_px, cfg)
+    new_count = count_for_estimate()
     if check.live_est is not None and old_count > 0:
         # Scale, so a seeded check (whose estimate stands for a full count) keeps its meaning
         check.live_est = check.live_est * new_count / old_count
@@ -302,6 +335,7 @@ def update_detections(session: Session, check: models.Check, photo: models.Photo
 
     world = load_world(session)
     state = world.tanks.get(check.tank_id)
-    if state is not None and state.batch is not None and state.batch.id == check.batch_id:
-        decision_service.create_missing(session, state, world, state.latest.id if state.latest else check.id)
+    if state is not None and state.batch is not None and state.batch.id == check.batch_id and state.latest is not None:
+        # A correction can bring new evidence, but never re-opens what was already decided for this check
+        decision_service.create_missing(session, state, world, state.latest.id, decided_since=state.latest.sampled_at)
     session.commit()

@@ -288,6 +288,7 @@ export interface TankDetail extends TankSummary {
   rules_version: string | null
   series: { points: SeriesPoint[] }
   expected_growth_um_day: number
+  chart_guides: { dead_watch: number; dead_critical: number; omega_target: number }
   actions: DecisionView[]
   actions_left: number
   checks: CheckRow[]

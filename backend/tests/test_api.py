@@ -222,6 +222,19 @@ def test_patch_corrections_recompute_and_reassess(client):
     assert corrected and all(d["auto_cls"] == "dead" for d in corrected)
 
 
+def test_a_png_and_its_rescale_find_the_same_objects(client):
+    import cv2
+
+    picture = cv2.imread(str(config.FIXTURES_DIR / "slides" / "slide-low-omega.jpg"))
+    ok, encoded = cv2.imencode(".png", picture)
+    assert ok
+    first = client.post("/api/analyze", files={"file": ("x.png", encoded.tobytes(), "image/png")}).json()
+    second = client.post(f"/api/analyze/{first['token']}/scale", json={"um_per_px": 1.6}).json()
+    assert [(d["id"], round(d["cx"]), round(d["cy"])) for d in first["detections"]] == [
+        (d["id"], round(d["cx"]), round(d["cy"])) for d in second["detections"]
+    ]
+
+
 def test_correcting_an_earlier_check_only_changes_it_and_later_ones(client):
     with Session(db.get_engine()) as session:
         batch = session.exec(select(models.Batch).where(models.Batch.code == "NW-1021")).one()
@@ -416,3 +429,218 @@ def test_floor_on_an_empty_database_does_not_crash():
         assert test_client.get("/api/checks").json() == {"checks": []}
         assert test_client.get("/api/decisions").json()["counts"]["all"] == 0
         assert test_client.get("/api/photos/tree").json() == {"rooms": []}
+
+
+def test_analyze_returns_the_fields_the_spec_names(client):
+    body = _analyze(client)
+    for key in ("token", "width", "height", "um_per_px", "calibration", "photo_volume_ml", "detections", "summary"):
+        assert key in body, key
+    assert body["summary"]["n_dead"] == sum(1 for d in body["detections"] if d["cls"] == "dead")
+    assert body["summary"]["mean_len_um"] == pytest.approx(128, abs=4)
+
+
+@pytest.mark.parametrize("width,height,value", [(1, 1, 200), (8, 8, 255), (40, 30, 0), (2000, 1500, 128), (600, 20, 90)])
+def test_odd_images_do_not_crash_the_engine(client, width, height, value):
+    import cv2
+    import numpy as np
+
+    canvas = np.full((height, width, 3), value, dtype=np.uint8)
+    ok, encoded = cv2.imencode(".png", canvas)
+    assert ok
+    response = client.post("/api/analyze", files={"file": ("blank.png", encoded.tobytes(), "image/png")})
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["width"] == width and body["height"] == height
+    assert body["calibration"] == "none"
+
+
+def test_a_check_with_no_larvae_found_can_be_saved_and_read_back(client):
+    import cv2
+    import numpy as np
+
+    ok, encoded = cv2.imencode(".jpg", np.full((900, 1200, 3), 225, dtype=np.uint8))
+    assert ok
+    analysis = client.post("/api/analyze", files={"file": ("blank.jpg", encoded.tobytes(), "image/jpeg")}).json()
+    saved = client.post("/api/checks", json=_save_payload(analysis, {}))
+    assert saved.status_code == 201, saved.text
+    detail = client.get(f"/api/checks/{saved.json()['check_id']}").json()
+    assert detail["n_counted"] == 0 and detail["live_est"] is None and detail["survival"] is None
+    assert client.get("/api/floor").status_code == 200
+    tank = client.get("/api/tanks/T-03").json()
+    assert tank["live_text"] == "—" and tank["survival_text"] == "—"
+    assert client.get("/api/photos/tree").status_code == 200
+
+
+def test_a_backdated_check_reassesses_only_itself_and_later_checks(client):
+    with Session(db.get_engine()) as session:
+        batch = session.exec(select(models.Batch).where(models.Batch.code == "NW-1021")).one()
+        rows = list(session.exec(select(models.Check).where(models.Check.batch_id == batch.id).order_by(models.Check.sampled_at)))
+        first_snapshot = (rows[0].level, rows[0].signals)
+        between = rows[1].sampled_at + timedelta(hours=26)
+    analysis = _analyze(client)
+    payload = _save_payload(analysis, {})
+    payload["sampled_at"] = between.isoformat()
+    assert client.post("/api/checks", json=payload).status_code == 201
+    with Session(db.get_engine()) as session:
+        batch = session.exec(select(models.Batch).where(models.Batch.code == "NW-1021")).one()
+        rows = list(session.exec(select(models.Check).where(models.Check.batch_id == batch.id).order_by(models.Check.sampled_at)))
+        assert (rows[0].level, rows[0].signals) == first_snapshot
+        assert len(rows) == 5
+        assert all(row.level is not None for row in rows)
+
+
+def _photo_with_larvae(client, sample: str) -> dict:
+    return client.post(f"/api/samples/{sample}/analyze").json()
+
+
+def test_a_photo_with_no_scale_does_not_inflate_the_estimate(client):
+    scaled = _photo_with_larvae(client, "slide-healthy-umbo")
+    unscaled = _photo_with_larvae(client, "slide-low-omega")
+    assert scaled["photo_volume_ml"] and unscaled["photo_volume_ml"] is None
+
+    alone = client.post("/api/checks", json=_save_payload(scaled, {})).json()
+    only_scaled = client.get(f"/api/checks/{alone['check_id']}").json()
+
+    run_seed(full=False, reset=True)
+    scaled = _photo_with_larvae(client, "slide-healthy-umbo")
+    unscaled = _photo_with_larvae(client, "slide-low-omega")
+    payload = _save_payload(scaled, {})
+    payload["photos"].append({"token": unscaled["token"], "detections": unscaled["detections"]})
+    saved = client.post("/api/checks", json=payload).json()
+    both = client.get(f"/api/checks/{saved['check_id']}").json()
+
+    assert both["n_counted"] > only_scaled["n_counted"]  # counts include every photo
+    assert both["live_est"] == pytest.approx(only_scaled["live_est"])  # the estimate only uses scaled ones
+
+    # Correcting the unscaled photo must leave the estimate alone too
+    photo = next(p for p in both["photos"] if p["volume_ml"] is None)
+    dets = photo["detections"]
+    target = next(d for d in dets if d["cls"] == "live")
+    target["cls"] = "dead"
+    target["source"] = "corrected"
+    patched = client.patch(f"/api/checks/{saved['check_id']}/photos/{photo['id']}/detections", json={"detections": dets}).json()
+    assert patched["live_est"] == pytest.approx(only_scaled["live_est"])
+
+
+def test_summarize_can_leave_unscaled_photos_out_of_the_estimate(client):
+    scaled = _photo_with_larvae(client, "slide-healthy-umbo")
+    unscaled = _photo_with_larvae(client, "slide-low-omega")
+    body = {
+        "detections": scaled["detections"] + unscaled["detections"], "um_per_px": scaled["um_per_px"],
+        "photo_volume_ml": scaled["photo_volume_ml"], "sample": {"bucket_l": 20, "concentration": 50}, "tank_id": "T-01",
+    }
+    inflated = client.post("/api/summarize", json=body).json()
+    body["estimate_detections"] = scaled["detections"]
+    right = client.post("/api/summarize", json=body).json()
+    alone = client.post("/api/summarize", json={**body, "detections": scaled["detections"], "estimate_detections": None}).json()
+    assert right["estimate"]["live_est"] == pytest.approx(alone["estimate"]["live_est"])
+    assert right["estimate"]["live_est"] < inflated["estimate"]["live_est"]
+    assert right["summary"]["n_live"] > alone["summary"]["n_live"]
+
+
+def test_a_failed_save_leaves_the_upload_in_place_and_no_stray_files(client, monkeypatch):
+    from app.services import decisions as decision_service
+
+    analysis = _analyze(client)
+    payload = _save_payload(analysis, _line1_water(client))
+    upload = config.uploads_dir() / f"{analysis['token']}.jpg"
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("database is locked")
+
+    monkeypatch.setattr(decision_service, "create_missing", boom)
+    with pytest.raises(RuntimeError):
+        client.post("/api/checks", json=payload)
+    monkeypatch.undo()
+
+    assert upload.exists()
+    with Session(db.get_engine()) as session:
+        batch = session.exec(select(models.Batch).where(models.Batch.code == "NW-1021")).one()
+        assert len(list(session.exec(select(models.Check).where(models.Check.batch_id == batch.id)))) == 4
+    stray = [p for p in config.photos_dir().rglob("*.jpg") if p.name.startswith("50")]
+    assert not stray
+
+    retry = client.post("/api/checks", json=payload)
+    assert retry.status_code == 201, retry.text
+    assert retry.json()["level"] == "critical"
+    assert not upload.exists()
+
+
+def test_correcting_outlines_does_not_reopen_answered_decisions(client):
+    saved = client.post("/api/checks", json=_save_payload(_analyze(client), _line1_water(client))).json()
+    decision_id = next(d["id"] for d in saved["new_decisions"] if d["action"] == "restock")
+    client.post(f"/api/decisions/{decision_id}/dismiss", json={})
+    before = _pending(client)
+
+    detail = client.get(f"/api/checks/{saved['check_id']}").json()
+    photo = detail["photos"][0]
+    dets = photo["detections"]
+    next(d for d in dets if d["cls"] == "live")["cls"] = "abnormal"
+    assert client.patch(f"/api/checks/{saved['check_id']}/photos/{photo['id']}/detections", json={"detections": dets}).status_code == 200
+    assert _pending(client) == before
+    assert "T-03:restock" not in _pending(client)
+
+
+def test_a_correction_can_still_add_a_newly_recommended_action(client):
+    saved = client.post("/api/checks", json=_save_payload(_analyze(client), _line1_water(client))).json()
+    detail = client.get(f"/api/checks/{saved['check_id']}").json()
+    photo = detail["photos"][0]
+    dets = photo["detections"]
+    for det in dets:
+        if det["cls"] == "live":
+            det["cls"] = "dead"  # dead now passes 40%, which adds "discard"
+    assert client.patch(f"/api/checks/{saved['check_id']}/photos/{photo['id']}/detections", json={"detections": dets}).status_code == 200
+    assert "T-03:discard" in _pending(client)
+
+
+def test_undo_refuses_a_second_pending_copy(client):
+    saved = client.post("/api/checks", json=_save_payload(_analyze(client), _line1_water(client))).json()
+    first_id = next(d["id"] for d in saved["new_decisions"] if d["action"] == "isolate")
+    client.post(f"/api/decisions/{first_id}/approve", json={})
+    # The next check recommends it again
+    again = client.post("/api/checks", json=_save_payload(_analyze(client), _line1_water(client))).json()
+    assert any(d["action"] == "isolate" for d in again["new_decisions"])
+    refused = client.post(f"/api/decisions/{first_id}/undo")
+    assert refused.status_code == 409
+    assert "already waiting" in refused.json()["detail"]
+    assert _pending(client).count("T-03:isolate") == 1
+
+
+def test_undo_refuses_to_reopen_a_closed_batch(client):
+    tank = client.get("/api/tanks/T-02").json()
+    decision_id = next(a["id"] for a in tank["actions"] if a["action"] == "screen")
+    client.post(f"/api/batches/{tank['batch']['id']}/close", json={"outcome": "discarded"})
+    refused = client.post(f"/api/decisions/{decision_id}/undo")
+    assert refused.status_code == 409
+    assert "closed" in refused.json()["detail"]
+    assert "T-02:screen" not in _pending(client)
+
+
+def test_line_water_does_not_mix_in_old_chemistry(client):
+    with Session(db.get_engine()) as session:
+        # Today's only reading on line 1 is a temperature. Everything else is at least a day older.
+        batch = session.exec(select(models.Batch).where(models.Batch.code == "NW-1027")).one()
+        session.add(models.Check(batch_id=batch.id, tank_id="T-08", sampled_at=datetime.now(), temp_c=26.0, level="ok"))
+        for check in session.exec(select(models.Check).where(models.Check.tank_id != "T-08")):
+            if check.tank_id in ("T-01", "T-02", "T-03", "T-07", "T-10", "S-01"):
+                check.sampled_at = check.sampled_at - timedelta(days=3)
+                session.add(check)
+        old = session.exec(select(models.Check).where(models.Check.tank_id == "T-08", models.Check.temp_c == 25.0)).one()
+        old.sampled_at = old.sampled_at - timedelta(days=3)
+        session.add(old)
+        session.commit()
+    line1 = next(line for line in client.get("/api/floor").json()["lines"] if line["id"] == "L1")
+    assert line1["water"]["temp_c"] == pytest.approx(26.0)
+    assert line1["omega"] is None and line1["ph"] is None
+    assert line1["reading_text"] == "No readings"
+
+
+def test_line_water_still_fills_gaps_from_the_same_day(client):
+    line2 = next(line for line in client.get("/api/floor").json()["lines"] if line["id"] == "L2")
+    assert line2["omega"] == pytest.approx(1.4)
+    assert line2["ph"] == pytest.approx(7.62)  # T-04's, 20 minutes before the newest check, which had no pH
+
+
+def test_tank_view_carries_the_chart_guides(client):
+    guides = client.get("/api/tanks/T-04").json()["chart_guides"]
+    assert guides == {"dead_watch": 10.0, "dead_critical": 20.0, "omega_target": 2.0}

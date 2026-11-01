@@ -54,12 +54,16 @@ def day_of(when: date | datetime, spawn_date: date) -> int:
     return (local - spawn_date).days
 
 
-def baseline_index(checks: Sequence[CheckData], i: int, cfg: Mapping) -> int | None:
-    """The most recent earlier check at least `baseline_min_days` older than check i."""
+def baseline_index(checks: Sequence[CheckData], i: int, cfg: Mapping, has_measure=None) -> int | None:
+    """The most recent earlier check at least `baseline_min_days` older than check i.
+
+    `has_measure` skips checks without the number being compared: a check from a photo with no scale has no
+    estimate, and must not hide a loss against the check before it.
+    """
     current = checks[i].sampled_at
     for j in range(i - 1, -1, -1):
         delta_days = (current - checks[j].sampled_at).total_seconds() / 86400.0
-        if delta_days >= cfg["baseline_min_days"]:
+        if delta_days >= cfg["baseline_min_days"] and (has_measure is None or has_measure(checks[j])):
             return j
     return None
 
@@ -72,11 +76,12 @@ def rates_at(checks: Sequence[CheckData], i: int, batch: BatchData, tank_kind: s
     b = baseline_index(checks, i, cfg)
     baseline = checks[b] if b is not None else None
 
-    # Loss: against the baseline check, or against stocking at spawn when there is none
+    # Loss: against the latest earlier estimate, or against stocking at spawn when there is none
     loss = None
     if check.live_est is not None and check.live_est > 0:
-        if baseline is not None:
-            base_live, base_time = baseline.live_est, baseline.sampled_at
+        b_live = baseline_index(checks, i, cfg, has_measure=lambda c: c.live_est is not None)
+        if b_live is not None:
+            base_live, base_time = checks[b_live].live_est, checks[b_live].sampled_at
         else:
             base_live = float(batch.stocked)
             base_time = datetime.combine(batch.spawn_date, time(cfg["spawn_hour"]))
@@ -86,15 +91,12 @@ def rates_at(checks: Sequence[CheckData], i: int, batch: BatchData, tank_kind: s
 
     # Growth: skipped in setting tanks, and once eyed larvae have stopped growing before they set
     growth = None
-    if (
-        baseline is not None
-        and tank_kind != "setting"
-        and check.mean_len_um is not None
-        and baseline.mean_len_um is not None
-        and baseline.mean_len_um < cfg["growth_skip_baseline_um"]
-    ):
-        delta_days = (check.sampled_at - baseline.sampled_at).total_seconds() / 86400.0
-        if delta_days > 0:
-            growth = (check.mean_len_um - baseline.mean_len_um) / delta_days
+    if tank_kind != "setting" and check.mean_len_um is not None:
+        b_len = baseline_index(checks, i, cfg, has_measure=lambda c: c.mean_len_um is not None)
+        base = checks[b_len] if b_len is not None else None
+        if base is not None and base.mean_len_um < cfg["growth_skip_baseline_um"]:
+            delta_days = (check.sampled_at - base.sampled_at).total_seconds() / 86400.0
+            if delta_days > 0:
+                growth = (check.mean_len_um - base.mean_len_um) / delta_days
 
     return Rates(survival=survival, loss_per_day=loss, growth_um_day=growth, baseline=baseline, previous=previous)

@@ -45,6 +45,7 @@ def seed_cache_dir() -> Path:
 
 UPLOAD_MAX_AGE_H = 24
 UPLOAD_MAX_BYTES = 40 * 1024 * 1024
+FUTURE_SAMPLE_TOLERANCE_S = 300  # a clock a few minutes off shouldn't block a save
 ENGINE_VERSION = "cv-0.1"
 RULES_VERSION = "rules-0.1"
 
@@ -174,6 +175,7 @@ DEFAULTS: dict = {
     # Line alerts and actions
     "line_alert_min_tanks": 2,
     "line_alert_window_days": 3,
+    "line_reading_window_h": 24,  # readings older than this don't fill gaps in a line's latest water values
     "discard_dead_pct": 40.0,
     # Save-time estimate warning
     "overstock_warning_ratio": 1.1,

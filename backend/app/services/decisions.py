@@ -24,13 +24,22 @@ def planned_for(state: TankState, world: World) -> list[PlannedAction]:
 
 
 def create_missing(session: Session, state: TankState, world: World, check_id: int | None,
-                   now: datetime | None = None, is_example: bool = False) -> list[models.Decision]:
-    """Create every recommended decision whose (scope, target, action) is not already pending."""
+                   now: datetime | None = None, is_example: bool = False,
+                   decided_since: datetime | None = None) -> list[models.Decision]:
+    """Create every recommended decision whose (scope, target, action) is not already pending.
+
+    With `decided_since`, an action decided after that time also stays closed: a person already answered it for
+    this evidence, so correcting an outline must not ask again.
+    """
     now = now or world.now
-    pending = {_key(d) for d in session.exec(select(models.Decision).where(models.Decision.status == "pending"))}
+    rows = list(session.exec(select(models.Decision)))
+    pending = {_key(d) for d in rows if d.status == "pending"}
+    answered = set()
+    if decided_since is not None:
+        answered = {_key(d) for d in rows if d.status != "pending" and d.created_at >= decided_since}
     created: list[models.Decision] = []
     for plan in planned_for(state, world):
-        if plan.key in pending:
+        if plan.key in pending or plan.key in answered:
             continue
         decision = models.Decision(
             scope=plan.scope,
@@ -61,7 +70,36 @@ def decide(session: Session, decision: models.Decision, status: str, user_name: 
     return decision
 
 
+class CannotUndo(ValueError):
+    """Undoing would leave a decision that makes no sense. The message is safe to show."""
+
+
+def _batch_is_over(session: Session, decision: models.Decision) -> bool:
+    if decision.scope != "tank":
+        return False
+    if decision.check_id is not None:
+        check = session.get(models.Check, decision.check_id)
+        batch = session.get(models.Batch, check.batch_id) if check else None
+        return batch is not None and batch.status != "active"
+    return session.exec(
+        select(models.Batch).where(models.Batch.tank_id == decision.tank_id, models.Batch.status == "active")
+    ).first() is None
+
+
 def undo(session: Session, decision: models.Decision) -> models.Decision:
+    if decision.status == "pending":
+        return decision
+    if _batch_is_over(session, decision):
+        raise CannotUndo("That batch is closed, so this decision can't be reopened.")
+    twin = session.exec(
+        select(models.Decision).where(
+            models.Decision.status == "pending", models.Decision.action == decision.action,
+            models.Decision.scope == decision.scope, models.Decision.tank_id == decision.tank_id,
+            models.Decision.line_id == decision.line_id,
+        )
+    ).first()
+    if twin is not None:
+        raise CannotUndo("This action is already waiting for a decision.")
     decision.status = "pending"
     decision.decided_by = None
     decision.decided_at = None

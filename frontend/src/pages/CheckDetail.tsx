@@ -11,6 +11,7 @@ import { TopBar } from '../components/shell/TopBar'
 import { useToast } from '../components/toastContext'
 import { ErrorState, LoadingState, Spinner, StatusPill } from '../components/ui'
 import { SEVERITY_DOT, severityText } from '../lib/levels'
+import { withOpinions } from '../lib/opinions'
 
 export default function CheckDetailPage() {
   const { id } = useParams()
@@ -115,7 +116,10 @@ function CheckDetailView({ id }: { id: string | undefined }) {
                 <CheckActions
                   photoRef={photo.id} detections={detections}
                   totalUnsure={detections.filter((d) => d.unsure && d.cls !== 'ignore').length}
-                  onChange={(next) => setDraft((current) => ({ ...current, [photo.id]: next }))}
+                  onOpinions={(asked, opinions) => setDraft((current) => {
+                    const base = current[asked as number] ?? check.photos.find((p) => p.id === asked)?.detections ?? []
+                    return { ...current, [asked as number]: withOpinions(base, opinions) }
+                  })}
                   onReview={() => viewer.current?.nextUnsure()}
                 />
                 <OpinionList

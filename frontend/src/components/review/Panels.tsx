@@ -159,8 +159,8 @@ function NumberField({ id, label, value, onChange, step = 'any', min = '0', suff
   )
 }
 
-export function EstimatePanel({ bucket, concentration, onBucket, onConcentration, estimate }: {
-  bucket: string; concentration: string; onBucket: (v: string) => void; onConcentration: (v: string) => void; estimate: Estimate | null
+export function EstimatePanel({ bucket, concentration, onBucket, onConcentration, estimate, note }: {
+  bucket: string; concentration: string; onBucket: (v: string) => void; onConcentration: (v: string) => void; estimate: Estimate | null; note?: string
 }) {
   return (
     <PanelSection title="Estimate for the tank" label="Estimate for the tank">
@@ -169,6 +169,7 @@ export function EstimatePanel({ bucket, concentration, onBucket, onConcentration
         <NumberField id="concentration" label="Sample concentrated ×" value={concentration} onChange={onConcentration} />
       </div>
       <EstimateText estimate={estimate} />
+      {note && <span className="text-xs leading-normal text-ink-4">{note}</span>}
     </PanelSection>
   )
 }

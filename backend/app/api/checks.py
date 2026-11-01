@@ -87,6 +87,7 @@ class SummarizeRequest(BaseModel):
     photo_volume_ml: float | None = None
     sample: Sample = Sample()
     tank_id: str | None = None
+    estimate_detections: list[Det] | None = None  # from photos with a scale, when some photos have none
 
 
 @router.post("/summarize")
@@ -99,7 +100,9 @@ def summarize_detections(body: SummarizeRequest, session: Session = Depends(get_
             select(models.Batch).where(models.Batch.tank_id == body.tank_id, models.Batch.status == "active")
         ).first()
         stocked = batch.stocked if batch else None
-    return check_service.compute_estimate(body.detections, body.photo_volume_ml, body.sample.model_dump(), stocked, settings)
+    return check_service.compute_estimate(
+        body.detections, body.photo_volume_ml, body.sample.model_dump(), stocked, settings, body.estimate_detections
+    )
 
 
 class Water(BaseModel):

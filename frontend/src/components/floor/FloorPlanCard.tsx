@@ -321,7 +321,7 @@ export function FloorPlanCard({ tanks, visibleTanks, lines, room, selectedId, vi
       {view === 'plan' ? (
         <>
           <div className="planwrap p-3">
-            <div className="planbox relative w-full" style={{ aspectRatio: '800 / 470' }}>
+            <div className="planbox relative mx-auto w-full max-w-[1000px]" style={{ aspectRatio: '800 / 470' }}>
               <PlanSvg tanks={tanks} lines={lines} selected={selected} dimmedRoom={room?.id ?? null} />
               <PlanOverlays tanks={tanks} lines={lines} selectedId={selectedId} onPick={onPick} />
             </div>

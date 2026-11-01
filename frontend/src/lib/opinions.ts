@@ -25,3 +25,13 @@ export function decideOpinion(detection: Detection, decision: 'accepted' | 'kept
 export function pendingOpinions(detections: Detection[]): Detection[] {
   return detections.filter((d) => d.claude && !d.claude.decided)
 }
+
+export type Opinions = Record<string, Omit<ClaudeOpinion, 'decided'>>
+
+/** Copies Claude's answers onto a photo's detections. Object ids only mean something within one photo. */
+export function withOpinions(detections: Detection[], opinions: Opinions): Detection[] {
+  return detections.map((d) => {
+    const opinion = opinions[String(d.id)]
+    return opinion ? { ...d, claude: opinion } : d
+  })
+}

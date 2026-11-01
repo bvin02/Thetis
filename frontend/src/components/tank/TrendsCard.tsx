@@ -111,7 +111,10 @@ export function TrendsCard({ tank }: { tank: TankDetail }) {
       const last = lastValid(checks, (p) => p.pct_dead)
       return {
         rows, names: { a: 'Dead', b: 'Abnormal' }, format: (_: string, v: number) => `${Math.round(v)}%`, unit: '%', domain: [0, (max: number) => Math.max(25, Math.ceil(max / 5) * 5)] as [number, (max: number) => number],
-        guides: [{ y: 10, label: 'Dead: watch 10%' }, { y: 20, label: 'Dead: critical 20%' }], hasB: true, hasGuide: false, legend: ['Dead', 'Abnormal'],
+        guides: [
+          { y: tank.chart_guides.dead_watch, label: `Dead: watch ${tank.chart_guides.dead_watch}%` },
+          { y: tank.chart_guides.dead_critical, label: `Dead: critical ${tank.chart_guides.dead_critical}%` },
+        ], hasB: true, hasGuide: false, legend: ['Dead', 'Abnormal'],
         summary: last ? `Dead larvae at ${Math.round(last.pct_dead as number)}%, abnormal at ${Math.round((last.pct_abnormal ?? 0))}% at the last check.` : 'No counts yet.',
       }
     }
@@ -120,10 +123,10 @@ export function TrendsCard({ tank }: { tank: TankDetail }) {
     return {
       rows, names: { a: 'Ω aragonite', b: 'pH' }, format: (key: string, v: number) => (key === 'b' ? v.toFixed(2) : v.toFixed(1)), unit: '',
       domain: [0, (max: number) => Math.max(4, Math.ceil(max))] as [number, (max: number) => number],
-      guides: [{ y: 2, label: 'Ω target 2' }], hasB: true, hasGuide: false, legend: ['Ω aragonite (left)', 'pH (right)'],
-      summary: last ? `Ω aragonite was ${(last.omega as number).toFixed(1)} at the last reading; the target is 2 or higher.` : 'No water readings yet.',
+      guides: [{ y: tank.chart_guides.omega_target, label: `Ω target ${tank.chart_guides.omega_target}` }], hasB: true, hasGuide: false, legend: ['Ω aragonite (left)', 'pH (right)'],
+      summary: last ? `Ω aragonite was ${(last.omega as number).toFixed(1)} at the last reading; the target is ${tank.chart_guides.omega_target} or higher.` : 'No water readings yet.',
     }
-  }, [trend, points, checks, tank.survival_text, tank.expected_growth_um_day])
+  }, [trend, points, checks, tank.survival_text, tank.expected_growth_um_day, tank.chart_guides])
 
   // The spawn point alone is not a trend
   const hasData = view.rows.filter((r) => r.a !== null).length > (trend === 'survival' ? 1 : 0)

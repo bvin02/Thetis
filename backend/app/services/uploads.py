@@ -12,6 +12,7 @@ import cv2
 from app import config
 from app.analysis.engine import analyze, decode_image
 from app.analysis.models import AnalysisResult
+from app.analysis.summary import summarize
 
 
 class NotAPhoto(ValueError):
@@ -118,6 +119,8 @@ def store_and_analyze(data: bytes, filename: str | None, settings: dict | None =
         if not ok:
             raise NotAPhoto("That photo couldn't be converted to JPEG.")
         image_path(token).write_bytes(encoded.tobytes())
+        # Analyse the same pixels that get stored, so a later re-analysis finds the same objects under the same ids
+        image = decode_image(encoded.tobytes())
 
     preset = _preset_scale(settings)
     result = analyze(image, um_per_px=preset, calibration="preset")
@@ -160,6 +163,7 @@ def analysis_payload(token: str, meta: dict, result: AnalysisResult) -> dict:
         "grid_spacing_px": result.grid_spacing_px,
         "photo_volume_ml": result.photo_volume_ml,
         "detections": [d.model_dump() for d in result.detections],
+        "summary": summarize(result.detections, result.um_per_px).model_dump(),
         "engine_version": result.engine_version,
         "ms": result.ms,
     }

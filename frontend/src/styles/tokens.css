@@ -167,6 +167,11 @@
     .lnk { display: inline-flex; align-items: center; min-height: 44px; }
   }
 
+  /* On a big screen the whole photo, toolbar and caption stay in view beside the long form */
+  @media (min-width: 1100px) {
+    .viewerbox { max-width: max(440px, calc((100vh - 190px) * var(--photo-ratio))); }
+  }
+
   .plancard { container-type: inline-size; }
   .planwrap { display: block; }
   .planlist { display: none; }

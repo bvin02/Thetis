@@ -1,6 +1,6 @@
 import { Maximize, Minus, Plus, X } from 'lucide-react'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react'
+import type { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import type { Detection, LarvaClass } from '../../api/types'
 import { LARVA_COLOR } from '../../lib/levels'
 import { OPINION_NAME, decideOpinion } from '../../lib/opinions'
@@ -501,7 +501,11 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
       </div>
       {tabs}
 
-      <div ref={boxRef} className="relative box-border w-full overflow-hidden rounded-card border border-line bg-muted-bg" style={{ aspectRatio: `${width} / ${height}` }}>
+      <div
+        ref={boxRef}
+        className="viewerbox relative box-border w-full overflow-hidden rounded-card border border-line bg-muted-bg"
+        style={{ aspectRatio: `${width} / ${height}`, '--photo-ratio': width / height } as CSSProperties}
+      >
         <svg
           ref={svgRef}
           viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}

@@ -1,13 +1,34 @@
 import { Menu, X } from 'lucide-react'
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import { ToastProvider } from '../Toast'
+import { CommandPalette } from './CommandPalette'
+import { ErrorBoundary } from './ErrorBoundary'
+import { PaletteContext } from './paletteContext'
 import { Sidebar } from './Sidebar'
 
 export default function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const { pathname } = useLocation()
+
+  // A new page starts at its top, wherever the last one was scrolled to
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setPaletteOpen((open) => !open)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
     <ToastProvider>
+    <PaletteContext.Provider value={() => setPaletteOpen(true)}>
     <div className="flex min-h-full bg-canvas">
       <aside className="sticky top-0 hidden h-screen w-[216px] flex-none min-[900px]:block">
         <Sidebar />
@@ -39,10 +60,14 @@ export default function AppShell() {
         )}
 
         <main className="my-2 mr-2 ml-2 flex min-w-0 flex-1 flex-col rounded-panel border border-line bg-panel shadow-panel min-[900px]:ml-0">
-          <Outlet />
+          <ErrorBoundary resetKey={pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
+    {paletteOpen && <CommandPalette onClose={() => setPaletteOpen(false)} />}
+    </PaletteContext.Provider>
     </ToastProvider>
   )
 }

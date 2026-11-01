@@ -11,6 +11,7 @@ import { CountsPanel, EstimatePanel, GutPanel, PanelSection, SizePanel, WaterPan
 import { TopBar } from '../components/shell/TopBar'
 import { useToast } from '../components/toastContext'
 import { ErrorState, LoadingState, Spinner } from '../components/ui'
+import { withOpinions } from '../lib/opinions'
 import { EMPTY_WATER, type WaterForm } from '../lib/water'
 
 function localDateTimeValue(date = new Date()) {
@@ -166,6 +167,13 @@ export default function NewCheckPage() {
     return volumes.length ? volumes.reduce((a, b) => a + b, 0) : null
   }, [photos])
   const scale = photos.find((p) => p.um_per_px)?.um_per_px ?? null
+  // A photo with no scale has no volume, so it can't count towards the estimate
+  const unscaledCount = photos.filter((p) => !p.photo_volume_ml).length
+  const mixedScales = unscaledCount > 0 && unscaledCount < photos.length
+  const estimateDetections = useMemo(
+    () => (mixedScales ? photos.filter((p) => p.photo_volume_ml).flatMap((p) => p.detections) : null),
+    [photos, mixedScales],
+  )
   const quick = useMemo(() => quickSummary(allDetections), [allDetections])
 
   // Live summary and estimate while correcting (debounced 100 ms)
@@ -182,6 +190,7 @@ export default function NewCheckPage() {
             detections: allDetections,
             um_per_px: scale,
             photo_volume_ml: totalVolume,
+            estimate_detections: estimateDetections,
             tank_id: tank?.id ?? null,
             sample: { bucket_l: toNumberOrNull(bucketValue) || null, concentration: toNumberOrNull(concentrationValue) || null },
           }),
@@ -198,9 +207,9 @@ export default function NewCheckPage() {
       window.clearTimeout(timer)
       controller.abort()
     }
-  }, [allDetections, photos.length, scale, totalVolume, tank?.id, bucketValue, concentrationValue])
+  }, [allDetections, estimateDetections, photos.length, scale, totalVolume, tank?.id, bucketValue, concentrationValue])
 
-  const analyseFiles = useCallback(async (files: File[]) => {
+  const analyseFiles = async (files: File[]) => {
     const usable = files.filter((f) => /^image\/(jpeg|png)$/.test(f.type) || /\.(jpe?g|png)$/i.test(f.name))
     if (files.length > 0 && usable.length === 0) {
       setAnalyseError("That file isn't a photo Thetis can read. Use a JPG or PNG.")
@@ -210,34 +219,48 @@ export default function NewCheckPage() {
     setAnalysing(true)
     setAnalyseError(null)
     try {
+      const firstNew = photos.length
       const results: AnalysisResult[] = []
       for (const file of usable) results.push(await postFile<AnalysisResult>('/api/analyze', file))
-      setPhotos((current) => {
-        setActive(current.length)
-        return [...current, ...results]
-      })
+      setPhotos((current) => [...current, ...results])
+      setActive(firstNew)
     } catch (error) {
       setAnalyseError(error instanceof Error ? error.message : "That photo couldn't be analysed.")
     } finally {
       setAnalysing(false)
     }
-  }, [])
+  }
 
-  const analyseSample = useCallback(async (sample: SampleSlide) => {
+  const analyseSample = async (sample: SampleSlide) => {
     setAnalysing(true)
     setAnalyseError(null)
     try {
+      const firstNew = photos.length
       const result = await postJSON<AnalysisResult>(`/api/samples/${sample.name}/analyze`)
-      setPhotos((current) => {
-        setActive(current.length)
-        return [...current, result]
-      })
+      setPhotos((current) => [...current, result])
+      setActive(firstNew)
     } catch (error) {
       setAnalyseError(error instanceof Error ? error.message : "That slide couldn't be analysed.")
     } finally {
       setAnalysing(false)
     }
-  }, [])
+  }
+
+  // Review walks through every photo: when this one has nothing left to check, move to the next that does
+  const wantsReview = useRef(false)
+  useEffect(() => {
+    if (!wantsReview.current) return
+    wantsReview.current = false
+    viewer.current?.nextUnsure()
+  }, [active])
+  const reviewNext = () => {
+    if (viewer.current?.nextUnsure()) return
+    const next = photos.findIndex((p, i) => i !== active && p.detections.some((d) => d.unsure && d.cls !== 'ignore'))
+    if (next >= 0) {
+      wantsReview.current = true
+      setActive(next)
+    }
+  }
 
   const updateActive = useCallback((next: Detection[]) => {
     setPhotos((current) => current.map((p, i) => (i === active ? { ...p, detections: next } : p)))
@@ -247,11 +270,13 @@ export default function NewCheckPage() {
     const photo = photos[active]
     if (!photo) return
     const result = await postJSON<AnalysisResult>(`/api/analyze/${photo.token}/scale`, { um_per_px: umPerPx })
-    // Keep the user's corrections: the same objects come back under the same ids
+    // Keep everything a person or Claude added: the same objects come back under the same ids
     const old = new Map(photo.detections.map((d) => [d.id, d]))
     const merged = result.detections.map((d) => {
       const before = old.get(d.id)
-      return before && before.source !== 'auto' ? { ...d, cls: before.cls, source: before.source, unsure: before.unsure } : d
+      if (!before) return d
+      const touched = before.source !== 'auto' || before.claude !== null || before.clump_n !== d.clump_n || (!before.unsure && d.unsure)
+      return touched ? { ...d, cls: before.cls, source: before.source, unsure: before.unsure, clump_n: before.clump_n, claude: before.claude } : d
     })
     const manual = photo.detections.filter((d) => d.source === 'manual').map((d) => ({ ...d, length_um: d.length_px * umPerPx }))
     setPhotos((current) => current.map((p, i) => (i === active ? { ...result, detections: [...merged, ...manual] } : p)))
@@ -370,13 +395,20 @@ export default function NewCheckPage() {
               <CountsPanel summary={quick}>
                 <CheckActions
                   photoRef={current?.token ?? null} detections={current?.detections ?? []} totalUnsure={quick.n_unsure}
-                  onChange={updateActive} onReview={() => viewer.current?.nextUnsure()}
+                  onOpinions={(asked, opinions) => setPhotos((list) => list.map((p) => (
+                    p.token === asked ? { ...p, detections: withOpinions(p.detections, opinions) } : p
+                  )))}
+                  onReview={reviewNext}
                 />
                 <OpinionList detections={current?.detections ?? []} onChange={updateActive} onSelect={(id) => viewer.current?.select(id)} />
               </CountsPanel>
               <SizePanel summary={shownSummary ?? { mean_len_um: null, sd_len_um: null, cv: null, stage: null, hist: null }} previousHist={tankQuery.data?.latest_check?.hist ?? null} calibrated={scale !== null} />
               <GutPanel gut={shownSummary?.gut ?? null} />
-              <EstimatePanel bucket={bucketValue} concentration={concentrationValue} onBucket={setBucket} onConcentration={setConcentration} estimate={hasPhoto ? estimate : null} />
+              <EstimatePanel
+                bucket={bucketValue} concentration={concentrationValue} onBucket={setBucket} onConcentration={setConcentration}
+                estimate={hasPhoto ? estimate : null}
+                note={mixedScales ? `${unscaledCount === 1 ? '1 photo has' : `${unscaledCount} photos have`} no scale, so the estimate leaves ${unscaledCount === 1 ? 'it' : 'them'} out.` : undefined}
+              />
             </>
           ) : (
             <PanelSection label="What comes next">

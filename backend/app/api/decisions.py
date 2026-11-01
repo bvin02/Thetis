@@ -108,5 +108,8 @@ def dismiss(decision_id: int, body: DecisionNote | None = None, session: Session
 
 @router.post("/decisions/{decision_id}/undo")
 def undo(decision_id: int, session: Session = Depends(get_session)) -> dict:
-    decision = service.undo(session, _load(decision_id, session))
+    try:
+        decision = service.undo(session, _load(decision_id, session))
+    except service.CannotUndo as error:
+        raise HTTPException(409, str(error)) from None
     return service.decision_view(decision, datetime.now())

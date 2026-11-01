@@ -1,7 +1,8 @@
-import { Plus } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFloor } from '../../api/hooks'
+import { useOpenPalette } from './paletteContext'
 
 function useNow(intervalMs = 20_000) {
   const [now, setNow] = useState(() => new Date())
@@ -21,6 +22,9 @@ function clockText(d: Date) {
 export function TopBar({ crumbs, newCheckHref = '/checks/new', hideNewCheck = false }: { crumbs: string[]; newCheckHref?: string; hideNewCheck?: boolean }) {
   const now = useNow()
   const { data } = useFloor()
+  const openPalette = useOpenPalette()
+  const page = crumbs[crumbs.length - 1]
+  useEffect(() => { document.title = `${page} · Thetis` }, [page])
   return (
     <header className="flex min-h-[52px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-divider px-7 py-2 max-[660px]:px-4">
       <nav aria-label="Location" className="flex min-w-0 flex-[1_1_240px] flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
@@ -37,6 +41,10 @@ export function TopBar({ crumbs, newCheckHref = '/checks/new', hideNewCheck = fa
         {data?.is_example && <span className="tag ml-1">Example data</span>}
       </nav>
       <span className="tnum text-[13px] text-ink-4">{clockText(now)}</span>
+      <button type="button" className="ghost !gap-2 !px-2.5 !text-xs !text-ink-4" aria-label="Search tanks and pages" onClick={openPalette}>
+        <Search size={14} strokeWidth={2} aria-hidden="true" />
+        <span className="mono">⌘K</span>
+      </button>
       {!hideNewCheck && (
         <Link to={newCheckHref} className="solid no-underline">
           <Plus size={14} strokeWidth={2} aria-hidden="true" />

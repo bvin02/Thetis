@@ -51,7 +51,7 @@ export function Segmented<T extends string>({ value, options, onChange, label, s
   style?: CSSProperties
 }) {
   return (
-    <div role="group" aria-label={label} className="inline-flex max-w-full rounded-control bg-muted-bg p-0.5" style={style}>
+    <div role="group" aria-label={label} className="inline-flex max-w-full overflow-x-auto rounded-control bg-muted-bg p-0.5" style={style}>
       {options.map((option) => {
         const active = option.value === value
         return (

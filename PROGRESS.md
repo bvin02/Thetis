@@ -1,7 +1,54 @@
 # Thetis build progress
 
-Autonomous overnight build of `SPEC.md`. Newest phase last. The "Good morning" summary goes at the
-top when the run ends.
+## Good morning
+
+**The whole MVP is built and working: all 8 phases, on localhost. Nothing on the SPEC's cut list had to be cut.**
+
+**To start it:**
+```bash
+npm run dev
+```
+Then open http://localhost:5173. It's in the demo state now, but that was seeded on Nov 1. **Before you record on
+another day, stop it and run `npm run seed`**, because "Today" and "Day 9" are relative to the seed date.
+
+**What works**
+- Floor, New check, Check detail, Tank page, Decisions, Photo library, Tanks and Checks, at desktop and phone width.
+- The full §1 demo: upload T-03's slide, correct it, ask Claude, save, T-03 goes Critical, approve isolation.
+- ⌘K search too, since the SPEC allowed it if there was time.
+
+**How it was tested**
+- 276 backend tests pass, including every §13 target. Engine: dead P/R 1.00/0.97, abnormal 0.95/0.86, length MAE
+  2.35 µm, about 0.15 s per slide. Real J006 photos: exact count on 27 of 30 (target 20).
+- `DEMO.md` run click by click in a real browser (28 checks) and 60 edge-case checks. No console errors.
+- All screens checked by eye. The Floor's layout is within about 1 px of the design down to the last card.
+- A fresh clone with no `.env` installs, seeds, passes its tests and runs with Claude hidden.
+- An independent code review found 10 real bugs. All are fixed, each with a test or browser check where practical.
+
+**What you need to do**
+1. **Record the demo** with `DEMO.md`. Record after 8:40 AM so the example check times are in the past.
+2. **Click Explain once before you record.** You allowed one live Claude call, and I spent it on Ask Claude (881 input
+   + 352 output tokens, about $0.01). So Explain has only been tested against a fake client. It costs about a cent.
+3. **Decide on the model.** Your `.env` selects `claude-opus-5-5`, twice the price of the SPEC's default,
+   `claude-sonnet-5-5`. I left it alone. If you switch, the stored demo answer no longer applies, so the first
+   Ask Claude makes one new paid call.
+4. **Set a spend limit** in the Claude Console if you haven't (SETUP.md step 3).
+5. **Be careful what you claim in the YC application.** The engine is proven on synthetic slides and on 30 real
+   photos with 1–2 live larvae each. It has not been tested on a real dense counting slide, or on real dead or
+   abnormal larvae, because no such open photos exist. Its accuracy there is unknown.
+
+**Good to know**
+- Everything is committed on branch `build/mvp`. `main` holds only the starter pack. Nothing was pushed.
+- The engine misses one faint dead shell in the demo slide (14 of 15 found). The demo uses that as its "fix a wrong
+  call" moment.
+- I went beyond or against the SPEC in a few places, on purpose: four extra engine rules (needed to pass the J006
+  target), `--reset` keeps the Claude call log so rehearsals don't spend credits again, and a few extra endpoints and
+  fields. Each is explained under its phase below.
+- Screenshots of every screen are in `data/shots/`.
+- `.env` was never opened or changed.
+
+---
+
+Autonomous overnight build of `SPEC.md`. Newest phase last.
 
 ## Working notes (read me first after a context reset)
 
@@ -222,3 +269,55 @@ pages screenshotted at 1440 and 390 px with no console errors and no horizontal 
 - Scripts in `frontend/scripts/` are the browser checks used in this build.
 
 **Still open:** nothing.
+
+## Phase 7: polish, testing, demo script
+
+**Built:** `DEMO.md`, updated `SETUP.md`, phone tap targets (44 px), empty and error states, an error boundary, page
+titles, scroll reset between pages, ⌘K search (tanks, batches, pages, "New check for T-03"), viewer sized to fit large
+screens, floor plan capped at 1000 px.
+
+**Tests (final run):**
+
+| Check | Result |
+|---|---|
+| Backend tests (`npm test`) | 276 passed |
+| `DEMO.md` click by click (`frontend/scripts/demo_final.mjs`, needs `npm run seed`) | 28 of 28, 12 s, no console errors, no new Claude call |
+| Edge cases (`frontend/scripts/edge_check.mjs`) | 60 of 60 |
+| All pages at 1440 and 390 px (`pages_check.mjs`) | no console errors, no horizontal scroll |
+| 900, 899, 660, 390 and 320 px (`responsive_check.mjs`) | no horizontal scroll, phone menu and sheet work, Floor controls ≥ 44 px |
+| Design comparison at 1440 px (`compare.mjs`) | section positions within about 1 px on the Floor; other differences are computed values, as SPEC §4.1 allows |
+| Fresh clone, no `.env` | setup, seed, tests and the demo flow pass; no Claude buttons |
+| `oxlint`, `ruff`, `tsc`, production build | clean |
+
+**§13 manual checklist:**
+- [x] §1 demo end to end in under 2 minutes, no console errors (automated run; a person will take about 2 minutes)
+- [x] `seed:full` Floor matches `home.png` side by side at 1440 px
+- [x] Works at 390 px with no horizontal scroll
+- [x] With no API key: no Claude buttons, nothing breaks
+
+**Code review findings, all fixed:**
+1. A photo with no scale inflated the tank estimate when mixed with scaled photos. It now stays out of the estimate
+   and the panel says so.
+2. Claude's answer landed on whichever photo was open when it returned. It now goes to the photo it was asked about.
+3. A failed save lost the upload. Files are now copied, and the upload is removed only after the commit.
+4. Correcting outlines re-opened decisions a manager had answered. Now it can add new ones but not re-open those.
+5. A check with no scale hid a real loss on the next check. Rates now look back to the last check with that number.
+6. Line water values mixed in old chemistry under a new date. Now only readings within 24 h of the newest are used.
+7. Adding a scale dropped clump edits and Claude's opinions, and PNG re-analysis could shift object ids. Fixed.
+8. Undo could create a second pending copy, or re-open a closed batch's decision. It now refuses and says why.
+9. "3 to check" counted all photos, but Review only worked on the open one. Review now moves to the next photo.
+10. A few thresholds were hardcoded. They moved to `config.py`, and chart guides now come from the rules' settings.
+
+**Decisions:**
+- ⌘K search was built because SPEC §4.0 allows it with spare time and the design shows the button. §1's "not in the
+  MVP" list also names it, so §4.0's exception is what I followed.
+- `claude_live_once.mjs` was deleted after its one use, so no script can make a live call by accident. Browser checks
+  mock Explain, and the demo script's Ask Claude must be answered from the cache.
+- J006-derived debug images were deleted from `data/debug`.
+- The auto-mode safety check blocked one command at the end because it listed `.env` (`ls -la .env`). I dropped that
+  part instead of working around it.
+
+**Still open:**
+- Explain has not been run against the real API (see Good morning).
+- The engine has never seen a real dense counting slide (see Good morning).
+- Recording the video is yours; I can't record video.

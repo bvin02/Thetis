@@ -195,6 +195,18 @@ def test_baseline_skips_checks_less_than_half_a_day_older():
     assert baseline_index(checks, 2, CFG) == 1
 
 
+def test_a_check_with_no_estimate_does_not_hide_a_loss():
+    import math
+
+    first = CheckData(sampled_at=T0, live_est=800_000.0, mean_len_um=100.0)
+    no_scale = CheckData(sampled_at=T0 + timedelta(days=2))  # a photo with no scale: no estimate, no sizes
+    now = CheckData(sampled_at=T0 + timedelta(days=4), live_est=200_000.0, mean_len_um=104.0)
+    rates = rates_at([first, no_scale, now], 2, BATCH, "larval", CFG)
+    assert rates.loss_per_day == pytest.approx(math.log(4) / 4)
+    assert rates.growth_um_day == pytest.approx(1.0)
+    assert assess([first, no_scale, now], BATCH, "larval", CFG).at_least("loss", "risk")
+
+
 def test_growth_skipped_in_setting_tanks_and_past_260_um():
     a = CheckData(sampled_at=T0, mean_len_um=200.0)
     b = CheckData(sampled_at=T0 + timedelta(days=2), mean_len_um=220.0)

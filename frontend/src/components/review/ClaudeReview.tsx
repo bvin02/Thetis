@@ -2,32 +2,28 @@ import { useMutation } from '@tanstack/react-query'
 import { postJSON } from '../../api/client'
 import { useClaudeStatus } from '../../api/hooks'
 import type { ClaudeOpinion, Detection } from '../../api/types'
-import { OPINION_NAME, decideOpinion, pendingOpinions } from '../../lib/opinions'
+import { OPINION_NAME, type Opinions, decideOpinion, pendingOpinions } from '../../lib/opinions'
 import { Spinner } from '../ui'
 
 const MAX_OBJECTS = 12
 
 /** Review plus Ask Claude, under the counts. Ask Claude is absent when there is no API key. */
-export function CheckActions({ photoRef, detections, totalUnsure, onChange, onReview }: {
+export function CheckActions({ photoRef, detections, totalUnsure, onOpinions, onReview }: {
   photoRef: string | number | null
   detections: Detection[]
   totalUnsure: number
-  onChange: (next: Detection[]) => void
+  onOpinions: (photo: string | number, opinions: Opinions) => void
   onReview: () => void
 }) {
   const status = useClaudeStatus()
   const unsure = detections.filter((d) => d.unsure && d.cls !== 'ignore' && !d.claude && d.source !== 'manual')
   const toSend = unsure.slice(0, MAX_OBJECTS)
   const ask = useMutation({
-    mutationFn: () => postJSON<{ opinions: Record<string, Omit<ClaudeOpinion, 'decided'>>; cached: boolean }>(
-      '/api/claude/second-opinion', { photo: photoRef, detection_ids: toSend.map((d) => d.id) },
+    mutationFn: (request: { photo: string | number; ids: number[] }) => postJSON<{ opinions: Opinions; cached: boolean }>(
+      '/api/claude/second-opinion', { photo: request.photo, detection_ids: request.ids },
     ),
-    onSuccess: (body) => {
-      onChange(detections.map((d) => {
-        const opinion = body.opinions[String(d.id)]
-        return opinion ? { ...d, claude: opinion } : d
-      }))
-    },
+    // The tech may have moved to another photo by the time this returns, so the request says which photo it was
+    onSuccess: (body, request) => onOpinions(request.photo, body.opinions),
   })
 
   if (totalUnsure === 0) return <span className="text-[13px] text-ink-3">Nothing left to check.</span>
@@ -38,7 +34,7 @@ export function CheckActions({ photoRef, detections, totalUnsure, onChange, onRe
         <span className="tnum flex-1 text-[13px] text-ink-2">{totalUnsure} to check</span>
         <button type="button" className="ghost max-[660px]:!h-11" onClick={onReview}>Review</button>
         {canAsk && (
-          <button type="button" className="ghost max-[660px]:!h-11" disabled={ask.isPending} onClick={() => ask.mutate()}>
+          <button type="button" className="ghost max-[660px]:!h-11" disabled={ask.isPending} onClick={() => { if (photoRef !== null) ask.mutate({ photo: photoRef, ids: toSend.map((d) => d.id) }) }}>
             {ask.isPending && <Spinner />}
             Ask Claude
           </button>
