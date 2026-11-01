@@ -1,0 +1,38 @@
+# Secrets (only .env.example is committed)
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# App data: database, saved and uploaded photos
+data/
+
+# Photos without a license: local testing only, never commit
+fixtures/real/
+fixtures/sources/downloads/
+**/J006*
+
+# Test output
+playwright-report/
+test-results/
+screenshots/
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Claude Code personal settings
+.claude/settings.local.json

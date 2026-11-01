@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floor · Hatchery Autopilot</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#EDF1F3}
+a{color:#0F1A20}a:hover{color:#3E4B53}
+*:focus-visible{outline:2px solid #13557A;outline-offset:2px}
+.nav,.ghost,.solid,.chip,.seg,.rowbtn,.lnk{transition:background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease}
+.nav:hover{background:rgba(255,255,255,0.72)}
+.ghost:hover{background:#F6F8F9;border-color:#CCD5DB}
+.solid:hover{background:#26333A}
+.chip:hover{border-color:#AEB9C0}
+.seg:hover{color:#0F1A20}
+.rowbtn:hover{background:#F6F8F9}
+.lnk{border:0;background:transparent;padding:0;font:inherit;color:#13557A;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.lnk:hover{color:#0F1A20}
+.ov{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;transition:background-color .15s ease,box-shadow .15s ease}
+.ov:hover{background:rgba(15,26,32,0.035);box-shadow:inset 0 0 0 1px #CCD5DB}
+.tip{position:absolute;opacity:0;visibility:hidden;transition:opacity .15s ease,visibility .15s ease;pointer-events:none;z-index:30}
+.tip.below{top:calc(100% + 6px)}
+.tip.above{bottom:calc(100% + 6px)}
+.tip.c{left:50%;transform:translateX(-50%)}
+.tip.l{left:0}
+.tip.r{right:0}
+.ov:hover .tip,.ov:focus-visible .tip{opacity:1;visibility:visible}
+.tk-body,.tk-sel{transition:fill .18s ease,stroke .18s ease,stroke-width .18s ease}
+.pipe1,.pipe2{transition:stroke .18s ease,stroke-width .18s ease}
+.planbox:has(.ov.l1:hover) .pipe1,.planbox:has(.ov.l1:focus-visible) .pipe1{stroke:#5F6C74;stroke-width:3}
+.planbox:has(.ov.l2:hover) .pipe2,.planbox:has(.ov.l2:focus-visible) .pipe2{stroke-width:3.5}
+.hc{position:relative;flex:1;height:16px;border-radius:3px;box-sizing:border-box;transition:box-shadow .15s ease}
+.hc:hover{box-shadow:0 0 0 1.5px #FFFFFF,0 0 0 3px #0F1A20 !important;z-index:2}
+.hc:hover .tip{opacity:1;visibility:visible}
+.spin{width:12px;height:12px;box-sizing:border-box;border-radius:999px;border:2px solid #CCD5DB;border-top-color:#0F1A20;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.appear{animation:appear .18s ease-out}
+@keyframes appear{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
+.plancard{container-type:inline-size}
+.planwrap{display:block}
+.planlist{display:none}
+@container (max-width: 660px){.planwrap{display:none}.planlist{display:flex}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none !important;animation:none !important}}
+</style>
+</helmet>
+
+<div style="display: flex; flex-wrap: wrap; min-height: 1600px; background: #EDF1F3; color: #0F1A20; font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased">
+
+  <aside style="flex: 1 1 200px; max-width: 216px; box-sizing: border-box; padding: 16px 12px; display: flex; flex-direction: column; gap: 20px">
+    <button class="nav" style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; text-align: left; font: inherit; color: inherit; cursor: pointer">
+      <span style="width: 28px; height: 28px; border-radius: 8px; background: #13557A; display: grid; place-items: center; flex: none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+      </span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25">
+        <span style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Northwind Shellfish</span>
+        <span style="font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Hatchery Autopilot</span>
+      </span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#66737B" stroke-width="2" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg>
+    </button>
+
+    <nav aria-label="Main" style="display: flex; flex-direction: column; gap: 2px">
+      <a class="nav" href="#" aria-current="page" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(15,26,32,0.06), 0 0 0 1px #E2E8EC; text-decoration: none; font-size: 14px; font-weight: 500; color: #0F1A20">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#13557A" stroke-width="1.75" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2.5"></circle><circle cx="15.5" cy="9" r="2.5"></circle><path d="M3 14h18"></path></svg>Floor</a>
+      <a class="nav" href="#" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 14px; color: #3E4B53">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"></ellipse><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"></path></svg>Tanks</a>
+      <a class="nav" href="#" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 14px; color: #3E4B53">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"></path></svg>Checks</a>
+      <a class="nav" href="#" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 14px; color: #3E4B53">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M4 13h4l2 3h4l2-3h4"></path><path d="M5 13l2-8h10l2 8v6H5z"></path></svg>
+        <span style="flex: 1">Decisions</span><span aria-label="{{ decisionAria }}" style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: #0F1A20; color: #FFFFFF; font-size: 11px; font-weight: 600; display: grid; place-items: center; font-variant-numeric: tabular-nums">{{ decisionCount }}</span></a>
+      <a class="nav" href="#" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 14px; color: #3E4B53">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M21 17l-5-5-8 7"></path></svg>Photo library</a>
+      <a class="nav" href="#" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 14px; color: #3E4B53">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"></path></svg>Reports</a>
+    </nav>
+
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 12px; font-weight: 500; color: #66737B; padding: 0 10px 8px">Rooms</span>
+      <sc-for list="{{ roomNav }}" as="r" hint-placeholder-count="4">
+        <a class="nav" href="#" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13px; color: #3E4B53">
+          <span style="width: 8px; height: 8px; border-radius: 999px; box-sizing: border-box; background: {{ r.bg }}; border: {{ r.border }}; flex: none"></span>
+          <span style="flex: 1">{{ r.name }}</span><span style="font-size: 12px; color: #66737B; font-variant-numeric: tabular-nums">{{ r.count }}</span></a>
+      </sc-for>
+    </div>
+
+    <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px">
+      <span style="width: 28px; height: 28px; border-radius: 999px; background: #D9E1E6; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: #3E4B53; flex: none">DO</span>
+      <span style="display: flex; flex-direction: column; line-height: 1.25"><span style="font-size: 13px; font-weight: 500">Dana Ortiz</span><span style="font-size: 12px; color: #66737B">Hatchery manager</span></span>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; margin: 8px 8px 8px 0; background: #FFFFFF; border: 1px solid #E2E8EC; border-radius: 12px; box-shadow: 0 1px 2px rgba(15,26,32,0.04); display: flex; flex-direction: column">
+
+    <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 52px; padding: 8px 28px; box-sizing: border-box; border-bottom: 1px solid #EEF2F4">
+      <nav aria-label="Location" style="flex: 1 1 240px; display: flex; align-items: center; gap: 8px; font-size: 13px">
+        <span style="color: #66737B">Northwind Shellfish</span><span aria-hidden="true" style="color: #AEB9C0">/</span><span style="font-weight: 500">Floor</span>
+        <span style="margin-left: 4px; font-size: 11px; font-weight: 500; color: #66737B; border: 1px solid #E2E8EC; border-radius: 6px; padding: 2px 6px">Example data</span>
+      </nav>
+      <span style="font-size: 13px; color: #66737B; font-variant-numeric: tabular-nums">Sat, Oct 31 · 9:12 AM</span>
+      <button class="ghost" aria-label="Search tanks and checks" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border: 1px solid #E2E8EC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 12px; color: #66737B; cursor: pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+        <span style="font-family: 'Geist Mono', ui-monospace, monospace">⌘K</span></button>
+      <button class="solid" style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: #0F1A20; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New check</button>
+    </header>
+
+    <section aria-label="Summary" style="padding: 28px 28px 0; display: flex; flex-direction: column; gap: 12px">
+      <h1 style="margin: 0; font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.025em; text-wrap: balance">{{ headline }}</h1>
+      <p style="margin: 0; max-width: 72ch; font-size: 15px; line-height: 1.55; color: #3E4B53">Line 2 water has been corrosive since yesterday. It now affects T-04 and T-05, and T-06 is on the same line. Separately, T-03 shows a pattern that matches a bacterial outbreak.</p>
+
+      <div role="region" aria-label="Tanks by urgency" style="margin-top: 4px; border: 1px solid #E2E8EC; border-radius: 10px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 16px">
+          <div style="width: 136px; flex: none; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 13px; font-weight: 600">Act now</span>
+            <span style="font-size: 12px; color: #66737B">{{ actLabel }}</span>
+          </div>
+          <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ actNow }}" as="c" hint-placeholder-count="3">
+              <button class="chip" onClick="{{ c.pick }}" aria-pressed="{{ c.isSel }}" aria-label="{{ c.aria }}" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid {{ c.border }}; background: {{ c.bg }}; box-shadow: {{ c.selShadow }}; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">
+                <span style="width: 8px; height: 8px; border-radius: 999px; background: {{ c.dot }}; flex: none"></span>
+                <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">{{ c.id }}</span>
+                <span style="font-weight: 500; color: {{ c.text }}">{{ c.label }}</span>
+                <span style="color: #5F6C74">{{ c.short }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 16px; border-top: 1px solid #EEF2F4">
+          <div style="width: 136px; flex: none; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 13px; font-weight: 600">Monitor</span>
+            <span style="font-size: 12px; color: #66737B">{{ monLabel }}</span>
+          </div>
+          <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{ monitor }}" as="c" hint-placeholder-count="3">
+              <button class="chip" onClick="{{ c.pick }}" aria-pressed="{{ c.isSel }}" aria-label="{{ c.aria }}" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid {{ c.border }}; background: {{ c.bg }}; box-shadow: {{ c.selShadow }}; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">
+                <span style="width: 8px; height: 8px; border-radius: 999px; background: {{ c.dot }}; flex: none"></span>
+                <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">{{ c.id }}</span>
+                <span style="font-weight: 500; color: {{ c.text }}">{{ c.label }}</span>
+                <span style="color: #5F6C74">{{ c.short }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <dl style="margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 16px 48px">
+        <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="5">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <dt style="font-size: 12px; color: #66737B">{{ m.label }}</dt>
+            <dd style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em; font-variant-numeric: tabular-nums">{{ m.value }}<span style="font-size: 13px; font-weight: 400; color: #66737B">{{ m.unit }}</span></dd>
+          </div>
+        </sc-for>
+      </dl>
+    </section>
+
+    <div style="padding: 24px 28px 28px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+
+      <div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+        <section class="plancard" aria-label="Floor plan" style="border: 1px solid #E2E8EC; border-radius: 10px">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 12px 16px; border-bottom: 1px solid #EEF2F4">
+            <h2 style="margin: 0; font-size: 14px; font-weight: 600; flex: 1 1 auto">Floor plan</h2>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 12px; color: #5F6C74">
+              <sc-for list="{{ legend }}" as="l" hint-placeholder-count="5">
+                <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; background: {{ l.bg }}; border: {{ l.border }}"></span>{{ l.label }}</span>
+              </sc-for>
+              <span style="display: flex; align-items: center; gap: 6px"><span style="width: 16px; height: 2px; border-radius: 1px; background: #E0702A"></span>Corrosive water</span>
+            </div>
+            <div role="group" aria-label="View" style="display: flex; padding: 2px; background: #F1F4F6; border-radius: 8px">
+              <button class="seg" onClick="{{ showPlan }}" aria-pressed="{{ isPlan }}" style="height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: {{ segPlanBg }}; box-shadow: {{ segPlanShadow }}; font: inherit; font-size: 12px; font-weight: 500; color: {{ segPlanColor }}; cursor: pointer">Plan</button>
+              <button class="seg" onClick="{{ showTable }}" aria-pressed="{{ isTable }}" style="height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: {{ segTableBg }}; box-shadow: {{ segTableShadow }}; font: inherit; font-size: 12px; font-weight: 500; color: {{ segTableColor }}; cursor: pointer">Table</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ isPlan }}" hint-placeholder-val="{{ true }}">
+            <div class="planwrap" style="padding: 12px">
+              <div class="planbox" style="position: relative; width: 100%; aspect-ratio: 800 / 470">
+                <svg viewBox="0 0 800 470" width="100%" height="100%" role="img" aria-label="Floor plan of the hatchery. Each tank is outlined by status. Seawater line 1 is normal; line 2 is corrosive and feeds T-04, T-05 and T-06." style="position: absolute; inset: 0; display: block; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif">
+                  <defs><pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.9" fill="#DCE3E7"></circle></pattern></defs>
+                  <rect x="0" y="0" width="800" height="470" fill="url(#dots)"></rect>
+
+                  <text x="12" y="30" font-size="10" font-weight="600" letter-spacing="0.8" fill="#5F6C74">SEAWATER</text>
+                  <rect x="12" y="40" width="80" height="44" rx="6" fill="#FFFFFF" stroke="#CCD5DB"></rect>
+                  <text x="22" y="58" font-size="11.5" font-weight="600" fill="#0F1A20">Line 1</text>
+                  <text x="22" y="74" font-size="10" fill="#5F6C74">Ω 2.9 · pH 7.96</text>
+                  <rect x="12" y="154" width="80" height="44" rx="6" fill="#FFF6ED" stroke="#E0702A"></rect>
+                  <text x="22" y="172" font-size="11.5" font-weight="600" fill="#0F1A20">Line 2</text>
+                  <text x="22" y="188" font-size="10" font-weight="500" fill="#B54708">Ω 1.4 · pH 7.62</text>
+
+                  <rect x="120" y="16" width="668" height="442" rx="4" fill="#FFFFFF" stroke="#B9C4CA" stroke-width="1.5"></rect>
+                  <g stroke="#B9C4CA" stroke-width="1.5">
+                    <line x1="470" y1="16" x2="470" y2="252"></line><line x1="470" y1="284" x2="470" y2="300"></line>
+                    <line x1="120" y1="300" x2="290" y2="300"></line><line x1="318" y1="300" x2="600" y2="300"></line><line x1="628" y1="300" x2="788" y2="300"></line>
+                    <line x1="330" y1="300" x2="330" y2="458"></line><line x1="560" y1="300" x2="560" y2="458"></line>
+                  </g>
+                  <g font-size="10" font-weight="600" letter-spacing="0.8" fill="#5F6C74">
+                    <text x="134" y="36">LARVAL ROOM A</text><text x="484" y="36">LARVAL ROOM B</text>
+                    <text x="134" y="322">ALGAE ROOM</text><text x="344" y="322">LAB</text><text x="574" y="322">SETTING ROOM</text>
+                  </g>
+                  <g font-size="10" fill="#66737B">
+                    <text x="250" y="36">6 × 2,000 L</text><text x="600" y="36">4 × 1,000 L</text>
+                    <text x="134" y="446">18 feed cultures</text><text x="680" y="322">2 downwellers</text>
+                  </g>
+
+                  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="pipe1" d="M92 62 H760 V178 H560" stroke="{{ pipes.p1 }}" stroke-width="{{ pipes.p1w }}"></path>
+                    <path class="pipe1" d="M185 62 V76 M295 62 V76 M405 62 V76 M560 62 V82 M690 62 V82 M560 178 V198 M690 178 V198" stroke="{{ pipes.p1 }}" stroke-width="{{ pipes.p1w }}"></path>
+                    <path class="pipe2" d="M92 176 H405 M185 176 V192 M295 176 V192 M405 176 V192" stroke="#E0702A" stroke-width="{{ pipes.p2w }}"></path>
+                  </g>
+                  <path d="M100 57 L112 67 L112 57 L100 67 Z" fill="#FFFFFF" stroke="#AEB9C0" stroke-width="1.5"></path>
+                  <path d="M100 171 L112 181 L112 171 L100 181 Z" fill="#FFFFFF" stroke="#E0702A" stroke-width="1.5"></path>
+                  <text x="128" y="56" font-size="9.5" font-weight="600" letter-spacing="0.6" fill="#5F6C74">LINE 1</text>
+                  <text x="128" y="170" font-size="9.5" font-weight="600" letter-spacing="0.6" fill="#B54708">LINE 2</text>
+
+                  <g fill="#EEF4EF" stroke="#C9D6CD" stroke-width="1">
+                    <circle cx="152" cy="352" r="8"></circle><circle cx="182" cy="352" r="8"></circle><circle cx="212" cy="352" r="8"></circle><circle cx="242" cy="352" r="8"></circle><circle cx="272" cy="352" r="8"></circle><circle cx="302" cy="352" r="8"></circle>
+                    <circle cx="152" cy="382" r="8"></circle><circle cx="182" cy="382" r="8"></circle><circle cx="212" cy="382" r="8"></circle><circle cx="242" cy="382" r="8"></circle><circle cx="272" cy="382" r="8"></circle><circle cx="302" cy="382" r="8"></circle>
+                    <circle cx="152" cy="412" r="8"></circle><circle cx="182" cy="412" r="8"></circle><circle cx="212" cy="412" r="8"></circle><circle cx="242" cy="412" r="8"></circle><circle cx="272" cy="412" r="8"></circle><circle cx="302" cy="412" r="8"></circle>
+                  </g>
+                  <rect x="350" y="396" width="190" height="34" rx="4" fill="#F6F8F9" stroke="#CCD5DB"></rect>
+                  <text x="445" y="417" text-anchor="middle" font-size="10" fill="#5F6C74">Microscope bench</text>
+
+                  <g>
+                    <circle class="tk-sel" cx="185" cy="112" r="43" fill="none" stroke="{{ tk.T01.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="185" cy="112" r="36" fill="{{ tk.T01.fill }}" stroke="{{ tk.T01.stroke }}" stroke-width="{{ tk.T01.sw }}" stroke-dasharray="{{ tk.T01.dash }}"></circle>
+                    <circle cx="185" cy="112" r="28" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="185" y="111" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-01</text>
+                    <text x="185" y="125" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T01.sub }}</text>
+                    <circle cx="211" cy="86" r="5" fill="{{ tk.T01.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T01.dotOp }}"></circle>
+                    <text x="185" y="163" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T01.live }}</tspan><tspan fill="{{ tk.T01.stColor }}" font-weight="600">{{ tk.T01.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="295" cy="112" r="43" fill="none" stroke="{{ tk.T02.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="295" cy="112" r="36" fill="{{ tk.T02.fill }}" stroke="{{ tk.T02.stroke }}" stroke-width="{{ tk.T02.sw }}" stroke-dasharray="{{ tk.T02.dash }}"></circle>
+                    <circle cx="295" cy="112" r="28" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="295" y="111" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-02</text>
+                    <text x="295" y="125" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T02.sub }}</text>
+                    <circle cx="321" cy="86" r="5" fill="{{ tk.T02.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T02.dotOp }}"></circle>
+                    <text x="295" y="163" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T02.live }}</tspan><tspan fill="{{ tk.T02.stColor }}" font-weight="600">{{ tk.T02.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="405" cy="112" r="43" fill="none" stroke="{{ tk.T03.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="405" cy="112" r="36" fill="{{ tk.T03.fill }}" stroke="{{ tk.T03.stroke }}" stroke-width="{{ tk.T03.sw }}" stroke-dasharray="{{ tk.T03.dash }}"></circle>
+                    <circle cx="405" cy="112" r="28" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="405" y="111" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-03</text>
+                    <text x="405" y="125" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T03.sub }}</text>
+                    <circle cx="431" cy="86" r="5" fill="{{ tk.T03.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T03.dotOp }}"></circle>
+                    <text x="405" y="163" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T03.live }}</tspan><tspan fill="{{ tk.T03.stColor }}" font-weight="600">{{ tk.T03.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="185" cy="228" r="43" fill="none" stroke="{{ tk.T04.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="185" cy="228" r="36" fill="{{ tk.T04.fill }}" stroke="{{ tk.T04.stroke }}" stroke-width="{{ tk.T04.sw }}" stroke-dasharray="{{ tk.T04.dash }}"></circle>
+                    <circle cx="185" cy="228" r="28" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="185" y="227" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-04</text>
+                    <text x="185" y="241" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T04.sub }}</text>
+                    <circle cx="211" cy="202" r="5" fill="{{ tk.T04.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T04.dotOp }}"></circle>
+                    <text x="185" y="279" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T04.live }}</tspan><tspan fill="{{ tk.T04.stColor }}" font-weight="600">{{ tk.T04.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="295" cy="228" r="43" fill="none" stroke="{{ tk.T05.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="295" cy="228" r="36" fill="{{ tk.T05.fill }}" stroke="{{ tk.T05.stroke }}" stroke-width="{{ tk.T05.sw }}" stroke-dasharray="{{ tk.T05.dash }}"></circle>
+                    <circle cx="295" cy="228" r="28" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="295" y="227" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-05</text>
+                    <text x="295" y="241" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T05.sub }}</text>
+                    <circle cx="321" cy="202" r="5" fill="{{ tk.T05.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T05.dotOp }}"></circle>
+                    <text x="295" y="279" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T05.live }}</tspan><tspan fill="{{ tk.T05.stColor }}" font-weight="600">{{ tk.T05.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="405" cy="228" r="43" fill="none" stroke="{{ tk.T06.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="405" cy="228" r="36" fill="{{ tk.T06.fill }}" stroke="{{ tk.T06.stroke }}" stroke-width="{{ tk.T06.sw }}" stroke-dasharray="{{ tk.T06.dash }}"></circle>
+                    <circle cx="405" cy="228" r="28" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="405" y="227" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-06</text>
+                    <text x="405" y="241" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T06.sub }}</text>
+                    <circle cx="431" cy="202" r="5" fill="{{ tk.T06.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T06.dotOp }}"></circle>
+                    <text x="405" y="279" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T06.live }}</tspan><tspan fill="{{ tk.T06.stColor }}" font-weight="600">{{ tk.T06.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="560" cy="112" r="37" fill="none" stroke="{{ tk.T07.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="560" cy="112" r="30" fill="{{ tk.T07.fill }}" stroke="{{ tk.T07.stroke }}" stroke-width="{{ tk.T07.sw }}" stroke-dasharray="{{ tk.T07.dash }}"></circle>
+                    <circle cx="560" cy="112" r="22" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="560" y="111" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-07</text>
+                    <text x="560" y="124" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T07.sub }}</text>
+                    <circle cx="582" cy="90" r="5" fill="{{ tk.T07.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T07.dotOp }}"></circle>
+                    <text x="560" y="157" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T07.live }}</tspan><tspan fill="{{ tk.T07.stColor }}" font-weight="600">{{ tk.T07.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="690" cy="112" r="37" fill="none" stroke="{{ tk.T08.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="690" cy="112" r="30" fill="{{ tk.T08.fill }}" stroke="{{ tk.T08.stroke }}" stroke-width="{{ tk.T08.sw }}" stroke-dasharray="{{ tk.T08.dash }}"></circle>
+                    <circle cx="690" cy="112" r="22" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="690" y="111" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-08</text>
+                    <text x="690" y="124" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T08.sub }}</text>
+                    <circle cx="712" cy="90" r="5" fill="{{ tk.T08.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T08.dotOp }}"></circle>
+                    <text x="690" y="157" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T08.live }}</tspan><tspan fill="{{ tk.T08.stColor }}" font-weight="600">{{ tk.T08.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="560" cy="228" r="37" fill="none" stroke="{{ tk.T09.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="560" cy="228" r="30" fill="{{ tk.T09.fill }}" stroke="{{ tk.T09.stroke }}" stroke-width="{{ tk.T09.sw }}" stroke-dasharray="{{ tk.T09.dash }}"></circle>
+                    <circle cx="560" cy="228" r="22" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="560" y="227" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-09</text>
+                    <text x="560" y="240" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T09.sub }}</text>
+                    <circle cx="582" cy="206" r="5" fill="{{ tk.T09.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T09.dotOp }}"></circle>
+                    <text x="560" y="273" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T09.live }}</tspan><tspan fill="{{ tk.T09.stColor }}" font-weight="600">{{ tk.T09.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <circle class="tk-sel" cx="690" cy="228" r="37" fill="none" stroke="{{ tk.T10.selStroke }}" stroke-width="1.75"></circle>
+                    <circle class="tk-body" cx="690" cy="228" r="30" fill="{{ tk.T10.fill }}" stroke="{{ tk.T10.stroke }}" stroke-width="{{ tk.T10.sw }}" stroke-dasharray="{{ tk.T10.dash }}"></circle>
+                    <circle cx="690" cy="228" r="22" fill="none" stroke="#E8EDF0"></circle>
+                    <text x="690" y="227" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">T-10</text>
+                    <text x="690" y="240" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.T10.sub }}</text>
+                    <circle cx="712" cy="206" r="5" fill="{{ tk.T10.dot }}" stroke="#FFFFFF" stroke-width="2" opacity="{{ tk.T10.dotOp }}"></circle>
+                    <text x="690" y="273" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.T10.live }}</tspan><tspan fill="{{ tk.T10.stColor }}" font-weight="600">{{ tk.T10.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <rect class="tk-sel" x="578" y="343" width="96" height="70" rx="13" fill="none" stroke="{{ tk.S01.selStroke }}" stroke-width="1.75"></rect>
+                    <rect class="tk-body" x="585" y="350" width="82" height="56" rx="8" fill="{{ tk.S01.fill }}" stroke="{{ tk.S01.stroke }}" stroke-width="{{ tk.S01.sw }}" stroke-dasharray="{{ tk.S01.dash }}"></rect>
+                    <text x="626" y="376" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">S-01</text>
+                    <text x="626" y="391" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.S01.sub }}</text>
+                    <text x="626" y="426" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.S01.live }}</tspan><tspan fill="{{ tk.S01.stColor }}" font-weight="600">{{ tk.S01.stTxt }}</tspan></text>
+                  </g>
+                  <g>
+                    <rect class="tk-sel" x="676" y="343" width="96" height="70" rx="13" fill="none" stroke="{{ tk.S02.selStroke }}" stroke-width="1.75"></rect>
+                    <rect class="tk-body" x="683" y="350" width="82" height="56" rx="8" fill="{{ tk.S02.fill }}" stroke="{{ tk.S02.stroke }}" stroke-width="{{ tk.S02.sw }}" stroke-dasharray="{{ tk.S02.dash }}"></rect>
+                    <text x="724" y="376" text-anchor="middle" font-family="Geist Mono, ui-monospace, monospace" font-size="13" font-weight="600" fill="#0F1A20">S-02</text>
+                    <text x="724" y="391" text-anchor="middle" font-size="10.5" fill="#5F6C74">{{ tk.S02.sub }}</text>
+                    <text x="724" y="426" text-anchor="middle" font-size="10.5"><tspan fill="#5F6C74">{{ tk.S02.live }}</tspan><tspan fill="{{ tk.S02.stColor }}" font-weight="600">{{ tk.S02.stTxt }}</tspan></text>
+                  </g>
+                </svg>
+
+                <sc-for list="{{ tanks }}" as="t" hint-placeholder-count="12">
+                  <button class="ov {{ t.lineCls }}" onClick="{{ t.pick }}" aria-label="{{ t.aria }}" aria-pressed="{{ t.isSel }}" style="left: {{ t.l }}%; top: {{ t.tp }}%; width: {{ t.w }}%; height: {{ t.h }}%; border-radius: {{ t.radius }}">
+                    <span class="tip {{ t.tipCls }}" style="width: 248px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E2E8EC; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; box-shadow: 0 8px 24px rgba(15,26,32,0.10); font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; color: #0F1A20; white-space: normal">
+                      <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+                        <span style="font-size: 13px; font-weight: 600"><span style="font-family: 'Geist Mono', ui-monospace, monospace">{{ t.id }}</span> <span style="font-weight: 400; color: #66737B">· {{ t.batch }}</span></span>
+                        <span style="display: flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 999px; background: {{ t.pill }}; font-size: 12px; font-weight: 500; color: {{ t.text }}"><span style="width: 6px; height: 6px; border-radius: 999px; background: {{ t.dotColor }}"></span>{{ t.levelLabel }}</span>
+                      </span>
+                      <span style="font-size: 12px; line-height: 1.45; color: #3E4B53">{{ t.reason }}</span>
+                      <span style="display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12px; padding-top: 8px; border-top: 1px solid #EEF2F4">
+                        <span style="color: #66737B">Survival</span><span style="text-align: right; font-weight: 500; font-variant-numeric: tabular-nums">{{ t.survTxt }}</span>
+                        <span style="color: #66737B">Last check</span><span style="text-align: right; font-weight: 500">{{ t.last }}</span>
+                        <span style="color: #66737B">Water</span><span style="text-align: right; font-weight: 500; color: {{ t.lineColor }}">{{ t.lineTxt }}</span>
+                      </span>
+                    </span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div class="planlist" style="flex-direction: column">
+              <sc-for list="{{ tanks }}" as="t" hint-placeholder-count="12">
+                <button class="rowbtn" onClick="{{ t.pick }}" aria-pressed="{{ t.isSel }}" style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 16px; border: 0; border-top: {{ t.listDivider }}; background: {{ t.rowBg }}; font: inherit; color: inherit; text-align: left; cursor: pointer">
+                  <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; background: {{ t.swBg }}; border: {{ t.swBorder }}; flex: none"></span>
+                  <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; font-weight: 600; width: 44px; flex: none">{{ t.id }}</span>
+                  <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                    <span style="font-size: 13px; font-weight: 500; color: {{ t.text }}">{{ t.levelLabel }}</span>
+                    <span style="font-size: 12px; color: #5F6C74">{{ t.reason }}</span>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isTable }}" hint-placeholder-val="{{ false }}">
+            <div style="overflow-x: auto">
+              <div aria-label="Tanks" style="min-width: 640px; display: flex; flex-direction: column; font-size: 13px">
+                <div aria-hidden="true" style="display: grid; grid-template-columns: 132px minmax(0, 1.2fr) minmax(0, 1fr) 84px 80px minmax(0, 1fr); gap: 12px; padding: 10px 16px; font-size: 12px; color: #66737B; border-bottom: 1px solid #EEF2F4">
+                  <span>Tank</span><span>Room</span><span>Age</span><span style="text-align: right">Live (est.)</span><span style="text-align: right">Survival</span><span>Last check</span>
+                </div>
+                <sc-for list="{{ tanks }}" as="t" hint-placeholder-count="12">
+                  <button class="rowbtn" onClick="{{ t.pick }}" aria-pressed="{{ t.isSel }}" aria-label="{{ t.rowAria }}" style="display: grid; grid-template-columns: 132px minmax(0, 1.2fr) minmax(0, 1fr) 84px 80px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 40px; padding: 6px 16px; border: 0; border-top: {{ t.listDivider }}; background: {{ t.rowBg }}; font: inherit; font-size: 13px; color: inherit; text-align: left; cursor: pointer">
+                    <span style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; background: {{ t.swBg }}; border: {{ t.swBorder }}; flex: none"></span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">{{ t.id }}</span><span style="font-size: 12px; color: {{ t.text }}">{{ t.levelLabel }}</span></span>
+                    <span style="color: #3E4B53">{{ t.roomName }}</span>
+                    <span style="color: #3E4B53">{{ t.ageTxt }}</span>
+                    <span style="text-align: right; font-variant-numeric: tabular-nums">{{ t.live }}</span>
+                    <span style="text-align: right; font-variant-numeric: tabular-nums">{{ t.survTxt }}</span>
+                    <span style="color: #3E4B53">{{ t.last }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+
+        <section aria-label="Last 14 days" style="border: 1px solid #E2E8EC; border-radius: 10px">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 12px 16px; border-bottom: 1px solid #EEF2F4">
+            <div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 2px">
+              <h2 style="margin: 0; font-size: 14px; font-weight: 600">Last 14 days</h2>
+              <span style="font-size: 12px; color: #66737B">Each tank's status on each day, from its most recent check. Select a tank to inspect it.</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; color: #5F6C74">
+              <sc-for list="{{ legend }}" as="l" hint-placeholder-count="5">
+                <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; box-sizing: border-box; background: {{ l.bg }}; border: {{ l.border }}"></span>{{ l.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="overflow-x: auto; padding: 12px 16px 16px">
+            <div style="min-width: 600px; display: flex; flex-direction: column; gap: 2px">
+              <sc-for list="{{ history }}" as="h" hint-placeholder-count="12">
+                <div role="group" aria-label="{{ h.aria }}" style="display: flex; align-items: center; gap: 4px; padding: 2px 4px; margin: 0 -4px; border-radius: 6px; background: {{ h.rowBg }}">
+                  <button class="rowbtn" onClick="{{ h.pick }}" aria-pressed="{{ h.isSel }}" style="width: 64px; flex: none; display: flex; align-items: center; gap: 6px; height: 20px; padding: 0 4px; border: 0; border-radius: 4px; background: transparent; font: inherit; color: inherit; cursor: pointer">
+                    <span style="width: 6px; height: 6px; border-radius: 999px; box-sizing: border-box; background: {{ h.dotBg }}; border: {{ h.dotBorder }}; flex: none"></span>
+                    <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; font-weight: {{ h.weight }}; color: {{ h.labelColor }}">{{ h.id }}</span>
+                  </button>
+                  <sc-for list="{{ h.cells }}" as="cell" hint-placeholder-count="14">
+                    <span class="hc" aria-hidden="true" style="background: {{ cell.bg }}; border: {{ cell.border }}; box-shadow: {{ cell.ring }}">
+                      <span class="tip {{ cell.tipCls }}" style="width: 200px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E2E8EC; border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 8px 24px rgba(15,26,32,0.10); font-family: 'Geist', ui-sans-serif, system-ui, sans-serif">
+                        <span style="font-size: 12px; font-weight: 600; color: #0F1A20"><span style="font-family: 'Geist Mono', ui-monospace, monospace">{{ h.id }}</span> · {{ cell.date }}</span>
+                        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: {{ cell.text }}"><span style="width: 8px; height: 8px; border-radius: 2px; box-sizing: border-box; background: {{ cell.bg }}; border: {{ cell.swBorder }}"></span>{{ cell.label }}</span>
+                        <span style="font-size: 12px; color: #5F6C74">{{ cell.change }}</span>
+                      </span>
+                    </span>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <div aria-hidden="true" style="display: flex; gap: 4px; padding: 6px 0 0 68px">
+                <sc-for list="{{ days }}" as="d" hint-placeholder-count="14">
+                  <span style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; font-variant-numeric: tabular-nums">
+                    <span style="font-size: 11px; color: {{ d.color }}; font-weight: {{ d.weight }}">{{ d.num }}</span>
+                    <span style="font-size: 10px; color: {{ d.subColor }}; font-weight: {{ d.weight }}">{{ d.sub }}</span>
+                  </span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside aria-label="Selected tank" style="flex: 1 1 376px; max-width: 400px; min-width: 0; border: 1px solid #E2E8EC; border-radius: 10px; display: flex; flex-direction: column">
+        <div style="padding: 16px; display: flex; flex-direction: column; gap: 4px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; flex: 1">{{ s.id }}</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; background: {{ s.pill }}; color: {{ s.text }}; font-size: 12px; font-weight: 500"><span style="width: 6px; height: 6px; border-radius: 999px; background: {{ s.dotColor }}"></span>{{ s.levelLabel }}</span>
+          </div>
+          <span style="font-size: 13px; color: #3E4B53">{{ s.ageTxt }}</span>
+          <span style="font-size: 12px; color: #66737B">{{ s.roomName }} · Batch {{ s.batch }} · <span style="color: {{ s.lineColor }}">{{ s.lineTxt }}</span></span>
+        </div>
+
+        <sc-if value="{{ s.hasPhoto }}" hint-placeholder-val="{{ true }}">
+          <section aria-label="Latest check" style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+              <h3 style="margin: 0; font-size: 13px; font-weight: 600">Latest check</h3>
+              <span style="font-size: 12px; color: #66737B">{{ s.last }}</span>
+            </div>
+            <div style="position: relative; width: 100%; aspect-ratio: 3 / 2; border-radius: 8px; overflow: hidden; background: #F1F4F6; border: 1px solid #E2E8EC; box-sizing: border-box">
+              <img src="{{ s.photo }}" alt="{{ s.photoAlt }}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block">
+              <span style="position: absolute; left: 8px; bottom: 8px; display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.94); box-shadow: 0 1px 2px rgba(15,26,32,0.08); font-size: 12px; color: #0F1A20; font-variant-numeric: tabular-nums">
+                <span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #2E8B57; box-sizing: border-box"></span>{{ s.counts.live }} live</span>
+                <span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #C2620E; box-sizing: border-box"></span>{{ s.counts.abn }} abnormal</span>
+                <span style="display: flex; align-items: center; gap: 5px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #C2362B; box-sizing: border-box"></span>{{ s.counts.dead }} dead</span>
+              </span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: #66737B">
+              <span style="font-variant-numeric: tabular-nums">{{ s.countTotal }} larvae · 1.60 µm/px</span>
+              <a href="#" style="font-weight: 500; color: #13557A; text-underline-offset: 2px; white-space: nowrap">Review outlines</a>
+            </div>
+          </section>
+        </sc-if>
+
+        <section aria-label="Risk forecast" style="padding: 16px; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+            <h3 style="margin: 0; font-size: 13px; font-weight: 600">Risk forecast</h3>
+            <span style="font-size: 11px; font-weight: 500; color: #66737B; border: 1px solid #E2E8EC; border-radius: 6px; padding: 2px 6px">Rules-based</span>
+          </div>
+          <sc-if value="{{ s.hasMeter }}" hint-placeholder-val="{{ true }}">
+            <div role="img" aria-label="{{ s.meterAria }}" style="display: flex; gap: 4px">
+              <sc-for list="{{ s.meter }}" as="seg" hint-placeholder-count="4">
+                <span style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+                  <span style="height: 4px; border-radius: 2px; background: {{ seg.bar }}"></span>
+                  <span style="font-size: 11px; color: {{ seg.txt }}; font-weight: {{ seg.weight }}">{{ seg.label }}</span>
+                </span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 14px; font-weight: 600">{{ s.pattern }}</span>
+            <span style="font-size: 13px; line-height: 1.5; color: #3E4B53">{{ s.forecast }}</span>
+          </div>
+        </section>
+
+        <sc-if value="{{ s.hasRows }}" hint-placeholder-val="{{ true }}">
+          <section aria-label="Condition" style="padding: 16px; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column">
+            <div style="display: flex; align-items: baseline; gap: 12px; padding-bottom: 8px">
+              <h3 style="margin: 0; font-size: 13px; font-weight: 600; flex: 1">Condition</h3>
+              <span style="font-size: 12px; color: #66737B; width: 76px; text-align: right">Now</span>
+              <span style="font-size: 12px; color: #66737B; width: 108px; text-align: right">Compared with</span>
+            </div>
+            <sc-for list="{{ s.rows }}" as="g" hint-placeholder-count="5">
+              <div style="display: flex; align-items: center; gap: 12px; min-height: 32px; border-top: 1px solid #EEF2F4; font-size: 13px">
+                <span style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; color: #3E4B53"><span style="width: 6px; height: 6px; border-radius: 999px; background: {{ g.dot }}; flex: none"></span>{{ g.label }}</span>
+                <span style="width: 76px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: {{ g.nowColor }}">{{ g.now }}</span>
+                <span style="width: 108px; text-align: right; font-size: 12px; line-height: 1.35; color: #66737B">{{ g.cmp }}</span>
+              </div>
+            </sc-for>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ s.hasChart }}" hint-placeholder-val="{{ true }}">
+          <section aria-label="Survival since spawn" style="padding: 16px; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+              <h3 style="margin: 0; font-size: 13px; font-weight: 600">Survival since spawn</h3>
+              <span style="font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums">{{ s.survTxt }}</span>
+            </div>
+            <div style="display: flex; gap: 8px">
+              <div aria-hidden="true" style="display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: #66737B; font-variant-numeric: tabular-nums; padding: 0 0 2px">
+                <span>100%</span><span>50%</span><span>0%</span>
+              </div>
+              <svg viewBox="0 0 300 64" width="100%" role="img" aria-label="{{ s.chartLabel }}" style="display: block; flex: 1; min-width: 0">
+                <defs><marker id="pt" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.4" fill="#FFFFFF" stroke="#0F1A20" stroke-width="1.3"></circle></marker></defs>
+                <line x1="0" y1="6" x2="300" y2="6" stroke="#EEF2F4"></line>
+                <line x1="0" y1="32" x2="300" y2="32" stroke="#EEF2F4"></line>
+                <line x1="0" y1="58" x2="300" y2="58" stroke="#E2E8EC"></line>
+                <path d="{{ s.area }}" fill="#0F1A20" fill-opacity="0.05"></path>
+                <polyline points="{{ s.line }}" fill="none" stroke="#0F1A20" stroke-width="1.5" stroke-linejoin="round" marker-start="url(#pt)" marker-mid="url(#pt)"></polyline>
+                <circle cx="{{ s.endX }}" cy="{{ s.endY }}" r="4" fill="{{ s.endColor }}" stroke="#FFFFFF" stroke-width="1.5"></circle>
+              </svg>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-left: 34px; font-size: 11px; color: #66737B"><span>Spawn</span><span>{{ s.checksTxt }}</span><span>{{ s.dayTxt }}</span></div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{ s.hasActions }}" hint-placeholder-val="{{ true }}">
+          <section aria-label="Recommended actions" style="padding: 16px 16px 8px; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-bottom: 4px">
+              <h3 style="margin: 0; font-size: 13px; font-weight: 600">Recommended actions</h3>
+              <span style="font-size: 12px; color: #66737B">{{ s.actionsLeft }}</span>
+            </div>
+            <sc-for list="{{ s.actions }}" as="a" hint-placeholder-count="2">
+              <div style="display: flex; gap: 12px; padding: 12px 0; border-top: {{ a.divider }}">
+                <span aria-hidden="true" style="width: 22px; height: 22px; flex: none; border-radius: 999px; box-sizing: border-box; border: 1px solid {{ a.badgeBorder }}; background: {{ a.badgeBg }}; color: {{ a.badgeColor }}; display: grid; place-items: center; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums">
+                  <sc-if value="{{ a.showNum }}" hint-placeholder-val="{{ true }}">{{ a.n }}</sc-if>
+                  <sc-if value="{{ a.showCheck }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg></sc-if>
+                  <sc-if value="{{ a.showX }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+                </span>
+                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+                  <span style="font-size: 13px; line-height: 1.45; color: {{ a.titleColor }}">{{ a.title }}</span>
+                  <sc-if value="{{ a.idle }}" hint-placeholder-val="{{ true }}">
+                    <span style="display: flex; flex-wrap: wrap; gap: 8px">
+                      <button class="solid" onClick="{{ a.approve }}" style="height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: #0F1A20; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">{{ a.cta }}</button>
+                      <button class="ghost" onClick="{{ a.dismiss }}" aria-label="{{ a.dismissAria }}" style="height: 32px; padding: 0 12px; border: 1px solid #E2E8EC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">Dismiss</button>
+                    </span>
+                  </sc-if>
+                  <sc-if value="{{ a.isPending }}" hint-placeholder-val="{{ false }}">
+                    <span role="status" class="appear" style="display: flex; align-items: center; gap: 8px; height: 32px; font-size: 13px; color: #5F6C74"><span class="spin"></span>Saving…</span>
+                  </sc-if>
+                  <sc-if value="{{ a.isDone }}" hint-placeholder-val="{{ false }}">
+                    <span role="status" class="appear" style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-height: 32px; font-size: 13px">
+                      <span style="font-weight: 500; color: {{ a.doneColor }}">{{ a.doneTxt }}</span>
+                      <span style="font-size: 12px; color: #66737B">Dana Ortiz · just now</span>
+                      <button class="lnk" onClick="{{ a.undo }}" style="font-size: 12px">Undo</button>
+                    </span>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </section>
+        </sc-if>
+
+        <a href="#" style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid #EEF2F4; font-size: 13px; font-weight: 500; text-decoration: none">Open {{ s.id }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var sel = st.sel || 'T-03';
+    var view = st.view || 'plan';
+    var done = st.done || {};
+    var pending = st.pending || {};
+    var IMG = {
+      vibrio: '/_blob/c24f4a48989afd34200503c13a7b22b0',
+      healthy: '/_blob/8c64a39999e7e910aeffed4192cd3073',
+      omega: '/_blob/2d1e4e432dff2d4ae82a68dec400a1d2',
+      dstage: '/_blob/aa09a49851a8c00d5dc7211ff3472a11',
+      eyed: '/_blob/8363ae7fd21cdba30a96f07ebf684c84'
+    };
+    var ST = {
+      critical: { label: 'Critical', color: '#D93A2F', text: '#B42318', pill: '#FEF3F2', tint: '#FEF3F2', chip: '#FEF3F2', chipBorder: '#F2C4BF', sw: '2.75', rank: 4 },
+      risk: { label: 'At risk', color: '#E0702A', text: '#B54708', pill: '#FFF6ED', tint: '#FFF6ED', chip: '#FFF6ED', chipBorder: '#F3D0B4', sw: '2.25', rank: 3 },
+      watch: { label: 'Watch', color: '#C98A0B', text: '#8E6206', pill: '#FEF9EC', tint: '#FFFFFF', chip: '#FFFFFF', chipBorder: '#E2E8EC', sw: '2', rank: 2 },
+      ok: { label: 'Normal', color: '#A7B3BA', text: '#3E4B53', pill: '#F1F4F6', tint: '#FFFFFF', chip: '#FFFFFF', chipBorder: '#E2E8EC', sw: '1.25', rank: 1 },
+      empty: { label: 'Empty', color: '#C7CFD4', text: '#66737B', pill: '#F1F4F6', tint: '#FFFFFF', chip: '#FFFFFF', chipBorder: '#E2E8EC', sw: '1.25', rank: 0 }
+    };
+    var SW = {
+      critical: { bg: '#D93A2F', border: '0' },
+      risk: { bg: '#E0702A', border: '0' },
+      watch: { bg: '#C98A0B', border: '0' },
+      ok: { bg: '#DCE3E7', border: '1px solid #A7B3BA' },
+      empty: { bg: '#FFFFFF', border: '1.5px dashed #AEB9C0' }
+    };
+    var FORECAST = {
+      ok: 'No warning signs at the last check.',
+      watch: 'An early warning sign. Re-check at the next drain.',
+      risk: 'Elevated chance of a crash in the next 1–3 days.',
+      critical: 'High chance this batch crashes in the next 1–3 days if nothing changes.',
+      empty: 'No batch in this tank.'
+    };
+    var A = {
+      'T-02:screen': { t: 'Screen at the next drain and cull the slowest growers', cta: 'Schedule screening', doneTxt: 'Screening scheduled' },
+      'T-03:isolate': { t: 'Isolate T-03. Use separate screens, buckets and hoses.', cta: 'Approve isolation', doneTxt: 'Isolation approved' },
+      'T-03:sample': { t: 'Plate a water and larvae sample to check for Vibrio', cta: 'Request sampling', doneTxt: 'Sampling requested' },
+      'T-03:restock': { t: 'Drain, clean and restock in fresh water today', cta: 'Approve drain and restock', doneTxt: 'Drain and restock approved' },
+      'L2:buffer': { t: 'Buffer line 2 water to bring Ω aragonite to 3 or higher', cta: 'Approve buffering', doneTxt: 'Buffering approved' },
+      'L2:hold': { t: 'Hold the next spawn until line 2 water recovers', cta: 'Hold next spawn', doneTxt: 'Next spawn on hold' },
+      'T-10:feed': { t: 'Check the algae ration and culture health', cta: 'Request feed check', doneTxt: 'Feed check requested' }
+    };
+    var raw = [
+      { id: 'T-01', cx: 185, cy: 112, r: 36, room: 'A', line: 1, batch: 'NW-1017', day: 14, stage: 'Late umbo', live: '14.2M', liveN: 14.2, survN: 0.71, len: '231 µm', growth: '9.6 µm/day', level: 'ok', reason: 'Tracking normally.', short: '', pattern: 'Tracking normally', spark: [100, 95, 90, 84, 79, 75, 71], last: 'Yesterday, 4:10 PM', photo: 'healthy', counts: { live: 61, abn: 2, dead: 2 }, signals: [], acts: [] },
+      { id: 'T-02', cx: 295, cy: 112, r: 36, room: 'A', line: 1, batch: 'NW-1019', day: 11, stage: 'Early umbo', live: '9.8M', liveN: 9.8, survN: 0.58, len: '176 µm', growth: '8.1 µm/day', level: 'watch', reason: 'Size spread is widening: CV 0.21, up from 0.14 at the last check.', short: 'Size spread widening', pattern: 'Batch is splitting into fast and slow growers', spark: [100, 93, 85, 77, 70, 63, 58], last: 'Yesterday, 4:35 PM', photo: 'healthy', counts: { live: 57, abn: 4, dead: 3 }, signals: [{ label: 'Size spread (CV)', now: '0.21', cmp: '0.14 at last check', sev: 'watch' }], acts: ['T-02:screen'] },
+      { id: 'T-03', cx: 405, cy: 112, r: 36, room: 'A', line: 1, batch: 'NW-1021', day: 9, stage: 'Early umbo', live: '4.1M', liveN: 4.1, survN: 0.41, len: '128 µm', growth: '1.2 µm/day', lenCmp: '126 µm at last check', level: 'critical', reason: 'Dead larvae 24%, up from 9% at the last check. Growth has stalled.', short: 'Bacterial pattern', pattern: 'Pattern matches a bacterial outbreak', spark: [100, 94, 88, 81, 66, 41], last: 'Today, 8:40 AM', photo: 'vibrio', counts: { live: 44, abn: 5, dead: 15 }, signals: [{ label: 'Dead larvae', now: '24%', cmp: '9% at last check', sev: 'critical' }, { label: 'Growth', now: '1.2 µm/day', cmp: '9 µm/day expected', sev: 'critical' }, { label: 'Gut fullness', now: '0.18', cmp: '0.71 at last check', sev: 'risk' }, { label: 'Water Ω aragonite', now: '2.9', cmp: 'target ≥ 2', sev: 'ok' }], acts: ['T-03:isolate', 'T-03:sample', 'T-03:restock'] },
+      { id: 'T-04', cx: 185, cy: 228, r: 36, room: 'A', line: 2, batch: 'NW-1023', day: 6, stage: 'D-stage', live: '16.5M', liveN: 16.5, survN: 0.66, len: '96 µm', growth: '5.0 µm/day', level: 'risk', reason: 'Line 2 water is corrosive (Ω 1.4). Abnormal shells are up to 19%.', short: 'Corrosive water', pattern: 'Pattern matches corrosive water', spark: [100, 94, 88, 80, 73, 66], last: 'Today, 7:55 AM', photo: 'omega', counts: { live: 51, abn: 13, dead: 5 }, signals: [{ label: 'Ω aragonite', now: '1.4', cmp: 'target ≥ 2', sev: 'risk' }, { label: 'pH', now: '7.62', cmp: 'target ≥ 7.8', sev: 'risk' }, { label: 'Abnormal shells', now: '19%', cmp: '6% at last check', sev: 'watch' }], acts: ['L2:buffer', 'L2:hold'] },
+      { id: 'T-05', cx: 295, cy: 228, r: 36, room: 'A', line: 2, batch: 'NW-1024', day: 5, stage: 'D-stage', live: '18.0M', liveN: 18.0, survN: 0.72, len: '88 µm', growth: '4.6 µm/day', level: 'risk', reason: 'Line 2 water is corrosive (Ω 1.4). Abnormal shells are up to 13%.', short: 'Corrosive water', pattern: 'Pattern matches corrosive water', spark: [100, 95, 89, 82, 72], last: 'Today, 8:05 AM', photo: 'omega', counts: { live: 58, abn: 9, dead: 3 }, signals: [{ label: 'Ω aragonite', now: '1.4', cmp: 'target ≥ 2', sev: 'risk' }, { label: 'Abnormal shells', now: '13%', cmp: '4% at last check', sev: 'watch' }], acts: ['L2:buffer', 'L2:hold'] },
+      { id: 'T-06', cx: 405, cy: 228, r: 36, room: 'A', line: 2, batch: 'NW-1026', day: 3, stage: 'D-stage', live: '22.4M', liveN: 22.4, survN: 0.90, len: '79 µm', growth: '5.4 µm/day', level: 'watch', reason: 'On line 2 (Ω 1.4). Larvae look normal so far.', short: 'On line 2', pattern: 'Water is corrosive; larvae not affected yet', spark: [100, 96, 90], last: 'Today, 8:15 AM', photo: 'dstage', counts: { live: 92, abn: 3, dead: 2 }, signals: [{ label: 'Ω aragonite', now: '1.4', cmp: 'target ≥ 2', sev: 'watch' }, { label: 'Abnormal shells', now: '3%', cmp: 'normal range', sev: 'ok' }], acts: ['L2:buffer', 'L2:hold'] },
+      { id: 'T-07', cx: 560, cy: 112, r: 30, room: 'B', line: 1, batch: 'NW-1012', day: 16, stage: 'Eyed', live: '6.3M', liveN: 6.3, survN: 0.52, len: '288 µm', growth: '10.2 µm/day', level: 'ok', reason: 'Eyed larvae. Ready to move to setting in 1–2 days.', short: '', pattern: 'Ready to set', spark: [100, 92, 85, 77, 70, 64, 58, 52], last: 'Yesterday, 3:20 PM', photo: 'eyed', counts: { live: 24, abn: 1, dead: 1 }, signals: [], acts: [] },
+      { id: 'T-08', cx: 690, cy: 112, r: 30, room: 'B', line: 1, batch: 'NW-1027', day: 2, stage: 'D-stage', live: '31.0M', liveN: 31.0, survN: 0.94, len: '74 µm', growth: '—', level: 'ok', reason: 'First check done. Tracking normally.', short: '', pattern: 'Tracking normally', spark: [100, 94], last: 'Yesterday, 5:40 PM', photo: 'dstage', counts: { live: 96, abn: 2, dead: 1 }, signals: [], acts: [] },
+      { id: 'T-09', cx: 560, cy: 228, r: 30, room: 'B', line: 1, batch: '—', day: 0, stage: 'Cleaning', live: '—', liveN: 0, survN: 0, len: '—', growth: '—', level: 'empty', reason: 'Empty. Being cleaned.', short: '', pattern: 'Empty tank', spark: [], last: '—', photo: null, counts: { live: 0, abn: 0, dead: 0 }, signals: [], acts: [] },
+      { id: 'T-10', cx: 690, cy: 228, r: 30, room: 'B', line: 1, batch: 'NW-1022', day: 8, stage: 'Early umbo', live: '11.2M', liveN: 11.2, survN: 0.63, len: '118 µm', growth: '4.1 µm/day', level: 'watch', reason: 'Growth is 4.1 µm a day, below the 9 expected. Guts look light.', short: 'Slow growth', pattern: 'Growing slower than expected', spark: [100, 94, 86, 79, 72, 67, 63], last: 'Yesterday, 4:50 PM', photo: 'healthy', counts: { live: 60, abn: 3, dead: 4 }, signals: [{ label: 'Growth', now: '4.1 µm/day', cmp: '9 µm/day expected', sev: 'watch' }, { label: 'Gut fullness', now: '0.32', cmp: '0.64 at last check', sev: 'watch' }], acts: ['T-10:feed'] },
+      { id: 'S-01', rect: [585, 350, 82, 56], room: 'S', line: 1, batch: 'NW-1009', day: 19, stage: 'Setting', live: '2.1M', liveN: 2.1, survN: 0.41, len: '305 µm', growth: '—', level: 'ok', reason: 'Setting on cultch. Moves to the nursery next week.', short: '', pattern: 'Setting', spark: [100, 80, 66, 55, 47, 41], last: 'Oct 29, 2:00 PM', photo: 'eyed', counts: { live: 20, abn: 0, dead: 1 }, signals: [], acts: [] },
+      { id: 'S-02', rect: [683, 350, 82, 56], room: 'S', line: 1, batch: '—', day: 0, stage: 'Empty', live: '—', liveN: 0, survN: 0, len: '—', growth: '—', level: 'empty', reason: 'Empty.', short: '', pattern: 'Empty downweller', spark: [], last: '—', photo: null, counts: { live: 0, abn: 0, dead: 0 }, signals: [], acts: [] }
+    ];
+    var roomNames = { A: 'Larval room A', B: 'Larval room B', S: 'Setting room' };
+    var pick = function (id) { return function () { self.setState({ sel: id }); }; };
+    var pct = function (v) { return (Math.round(v * 1000) / 10).toString(); };
+    var isEmpty = function (t) { return t.level === 'empty'; };
+
+    var sevDot = { critical: '#D93A2F', risk: '#E0702A', watch: '#C98A0B', ok: '#A7B3BA', none: 'transparent' };
+    var selTank = raw.filter(function (t) { return t.id === sel; })[0] || raw[2];
+
+    var tk = {};
+    var tanks = raw.map(function (t, i) {
+      var lv = ST[t.level];
+      var isSel = t.id === sel;
+      var box = t.rect ? [t.rect[0] - 7, t.rect[1] - 7, t.rect[2] + 14, t.rect[3] + 14] : [t.cx - t.r - 8, t.cy - t.r - 8, 2 * t.r + 16, 2 * t.r + 16];
+      var cx = t.rect ? t.rect[0] + t.rect[2] / 2 : t.cx;
+      var cy = t.rect ? t.rect[1] : t.cy;
+      var problem = t.level === 'critical' || t.level === 'risk' || t.level === 'watch';
+      tk[t.id.replace('-', '')] = {
+        selStroke: isSel ? '#0F1A20' : 'transparent',
+        fill: isSel && !problem ? '#F6F8F9' : lv.tint,
+        stroke: lv.color, sw: lv.sw,
+        dash: isEmpty(t) ? '3 3' : 'none',
+        sub: isEmpty(t) ? t.stage : 'Day ' + t.day,
+        dot: lv.color, dotOp: problem ? '1' : '0',
+        live: isEmpty(t) ? '' : t.live,
+        stTxt: problem ? ' · ' + lv.label : '',
+        stColor: lv.text
+      };
+      return Object.assign({}, t, {
+        isSel: isSel, levelLabel: lv.label, text: lv.text, pill: lv.pill, dotColor: lv.color,
+        swBg: SW[t.level].bg, swBorder: SW[t.level].border,
+        roomName: roomNames[t.room],
+        ageTxt: isEmpty(t) ? t.stage : 'Day ' + t.day + ' · ' + t.stage,
+        survTxt: isEmpty(t) ? '—' : Math.round(t.survN * 100) + '%',
+        lineTxt: 'Line ' + t.line + (t.line === 2 ? ' · corrosive' : ''),
+        lineColor: t.line === 2 ? '#B54708' : '#0F1A20',
+        lineCls: 'l' + t.line,
+        l: pct(box[0] / 800), tp: pct(box[1] / 470), w: pct(box[2] / 800), h: pct(box[3] / 470),
+        radius: t.rect ? '14px' : '999px',
+        tipCls: (cy < 200 ? 'below' : 'above') + ' ' + (cx < 260 ? 'l' : (cx > 600 ? 'r' : 'c')),
+        aria: t.id + ', ' + lv.label + '. ' + t.reason,
+        rowAria: t.id + ', ' + lv.label + ', ' + roomNames[t.room] + ', ' + (isEmpty(t) ? t.stage : 'day ' + t.day + ', survival ' + Math.round(t.survN * 100) + '%, last check ' + t.last),
+        rowBg: isSel ? '#F6F8F9' : '#FFFFFF',
+        listDivider: i === 0 ? '0' : '1px solid #EEF2F4',
+        pick: pick(t.id)
+      });
+    });
+
+    var pipes = {
+      p1: selTank.line === 1 && !isEmpty(selTank) ? '#7D8A92' : '#AEB9C0',
+      p1w: selTank.line === 1 && !isEmpty(selTank) ? '2.5' : '2',
+      p2w: selTank.line === 2 ? '3' : '2'
+    };
+
+    var chipFor = function (t) {
+      var lv = ST[t.level];
+      var isSel = t.id === sel;
+      return {
+        id: t.id, label: lv.label, short: t.short, text: lv.text, dot: lv.color,
+        bg: lv.chip, border: lv.chipBorder, isSel: isSel,
+        selShadow: isSel ? '0 0 0 1.5px #0F1A20' : 'none',
+        aria: t.id + ', ' + lv.label + ': ' + t.reason,
+        pick: function () { self.setState({ sel: t.id, view: 'plan' }); }
+      };
+    };
+    var actNow = raw.filter(function (t) { return t.level === 'critical' || t.level === 'risk'; })
+      .sort(function (a, b) { return ST[b.level].rank - ST[a.level].rank || (a.id < b.id ? -1 : 1); }).map(chipFor);
+    var monitor = raw.filter(function (t) { return t.level === 'watch'; }).map(chipFor);
+    var headline = actNow.length === 1 ? '1 tank needs attention now' : actNow.length + ' tanks need attention now';
+    var actCount = actNow.length;
+    var critCount = raw.filter(function (t) { return t.level === 'critical'; }).length;
+    var riskCount = raw.filter(function (t) { return t.level === 'risk'; }).length;
+    var actLabel = critCount + ' critical · ' + riskCount + ' at risk';
+    var monLabel = monitor.length + ' on watch';
+
+    var openKeys = {};
+    raw.forEach(function (t) { t.acts.forEach(function (k) { if (!done[k]) openKeys[k] = true; }); });
+    var decisionCount = Object.keys(openKeys).length;
+    var running = raw.filter(function (t) { return !isEmpty(t); });
+    var liveTotal = running.reduce(function (a, t) { return a + t.liveN; }, 0);
+    var avgSurv = Math.round(running.reduce(function (a, t) { return a + t.survN; }, 0) / running.length * 100);
+    var metrics = [
+      { label: 'Larvae in hatchery', value: liveTotal.toFixed(1), unit: 'M' },
+      { label: 'Tanks running', value: String(running.length), unit: ' of ' + raw.length },
+      { label: 'Average survival', value: String(avgSurv), unit: '%' },
+      { label: 'Decisions waiting', value: String(decisionCount), unit: '' },
+      { label: 'Next check', value: 'T-02', unit: ' · 10:30 AM' }
+    ];
+
+    var legend = ['critical', 'risk', 'watch', 'ok', 'empty'].map(function (k) {
+      return { label: ST[k].label, bg: SW[k].bg, border: SW[k].border };
+    });
+
+    var roomNav = ['A', 'B', 'S'].map(function (k) {
+      var list = raw.filter(function (t) { return t.room === k; });
+      var worst = list.reduce(function (w, t) { return ST[t.level].rank > ST[w].rank ? t.level : w; }, 'empty');
+      var key = worst === 'empty' ? 'ok' : worst;
+      return { name: roomNames[k], count: String(list.length), bg: SW[key].bg, border: SW[key].border };
+    });
+    roomNav.push({ name: 'Algae room', count: '18', bg: '#FFFFFF', border: '1px solid #A7B3BA' });
+
+    var CH = { o: 'ok', w: 'watch', r: 'risk', c: 'critical', e: 'empty', '-': 'none' };
+    var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var seq = {
+      'T-01': 'oooooooooooooo', 'T-02': '--oooooooowwww', 'T-03': '-----oooooowwc', 'T-04': '-------ooooowr', 'T-05': '--------oooowr', 'T-06': '----------ooww',
+      'T-07': 'oooooooooooooo', 'T-08': '-----------ooo', 'T-09': 'ooooooooooeeee', 'T-10': '-----oooooowww', 'S-01': 'oooooooooooooo', 'S-02': 'eeeeeeeeeeeeee'
+    };
+    var labelOf = function (lv) { return lv === 'none' ? 'No batch' : ST[lv].label; };
+    var history = raw.map(function (t, ri) {
+      var chars = seq[t.id].split('');
+      var runs = [];
+      chars.forEach(function (chr, i) {
+        var lv = CH[chr];
+        if (runs.length && runs[runs.length - 1].lv === lv) runs[runs.length - 1].to = i; else runs.push({ lv: lv, from: i, to: i });
+      });
+      var aria = t.id + ': ' + runs.map(function (r) {
+        var a = 18 + r.from, b = 18 + r.to;
+        return labelOf(r.lv).toLowerCase() + ' Oct ' + a + (b !== a ? ' to ' + b : '');
+      }).join(', ');
+      var isSel = t.id === sel;
+      var curLv = t.level;
+      return {
+        id: t.id, aria: aria, isSel: isSel,
+        rowBg: isSel ? '#F1F4F6' : 'transparent',
+        weight: isSel ? '600' : '500', labelColor: isSel ? '#0F1A20' : '#3E4B53',
+        dotBg: SW[curLv].bg, dotBorder: SW[curLv].border,
+        pick: pick(t.id),
+        cells: chars.map(function (chr, i) {
+          var lv = CH[chr];
+          var prev = i > 0 ? CH[chars[i - 1]] : null;
+          var change = '';
+          if (lv === 'none') change = 'No batch in this tank yet';
+          else if (lv === 'empty') change = (prev && prev !== 'empty' && prev !== 'none') ? 'Tank emptied' : 'Tank empty';
+          else if (prev === null) change = 'Start of this view';
+          else if (prev === 'none' || prev === 'empty') change = 'First check of a new batch';
+          else if (prev === lv) change = 'No change from the day before';
+          else change = (ST[lv].rank > ST[prev].rank ? 'Worsened from ' : 'Improved from ') + ST[prev].label;
+          var swKey = lv === 'none' ? 'empty' : lv;
+          var today = i === 13;
+          var d = 18 + i;
+          return {
+            bg: lv === 'ok' ? '#DCE3E7' : SW[swKey].bg,
+            border: (lv === 'empty' || lv === 'none') ? '1.5px dashed #C7CFD4' : '0',
+            swBorder: SW[swKey].border,
+            ring: today ? '0 0 0 1.5px #FFFFFF, 0 0 0 3px #66737B' : 'none',
+            label: labelOf(lv),
+            text: lv === 'none' ? '#66737B' : ST[lv].text,
+            date: WD[(d - 18) % 7] + ', Oct ' + d + (today ? ' (today)' : ''),
+            change: change,
+            tipCls: (ri <= 3 ? 'below' : 'above') + ' ' + (i <= 2 ? 'l' : (i >= 11 ? 'r' : 'c'))
+          };
+        })
+      };
+    });
+    var days = [];
+    for (var i = 0; i < 14; i++) {
+      var dn = 18 + i;
+      var today = i === 13;
+      days.push({
+        num: today ? 'Today' : String(dn),
+        sub: i === 0 ? 'Oct' : WD[i % 7].charAt(0),
+        color: today ? '#0F1A20' : '#5F6C74',
+        subColor: today ? '#0F1A20' : '#66737B',
+        weight: today ? '600' : '400'
+      });
+    }
+
+    var cur = tanks.filter(function (t) { return t.id === sel; })[0] || tanks[2];
+    var lvC = ST[cur.level];
+    var stocked = cur.survN ? (cur.liveN / cur.survN).toFixed(1) + 'M' : '';
+    var rows = cur.signals.map(function (g) {
+      return { label: g.label, now: g.now, cmp: g.cmp, dot: sevDot[g.sev], nowColor: (g.sev === 'critical' || g.sev === 'risk') ? ST[g.sev].text : '#0F1A20' };
+    });
+    if (!isEmpty(cur)) {
+      var hasGrowth = cur.signals.some(function (g) { return g.label === 'Growth'; });
+      rows.push({ label: 'Live larvae (est.)', now: cur.live, cmp: 'of ' + stocked + ' stocked', dot: 'transparent', nowColor: '#0F1A20' });
+      rows.push({ label: 'Shell length', now: cur.len, cmp: hasGrowth ? (cur.lenCmp || '—') : (cur.growth !== '—' ? 'growing ' + cur.growth : 'first check'), dot: 'transparent', nowColor: '#0F1A20' });
+    }
+    var chartPts = cur.spark.map(function (v, i) {
+      var n = cur.spark.length;
+      return [4 + i * 292 / Math.max(1, n - 1), 6 + (1 - v / 100) * 52];
+    });
+    var fmt = function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); };
+    var last = chartPts[chartPts.length - 1] || [0, 0];
+    var meterKeys = ['ok', 'watch', 'risk', 'critical'];
+    var meter = meterKeys.map(function (k) {
+      var on = k === cur.level;
+      return { label: ST[k].label, bar: on ? ST[k].color : '#E3E9EC', txt: on ? ST[k].text : '#66737B', weight: on ? '600' : '400' };
+    });
+    var actions = cur.acts.map(function (k, i) {
+      var a = A[k];
+      var d = done[k];
+      var p = pending[k];
+      return {
+        n: String(i + 1), title: a.t, cta: a.cta,
+        idle: !d && !p, isPending: !!p && !d, isDone: !!d,
+        showNum: !d, showCheck: d === 'approved', showX: d === 'dismissed',
+        titleColor: d ? '#66737B' : '#0F1A20',
+        badgeBg: d === 'approved' ? '#EEF7F1' : '#FFFFFF',
+        badgeBorder: d === 'approved' ? '#A9D3B8' : '#CCD5DB',
+        badgeColor: d === 'approved' ? '#2E7D57' : '#3E4B53',
+        doneTxt: d === 'approved' ? a.doneTxt : 'Dismissed',
+        doneColor: d === 'approved' ? '#2E7D57' : '#3E4B53',
+        dismissAria: 'Dismiss: ' + a.t,
+        divider: i === 0 ? '0' : '1px solid #EEF2F4',
+        approve: function () {
+          var s0 = self.state || {};
+          var p1 = Object.assign({}, s0.pending || {}); p1[k] = true;
+          self.setState({ pending: p1 });
+          setTimeout(function () {
+            var s1 = self.state || {};
+            var d2 = Object.assign({}, s1.done || {}); d2[k] = 'approved';
+            var p2 = Object.assign({}, s1.pending || {}); delete p2[k];
+            self.setState({ done: d2, pending: p2 });
+          }, 650);
+        },
+        dismiss: function () {
+          var s0 = self.state || {};
+          var d2 = Object.assign({}, s0.done || {}); d2[k] = 'dismissed';
+          self.setState({ done: d2 });
+        },
+        undo: function () {
+          var s0 = self.state || {};
+          var d2 = Object.assign({}, s0.done || {}); delete d2[k];
+          self.setState({ done: d2 });
+        }
+      };
+    });
+    var left = actions.filter(function (a) { return !a.isDone; }).length;
+    var s = Object.assign({}, cur, {
+      hasPhoto: !!cur.photo,
+      photo: cur.photo ? IMG[cur.photo] : '',
+      photoAlt: 'Microscope photo from the latest check of ' + cur.id + ', with each larva outlined: green live, orange abnormal, red dead',
+      countTotal: String(cur.counts.live + cur.counts.abn + cur.counts.dead),
+      forecast: FORECAST[cur.level],
+      hasMeter: !isEmpty(cur),
+      meter: meter,
+      meterAria: 'Risk level: ' + lvC.label + ', on a scale of Normal, Watch, At risk, Critical',
+      hasRows: rows.length > 0,
+      rows: rows,
+      hasChart: cur.spark.length > 1,
+      line: chartPts.map(fmt).join(' '),
+      area: chartPts.length ? 'M' + chartPts[0][0].toFixed(1) + ',58 L' + chartPts.map(fmt).join(' L') + ' L' + last[0].toFixed(1) + ',58 Z' : '',
+      endX: last[0].toFixed(1), endY: last[1].toFixed(1),
+      endColor: (cur.level === 'ok' || isEmpty(cur)) ? '#0F1A20' : lvC.color,
+      chartLabel: 'Survival fell from 100% at spawn to ' + cur.survTxt + ' over ' + (cur.spark.length - 1) + ' checks',
+      checksTxt: (cur.spark.length - 1) + (cur.spark.length - 1 === 1 ? ' check' : ' checks'),
+      dayTxt: 'Day ' + cur.day,
+      hasActions: actions.length > 0,
+      actions: actions,
+      actionsLeft: left === 0 ? 'All decided' : left + ' to decide'
+    });
+
+    var isPlan = view === 'plan';
+    return {
+      headline: headline, actNow: actNow, monitor: monitor, actLabel: actLabel, monLabel: monLabel, actCount: actCount,
+      metrics: metrics, legend: legend, roomNav: roomNav,
+      decisionCount: decisionCount, decisionAria: decisionCount + ' decisions waiting',
+      tk: tk, tanks: tanks, pipes: pipes, history: history, days: days, s: s,
+      isPlan: isPlan, isTable: !isPlan,
+      showPlan: function () { self.setState({ view: 'plan' }); },
+      showTable: function () { self.setState({ view: 'table' }); },
+      segPlanBg: isPlan ? '#FFFFFF' : 'transparent', segPlanShadow: isPlan ? '0 1px 2px rgba(15,26,32,0.08)' : 'none', segPlanColor: isPlan ? '#0F1A20' : '#5F6C74',
+      segTableBg: !isPlan ? '#FFFFFF' : 'transparent', segTableShadow: !isPlan ? '0 1px 2px rgba(15,26,32,0.08)' : 'none', segTableColor: !isPlan ? '#0F1A20' : '#5F6C74'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,2018 @@
+{
+ "about": "Example hatchery for the demo. EXAMPLE DATA: every row created from this file must be flagged is_example and labelled in the UI. Days are relative to the day the seed runs (0 = today, -1 = yesterday); times are local. Checks and decisions marked demo_live are skipped by default and loaded only with --full: in the demo they are created live by uploading fixtures/demo/t03-today.jpg. Tank status defaults to 'active' when it has an active batch. Link each decision's check_id to the target tank's latest check at or before 'created' (line decisions: no check_id). Photos: render each check's photo with tools/gen_slides.make_slide(**photo, counts, mean_len_um, sd_len_um, gut) and build detections from the truth JSON.",
+ "hatchery": {
+  "name": "Northwind Shellfish",
+  "species": "pacific_oyster",
+  "example": true
+ },
+ "user": {
+  "name": "Dana Ortiz",
+  "initials": "DO",
+  "role": "Hatchery manager"
+ },
+ "settings": {
+  "bucket_l": 20,
+  "concentration": 50,
+  "chamber_depth_mm": 1.0,
+  "expected_growth_um_day": 9.0,
+  "target_temp_c": 25.0,
+  "check_interval_h": 48
+ },
+ "plan": {
+  "viewbox": [
+   800,
+   470
+  ],
+  "note": "Static parts of the floor plan (walls, room labels, pipes, algae cultures, bench) are drawn as in design/source/Main.dc.html. Tanks come from 'tanks'.",
+  "rooms": [
+   {
+    "id": "A",
+    "name": "Larval room A",
+    "kind": "larval",
+    "label_xy": [
+     134,
+     36
+    ],
+    "caption": "6 × 2,000 L"
+   },
+   {
+    "id": "B",
+    "name": "Larval room B",
+    "kind": "larval",
+    "label_xy": [
+     484,
+     36
+    ],
+    "caption": "4 × 1,000 L"
+   },
+   {
+    "id": "S",
+    "name": "Setting room",
+    "kind": "setting",
+    "label_xy": [
+     574,
+     322
+    ],
+    "caption": "2 downwellers"
+   }
+  ],
+  "lines": [
+   {
+    "id": "L1",
+    "name": "Line 1",
+    "card_xy": [
+     12,
+     40
+    ]
+   },
+   {
+    "id": "L2",
+    "name": "Line 2",
+    "card_xy": [
+     12,
+     154
+    ]
+   }
+  ]
+ },
+ "tanks": [
+  {
+   "id": "T-01",
+   "room": "A",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 185,
+   "cy": 112,
+   "r": 36,
+   "volume_l": 2000
+  },
+  {
+   "id": "T-02",
+   "room": "A",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 295,
+   "cy": 112,
+   "r": 36,
+   "volume_l": 2000
+  },
+  {
+   "id": "T-03",
+   "room": "A",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 405,
+   "cy": 112,
+   "r": 36,
+   "volume_l": 2000
+  },
+  {
+   "id": "T-04",
+   "room": "A",
+   "line": "L2",
+   "shape": "circle",
+   "cx": 185,
+   "cy": 228,
+   "r": 36,
+   "volume_l": 2000
+  },
+  {
+   "id": "T-05",
+   "room": "A",
+   "line": "L2",
+   "shape": "circle",
+   "cx": 295,
+   "cy": 228,
+   "r": 36,
+   "volume_l": 2000
+  },
+  {
+   "id": "T-06",
+   "room": "A",
+   "line": "L2",
+   "shape": "circle",
+   "cx": 405,
+   "cy": 228,
+   "r": 36,
+   "volume_l": 2000
+  },
+  {
+   "id": "T-07",
+   "room": "B",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 560,
+   "cy": 112,
+   "r": 30,
+   "volume_l": 1000
+  },
+  {
+   "id": "T-08",
+   "room": "B",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 690,
+   "cy": 112,
+   "r": 30,
+   "volume_l": 1000
+  },
+  {
+   "id": "T-09",
+   "room": "B",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 560,
+   "cy": 228,
+   "r": 30,
+   "volume_l": 1000,
+   "status": "cleaning"
+  },
+  {
+   "id": "T-10",
+   "room": "B",
+   "line": "L1",
+   "shape": "circle",
+   "cx": 690,
+   "cy": 228,
+   "r": 30,
+   "volume_l": 1000
+  },
+  {
+   "id": "S-01",
+   "room": "S",
+   "line": "L1",
+   "shape": "rect",
+   "x": 585,
+   "y": 350,
+   "w": 82,
+   "h": 56,
+   "volume_l": 400
+  },
+  {
+   "id": "S-02",
+   "room": "S",
+   "line": "L1",
+   "shape": "rect",
+   "x": 683,
+   "y": 350,
+   "w": 82,
+   "h": 56,
+   "volume_l": 400,
+   "status": "empty"
+  }
+ ],
+ "batches": [
+  {
+   "code": "NW-1017",
+   "tank": "T-01",
+   "species": "pacific_oyster",
+   "spawn_day": -14,
+   "stocked": 20000000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -13,
+     "time": "16:10",
+     "live_est": 19400000,
+     "counts": {
+      "live": 70,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 72,
+     "sd_len_um": 5.0,
+     "gut": 0.78,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 101,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -11,
+     "time": "16:10",
+     "live_est": 18600000,
+     "counts": {
+      "live": 66,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 95,
+     "sd_len_um": 7.1,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 102,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -9,
+     "time": "16:10",
+     "live_est": 17600000,
+     "counts": {
+      "live": 64,
+      "abnormal": 2,
+      "dead": 1
+     },
+     "mean_len_um": 120,
+     "sd_len_um": 9.6,
+     "gut": 0.82,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 103,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -7,
+     "time": "16:10",
+     "live_est": 16800000,
+     "counts": {
+      "live": 62,
+      "abnormal": 1,
+      "dead": 2
+     },
+     "mean_len_um": 147,
+     "sd_len_um": 11.8,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 104,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -5,
+     "time": "16:10",
+     "live_est": 15800000,
+     "counts": {
+      "live": 63,
+      "abnormal": 2,
+      "dead": 1
+     },
+     "mean_len_um": 176,
+     "sd_len_um": 14.1,
+     "gut": 0.81,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 105,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -3,
+     "time": "16:10",
+     "live_est": 15000000,
+     "counts": {
+      "live": 48,
+      "abnormal": 1,
+      "dead": 2
+     },
+     "mean_len_um": 211.8,
+     "sd_len_um": 16.9,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 106,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -1,
+     "time": "16:10",
+     "live_est": 14200000,
+     "counts": {
+      "live": 41,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 231,
+     "sd_len_um": 18.5,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 107,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1019",
+   "tank": "T-02",
+   "species": "pacific_oyster",
+   "spawn_day": -11,
+   "stocked": 16900000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -9,
+     "time": "16:35",
+     "live_est": 15717000,
+     "counts": {
+      "live": 66,
+      "abnormal": 2,
+      "dead": 1
+     },
+     "mean_len_um": 80,
+     "sd_len_um": 7.2,
+     "gut": 0.78,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 108,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -7,
+     "time": "16:35",
+     "live_est": 14365000,
+     "counts": {
+      "live": 64,
+      "abnormal": 2,
+      "dead": 2
+     },
+     "mean_len_um": 100,
+     "sd_len_um": 10.0,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 109,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -5,
+     "time": "16:35",
+     "live_est": 12844000,
+     "counts": {
+      "live": 62,
+      "abnormal": 3,
+      "dead": 2
+     },
+     "mean_len_um": 122,
+     "sd_len_um": 14.6,
+     "gut": 0.77,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 110,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -3,
+     "time": "16:35",
+     "live_est": 11154000,
+     "counts": {
+      "live": 60,
+      "abnormal": 3,
+      "dead": 3
+     },
+     "mean_len_um": 150,
+     "sd_len_um": 21.0,
+     "gut": 0.75,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 111,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -1,
+     "time": "16:35",
+     "live_est": 9802000,
+     "counts": {
+      "live": 57,
+      "abnormal": 4,
+      "dead": 3
+     },
+     "mean_len_um": 176,
+     "sd_len_um": 37.0,
+     "gut": 0.72,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 112,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1021",
+   "tank": "T-03",
+   "species": "pacific_oyster",
+   "spawn_day": -9,
+   "stocked": 10000000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -8,
+     "time": "16:30",
+     "live_est": 9400000,
+     "counts": {
+      "live": 57,
+      "abnormal": 1,
+      "dead": 2
+     },
+     "mean_len_um": 84.0,
+     "sd_len_um": 7.6,
+     "gut": 0.74,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 113,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -6,
+     "time": "16:10",
+     "live_est": 8800000,
+     "counts": {
+      "live": 46,
+      "abnormal": 2,
+      "dead": 2
+     },
+     "mean_len_um": 101.0,
+     "sd_len_um": 9.1,
+     "gut": 0.76,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 114,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -4,
+     "time": "15:55",
+     "live_est": 8100000,
+     "counts": {
+      "live": 54,
+      "abnormal": 2,
+      "dead": 3
+     },
+     "mean_len_um": 119.0,
+     "sd_len_um": 13.1,
+     "gut": 0.73,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 115,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -2,
+     "time": "16:20",
+     "live_est": 7000000,
+     "counts": {
+      "live": 50,
+      "abnormal": 3,
+      "dead": 5
+     },
+     "mean_len_um": 126.0,
+     "sd_len_um": 16.4,
+     "gut": 0.71,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 116,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": 0,
+     "time": "08:40",
+     "live_est": 4100000,
+     "counts": {
+      "live": 43,
+      "abnormal": 5,
+      "dead": 15
+     },
+     "mean_len_um": 128.0,
+     "sd_len_um": 20.5,
+     "gut": 0.18,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 2031,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     },
+     "demo_live": true
+    }
+   ]
+  },
+  {
+   "code": "NW-1023",
+   "tank": "T-04",
+   "species": "pacific_oyster",
+   "spawn_day": -6,
+   "stocked": 25000000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -5,
+     "time": "16:00",
+     "live_est": 23500000,
+     "counts": {
+      "live": 62,
+      "abnormal": 2,
+      "dead": 1
+     },
+     "mean_len_um": 72.0,
+     "sd_len_um": 5.5,
+     "gut": 0.7,
+     "water": {
+      "temp_c": 25.1,
+      "salinity_ppt": 29,
+      "ph": 7.92,
+      "omega_arag": 2.7,
+      "do_mgl": 7.0
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 118,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -3,
+     "time": "16:00",
+     "live_est": 20000000,
+     "counts": {
+      "live": 60,
+      "abnormal": 3,
+      "dead": 2
+     },
+     "mean_len_um": 82.0,
+     "sd_len_um": 6.5,
+     "gut": 0.68,
+     "water": {
+      "temp_c": 25.1,
+      "salinity_ppt": 29,
+      "ph": 7.92,
+      "omega_arag": 2.7,
+      "do_mgl": 7.0
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 119,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -1,
+     "time": "08:00",
+     "live_est": 17600000,
+     "counts": {
+      "live": 58,
+      "abnormal": 4,
+      "dead": 3
+     },
+     "mean_len_um": 91.0,
+     "sd_len_um": 7.5,
+     "gut": 0.66,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.74,
+      "omega_arag": 1.8,
+      "do_mgl": 7.0
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 120,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": 0,
+     "time": "07:55",
+     "live_est": 16500000,
+     "counts": {
+      "live": 51,
+      "abnormal": 13,
+      "dead": 5
+     },
+     "mean_len_um": 96.0,
+     "sd_len_um": 8.0,
+     "gut": 0.62,
+     "water": {
+      "temp_c": 25.2,
+      "salinity_ppt": 29,
+      "ph": 7.62,
+      "omega_arag": 1.4,
+      "do_mgl": 6.9
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 121,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1024",
+   "tank": "T-05",
+   "species": "pacific_oyster",
+   "spawn_day": -5,
+   "stocked": 25000000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -4,
+     "time": "16:30",
+     "live_est": 23750000,
+     "counts": {
+      "live": 66,
+      "abnormal": 2,
+      "dead": 1
+     },
+     "mean_len_um": 71.0,
+     "sd_len_um": 5.0,
+     "gut": 0.72,
+     "water": {
+      "temp_c": 25.1,
+      "salinity_ppt": 29,
+      "ph": 7.92,
+      "omega_arag": 2.7,
+      "do_mgl": 7.0
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 122,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -1,
+     "time": "08:30",
+     "live_est": 19500000,
+     "counts": {
+      "live": 64,
+      "abnormal": 3,
+      "dead": 2
+     },
+     "mean_len_um": 84.0,
+     "sd_len_um": 6.0,
+     "gut": 0.7,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "omega_arag": 1.8,
+      "do_mgl": 7.0
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 123,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": 0,
+     "time": "08:05",
+     "live_est": 18000000,
+     "counts": {
+      "live": 58,
+      "abnormal": 9,
+      "dead": 3
+     },
+     "mean_len_um": 89.0,
+     "sd_len_um": 6.5,
+     "gut": 0.66,
+     "water": {
+      "temp_c": 25.2,
+      "salinity_ppt": 29,
+      "omega_arag": 1.4,
+      "do_mgl": 6.9
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 124,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1026",
+   "tank": "T-06",
+   "species": "pacific_oyster",
+   "spawn_day": -3,
+   "stocked": 25000000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -1,
+     "time": "08:15",
+     "live_est": 24000000,
+     "counts": {
+      "live": 90,
+      "abnormal": 3,
+      "dead": 1
+     },
+     "mean_len_um": 74.0,
+     "sd_len_um": 5.2,
+     "gut": 0.75,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "omega_arag": 1.8,
+      "do_mgl": 7.0
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 125,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": 0,
+     "time": "08:15",
+     "live_est": 22400000,
+     "counts": {
+      "live": 92,
+      "abnormal": 3,
+      "dead": 2
+     },
+     "mean_len_um": 79.4,
+     "sd_len_um": 5.6,
+     "gut": 0.73,
+     "water": {
+      "temp_c": 25.2,
+      "salinity_ppt": 29,
+      "omega_arag": 1.4,
+      "do_mgl": 6.9
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 126,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1012",
+   "tank": "T-07",
+   "species": "pacific_oyster",
+   "spawn_day": -16,
+   "stocked": 12100000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -15,
+     "time": "15:20",
+     "live_est": 11616000,
+     "counts": {
+      "live": 30,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 74,
+     "sd_len_um": 5.2,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 127,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -13,
+     "time": "15:20",
+     "live_est": 11132000,
+     "counts": {
+      "live": 29,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 100,
+     "sd_len_um": 7.0,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 128,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -11,
+     "time": "15:20",
+     "live_est": 10285000,
+     "counts": {
+      "live": 28,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 130,
+     "sd_len_um": 9.1,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 129,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -9,
+     "time": "15:20",
+     "live_est": 9317000,
+     "counts": {
+      "live": 28,
+      "abnormal": 0,
+      "dead": 1
+     },
+     "mean_len_um": 162,
+     "sd_len_um": 11.3,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 130,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -7,
+     "time": "15:20",
+     "live_est": 8470000,
+     "counts": {
+      "live": 26,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 196,
+     "sd_len_um": 13.7,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 131,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -5,
+     "time": "15:20",
+     "live_est": 7744000,
+     "counts": {
+      "live": 25,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 232,
+     "sd_len_um": 16.2,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 132,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -3,
+     "time": "15:20",
+     "live_est": 7018000,
+     "counts": {
+      "live": 25,
+      "abnormal": 0,
+      "dead": 1
+     },
+     "mean_len_um": 268,
+     "sd_len_um": 18.8,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 133,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -1,
+     "time": "15:20",
+     "live_est": 6292000,
+     "counts": {
+      "live": 24,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 288,
+     "sd_len_um": 20.2,
+     "gut": 0.8,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 134,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1027",
+   "tank": "T-08",
+   "species": "pacific_oyster",
+   "spawn_day": -2,
+   "stocked": 33000000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -1,
+     "time": "17:40",
+     "live_est": 31000000,
+     "counts": {
+      "live": 96,
+      "abnormal": 2,
+      "dead": 1
+     },
+     "mean_len_um": 74.0,
+     "sd_len_um": 5.0,
+     "gut": 0.7,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 135,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1008",
+   "tank": "T-09",
+   "species": "pacific_oyster",
+   "spawn_day": -20,
+   "stocked": 14000000,
+   "status": "closed",
+   "outcome": "moved_to_setting",
+   "closed_day": -4,
+   "checks": [
+    {
+     "day": -15,
+     "time": "15:40",
+     "live_est": 12040000,
+     "counts": {
+      "live": 28,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 150,
+     "sd_len_um": 12.0,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 136,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -13,
+     "time": "15:40",
+     "live_est": 11060000,
+     "counts": {
+      "live": 27,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 178,
+     "sd_len_um": 14.2,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 137,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -11,
+     "time": "15:40",
+     "live_est": 10080000,
+     "counts": {
+      "live": 26,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 205,
+     "sd_len_um": 16.4,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 138,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -9,
+     "time": "15:40",
+     "live_est": 9240000,
+     "counts": {
+      "live": 26,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 232,
+     "sd_len_um": 18.6,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 139,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -7,
+     "time": "15:40",
+     "live_est": 8540000,
+     "counts": {
+      "live": 25,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 254,
+     "sd_len_um": 20.3,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 140,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -5,
+     "time": "15:40",
+     "live_est": 7840000,
+     "counts": {
+      "live": 25,
+      "abnormal": 0,
+      "dead": 1
+     },
+     "mean_len_um": 276,
+     "sd_len_um": 22.1,
+     "gut": 0.79,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 141,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1022",
+   "tank": "T-10",
+   "species": "pacific_oyster",
+   "spawn_day": -8,
+   "stocked": 17800000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -7,
+     "time": "16:50",
+     "live_est": 16732000,
+     "counts": {
+      "live": 64,
+      "abnormal": 2,
+      "dead": 2
+     },
+     "mean_len_um": 76.0,
+     "sd_len_um": 6.1,
+     "gut": 0.7,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 142,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -5,
+     "time": "16:50",
+     "live_est": 15130000,
+     "counts": {
+      "live": 62,
+      "abnormal": 2,
+      "dead": 3
+     },
+     "mean_len_um": 93.0,
+     "sd_len_um": 8.4,
+     "gut": 0.68,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 143,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -3,
+     "time": "16:50",
+     "live_est": 13172000,
+     "counts": {
+      "live": 61,
+      "abnormal": 3,
+      "dead": 3
+     },
+     "mean_len_um": 113.0,
+     "sd_len_um": 11.3,
+     "gut": 0.64,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 144,
+      "stage": "d",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -1,
+     "time": "16:50",
+     "live_est": 11214000,
+     "counts": {
+      "live": 60,
+      "abnormal": 3,
+      "dead": 4
+     },
+     "mean_len_um": 121.2,
+     "sd_len_um": 12.1,
+     "gut": 0.32,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 145,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  },
+  {
+   "code": "NW-1009",
+   "tank": "S-01",
+   "species": "pacific_oyster",
+   "spawn_day": -19,
+   "stocked": 5100000,
+   "status": "active",
+   "checks": [
+    {
+     "day": -16,
+     "time": "14:00",
+     "live_est": 4080000,
+     "counts": {
+      "live": 22,
+      "abnormal": 0,
+      "dead": 1
+     },
+     "mean_len_um": 240,
+     "sd_len_um": 14.4,
+     "gut": 0.82,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 146,
+      "stage": "umbo",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -12,
+     "time": "14:00",
+     "live_est": 3366000,
+     "counts": {
+      "live": 21,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 270,
+     "sd_len_um": 16.2,
+     "gut": 0.82,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 147,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -8,
+     "time": "14:00",
+     "live_est": 2805000,
+     "counts": {
+      "live": 21,
+      "abnormal": 0,
+      "dead": 1
+     },
+     "mean_len_um": 290,
+     "sd_len_um": 17.4,
+     "gut": 0.82,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 148,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -5,
+     "time": "14:00",
+     "live_est": 2397000,
+     "counts": {
+      "live": 20,
+      "abnormal": 1,
+      "dead": 1
+     },
+     "mean_len_um": 300,
+     "sd_len_um": 18.0,
+     "gut": 0.82,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 149,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    },
+    {
+     "day": -2,
+     "time": "14:00",
+     "live_est": 2101000,
+     "counts": {
+      "live": 20,
+      "abnormal": 0,
+      "dead": 1
+     },
+     "mean_len_um": 305,
+     "sd_len_um": 18.3,
+     "gut": 0.82,
+     "water": {
+      "temp_c": 25.0,
+      "salinity_ppt": 29,
+      "ph": 7.96,
+      "omega_arag": 2.9,
+      "do_mgl": 7.1
+     },
+     "sample": {
+      "bucket_l": 20,
+      "concentration": 50
+     },
+     "photo": {
+      "seed": 150,
+      "stage": "eyed",
+      "grid": true,
+      "clumps": 0
+     }
+    }
+   ]
+  }
+ ],
+ "decisions": [
+  {
+   "scope": "tank",
+   "target": "T-03",
+   "action": "feed_check",
+   "created": {
+    "day": -2,
+    "time": "16:21"
+   },
+   "status": "approved",
+   "decided_by": "Dana Ortiz",
+   "decided": {
+    "day": -2,
+    "time": "17:05"
+   },
+   "note": "Ration checked; increased to the umbo-stage rate."
+  },
+  {
+   "scope": "line",
+   "target": "L2",
+   "action": "buffer_line",
+   "created": {
+    "day": -1,
+    "time": "08:01"
+   },
+   "status": "pending"
+  },
+  {
+   "scope": "line",
+   "target": "L2",
+   "action": "hold_spawn",
+   "created": {
+    "day": -1,
+    "time": "08:16"
+   },
+   "status": "pending"
+  },
+  {
+   "scope": "tank",
+   "target": "T-02",
+   "action": "screen",
+   "created": {
+    "day": -1,
+    "time": "16:36"
+   },
+   "status": "pending"
+  },
+  {
+   "scope": "tank",
+   "target": "T-10",
+   "action": "feed_check",
+   "created": {
+    "day": -1,
+    "time": "16:51"
+   },
+   "status": "pending"
+  },
+  {
+   "scope": "tank",
+   "target": "T-03",
+   "action": "isolate",
+   "created": {
+    "day": 0,
+    "time": "08:41"
+   },
+   "status": "pending",
+   "demo_live": true
+  },
+  {
+   "scope": "tank",
+   "target": "T-03",
+   "action": "sample_vibrio",
+   "created": {
+    "day": 0,
+    "time": "08:41"
+   },
+   "status": "pending",
+   "demo_live": true
+  },
+  {
+   "scope": "tank",
+   "target": "T-03",
+   "action": "restock",
+   "created": {
+    "day": 0,
+    "time": "08:41"
+   },
+   "status": "pending",
+   "demo_live": true
+  }
+ ],
+ "expected": {
+  "note": "What the rules in SPEC §7 must produce after seeding. Used by tests/test_seed_story.py.",
+  "demo": {
+   "S-01": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-01": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-02": {
+    "level": "watch",
+    "pattern": "splitting"
+   },
+   "T-03": {
+    "level": "watch",
+    "pattern": "underfed"
+   },
+   "T-04": {
+    "level": "risk",
+    "pattern": "corrosive"
+   },
+   "T-05": {
+    "level": "risk",
+    "pattern": "corrosive"
+   },
+   "T-06": {
+    "level": "watch",
+    "pattern": "corrosive_early"
+   },
+   "T-07": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-08": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-10": {
+    "level": "watch",
+    "pattern": "underfed"
+   }
+  },
+  "full": {
+   "S-01": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-01": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-02": {
+    "level": "watch",
+    "pattern": "splitting"
+   },
+   "T-03": {
+    "level": "critical",
+    "pattern": "bacterial"
+   },
+   "T-04": {
+    "level": "risk",
+    "pattern": "corrosive"
+   },
+   "T-05": {
+    "level": "risk",
+    "pattern": "corrosive"
+   },
+   "T-06": {
+    "level": "watch",
+    "pattern": "corrosive_early"
+   },
+   "T-07": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-08": {
+    "level": "ok",
+    "pattern": null
+   },
+   "T-10": {
+    "level": "watch",
+    "pattern": "underfed"
+   }
+  },
+  "empty_tanks": [
+   "S-02",
+   "T-09"
+  ],
+  "pending_decisions": {
+   "demo": [
+    "L2:buffer_line",
+    "L2:hold_spawn",
+    "T-02:screen",
+    "T-10:feed_check"
+   ],
+   "full": [
+    "L2:buffer_line",
+    "L2:hold_spawn",
+    "T-02:screen",
+    "T-10:feed_check",
+    "T-03:isolate",
+    "T-03:sample_vibrio",
+    "T-03:restock"
+   ]
+  },
+  "headline": {
+   "demo": "2 tanks need attention now",
+   "full": "3 tanks need attention now"
+  }
+ }
+}

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Photo library · Hatchery Autopilot</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#EDF1F3}
+a{color:#0F1A20}a:hover{color:#3E4B53}
+.nav:hover{background:rgba(255,255,255,0.7)}
+.row:hover{background:#F6F8F9}
+.ghost:hover{background:#F6F8F9}
+.solid:hover{background:#26333A}
+</style>
+</helmet>
+
+<div style="display: flex; flex-wrap: wrap; min-height: 900px; background: #EDF1F3; color: #0F1A20; font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased">
+
+  <aside style="flex: 1 1 200px; max-width: 216px; box-sizing: border-box; padding: 14px 10px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px">
+      <span style="width: 26px; height: 26px; border-radius: 7px; background: #13557A; display: grid; place-items: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle></svg></span>
+      <span style="display: flex; flex-direction: column; line-height: 1.2"><span style="font-size: 13px; font-weight: 600">Northwind Shellfish</span><span style="font-size: 12px; color: #66737B">Hatchery Autopilot</span></span>
+    </div>
+    <nav aria-label="Main" style="display: flex; flex-direction: column; gap: 2px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: {{ n.color }}; font-weight: {{ n.weight }}; background: {{ n.bg }}; box-shadow: {{ n.shadow }}">{{ n.label }}</a>
+      </sc-for>
+    </nav>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; margin: 8px 8px 8px 0; background: #FFFFFF; border: 1px solid #E2E8EC; border-radius: 12px; box-shadow: 0 1px 2px rgba(15,26,32,0.04); display: flex; flex-direction: column">
+    <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; min-height: 52px; padding: 0 24px; border-bottom: 1px solid #EEF2F4">
+      <nav aria-label="Location" style="flex: 1 1 320px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px">
+        <a href="#" style="text-decoration: none; color: #66737B">Photo library</a><span aria-hidden="true" style="color: #B9C4CA">/</span>
+        <a href="#" style="text-decoration: none; color: #66737B">Larval room A</a><span aria-hidden="true" style="color: #B9C4CA">/</span>
+        <a href="#" style="text-decoration: none; color: #66737B; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px">T-03</a><span aria-hidden="true" style="color: #B9C4CA">/</span>
+        <span style="font-weight: 500">Today, 8:40 AM</span>
+      </nav>
+      <button class="ghost" style="height: 32px; padding: 0 12px; border: 1px solid #E2E8EC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">Filter</button>
+      <button class="solid" style="height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: #0F1A20; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">New check</button>
+    </header>
+
+    <div style="flex: 1; overflow-x: auto">
+      <div style="min-width: 1100px; display: flex; min-height: 800px">
+
+        <section aria-label="Rooms" style="width: 196px; flex: none; border-right: 1px solid #EEF2F4; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px">
+          <h2 style="margin: 0; padding: 6px 10px 8px; font-size: 12px; font-weight: 500; color: #66737B">Rooms</h2>
+          <sc-for list="{{ rooms }}" as="r" hint-placeholder-count="4">
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: {{ r.bg }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#66737B" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              <span style="flex: 1; font-size: 13px; font-weight: {{ r.weight }}">{{ r.name }}</span>
+              <span style="font-size: 12px; color: #66737B">{{ r.count }}</span>
+            </a>
+          </sc-for>
+        </section>
+
+        <section aria-label="Tanks in Larval room A" style="width: 232px; flex: none; border-right: 1px solid #EEF2F4; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px">
+          <h2 style="margin: 0; padding: 6px 10px 8px; font-size: 12px; font-weight: 500; color: #66737B">Larval room A</h2>
+          <sc-for list="{{ tanks }}" as="t" hint-placeholder-count="6">
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: {{ t.bg }}">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: {{ t.border }}; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">{{ t.id }}</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ t.note }}</span>
+              <span style="font-size: 12px; color: #8A969D">{{ t.photos }}</span>
+            </a>
+          </sc-for>
+        </section>
+
+        <section aria-label="Checks for T-03" style="width: 268px; flex: none; border-right: 1px solid #EEF2F4; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px">
+          <h2 style="margin: 0; padding: 6px 10px 8px; font-size: 12px; font-weight: 500; color: #66737B">T-03 · 5 checks</h2>
+          <sc-for list="{{ checks }}" as="c" hint-placeholder-count="5">
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: {{ c.bg }}">
+              <img src="{{ c.img }}" alt="" style="width: 54px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8EC; flex: none">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 13px; font-weight: {{ c.weight }}">{{ c.when }}</span>
+                <span style="font-size: 12px; color: #66737B">{{ c.summary }}</span>
+              </span>
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: {{ c.border }}; flex: none"></span>
+            </a>
+          </sc-for>
+          <p style="margin: auto 0 0; padding: 10px; font-size: 12px; color: #66737B; border-top: 1px solid #EEF2F4">Spawned Oct 22 · stocked 10M D-larvae</p>
+        </section>
+
+        <section aria-label="Preview" style="flex: 1; min-width: 0; padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px">
+            <div style="flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <span style="font-size: 18px; font-weight: 600; letter-spacing: -0.015em">64 larvae counted</span>
+              <span style="font-size: 12.5px; color: #66737B">Photo 1 of 1 · 1.60 µm per pixel, read from the counting-slide grid</span>
+            </div>
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; background: #FEF3F2; color: #B42318; font-size: 12px; font-weight: 500"><span style="width: 6px; height: 6px; border-radius: 999px; background: #D93A2F"></span>Critical</span>
+            <button class="ghost" style="height: 32px; padding: 0 12px; border: 1px solid #E2E8EC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">Review outlines</button>
+          </div>
+
+          <img src="/_blob/c24f4a48989afd34200503c13a7b22b0" alt="Microscope photo from today's check of T-03 with each larva outlined: green live, orange abnormal, red dead" style="display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; border: 1px solid #E2E8EC; box-sizing: border-box">
+
+          <div style="display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: #3E4B53">
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #2E8B57; box-sizing: border-box"></span>Live</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #C2620E; box-sizing: border-box"></span>Abnormal</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #C2362B; box-sizing: border-box"></span>Dead (empty shell)</span>
+          </div>
+
+          <dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #E2E8EC; border-radius: 10px">
+            <sc-for list="{{ facts }}" as="f" hint-placeholder-count="6">
+              <div style="padding: 12px 14px; border-left: {{ f.left }}; border-top: {{ f.top }}; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">{{ f.k }}</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">{{ f.v }}</dd>
+                <dd style="margin: 0; font-size: 12px; color: {{ f.noteColor }}">{{ f.note }}</dd>
+              </div>
+            </sc-for>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var B = { ok: '1.5px solid #9AA6AE', watch: '2px solid #C98A0B', risk: '2px solid #E0702A', critical: '2px solid #D93A2F', empty: '1.5px dashed #C7CFD4' };
+    var SEL = '#F1F4F6';
+    var IMG = { vibrio: '/_blob/c24f4a48989afd34200503c13a7b22b0', healthy: '/_blob/8c64a39999e7e910aeffed4192cd3073' };
+    var nav = ['Floor', 'Tanks', 'Checks', 'Decisions', 'Photo library', 'Reports'].map(function (l) {
+      var on = l === 'Photo library';
+      return { label: l, color: on ? '#0F1A20' : '#3E4B53', weight: on ? '500' : '400', bg: on ? '#FFFFFF' : 'transparent', shadow: on ? '0 1px 2px rgba(15,26,32,0.06), 0 0 0 1px #E2E8EC' : 'none' };
+    });
+    var rooms = [
+      { name: 'Larval room A', count: '27', sel: true }, { name: 'Larval room B', count: '18' },
+      { name: 'Setting room', count: '9' }, { name: 'Unsorted', count: '3' }
+    ].map(function (r) { return Object.assign({}, r, { bg: r.sel ? SEL : 'transparent', weight: r.sel ? '500' : '400' }); });
+    var tanks = [
+      { id: 'T-01', level: 'ok', note: 'Day 14 · 231 µm', photos: '7' },
+      { id: 'T-02', level: 'watch', note: 'Day 11 · size spread', photos: '6' },
+      { id: 'T-03', level: 'critical', note: 'Day 9 · 24% dead', photos: '5', sel: true },
+      { id: 'T-04', level: 'risk', note: 'Day 6 · Ω 1.4', photos: '4' },
+      { id: 'T-05', level: 'risk', note: 'Day 5 · Ω 1.4', photos: '3' },
+      { id: 'T-06', level: 'watch', note: 'Day 3 · line 2', photos: '2' }
+    ].map(function (t) { return Object.assign({}, t, { border: B[t.level], bg: t.sel ? SEL : 'transparent' }); });
+    var checks = [
+      { when: 'Today, 8:40 AM', summary: '24% dead · 128 µm', level: 'critical', sel: true, img: IMG.vibrio },
+      { when: 'Oct 29, 4:20 PM', summary: '9% dead · 126 µm', level: 'watch', img: IMG.healthy },
+      { when: 'Oct 27, 3:55 PM', summary: '5% dead · 119 µm', level: 'ok', img: IMG.healthy },
+      { when: 'Oct 25, 4:10 PM', summary: '4% dead · 101 µm', level: 'ok', img: IMG.healthy },
+      { when: 'Oct 23, 4:30 PM', summary: '3% dead · 84 µm', level: 'ok', img: IMG.healthy }
+    ].map(function (c) { return Object.assign({}, c, { border: B[c.level], bg: c.sel ? SEL : 'transparent', weight: c.sel ? '500' : '400' }); });
+    var facts = [
+      { k: 'Live', v: '44', note: '69% of counted', noteColor: '#66737B' },
+      { k: 'Abnormal', v: '5', note: '8% of counted', noteColor: '#66737B' },
+      { k: 'Dead', v: '15', note: '24%, up from 9%', noteColor: '#B42318' },
+      { k: 'Mean shell length', v: '128 µm', note: '+2 µm in 2 days', noteColor: '#B42318' },
+      { k: 'Size spread (CV)', v: '0.19', note: 'up from 0.13', noteColor: '#8E6206' },
+      { k: 'Gut fullness', v: '0.18', note: 'down from 0.71', noteColor: '#B42318' }
+    ].map(function (f, i) { return Object.assign({}, f, { left: i % 3 === 0 ? '0' : '1px solid #EEF2F4', top: i < 3 ? '0' : '1px solid #EEF2F4' }); });
+    return { nav: nav, rooms: rooms, tanks: tanks, checks: checks, facts: facts };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>@font-face{font-family:'Geist';src:url(fonts/Geist-Variable.woff2) format('woff2');font-weight:100 900}
+@font-face{font-family:'Geist Mono';src:url(fonts/GeistMono-Variable.woff2) format('woff2');font-weight:100 900}</style><style>
+body{margin:0;background:#EDF1F3}
+a{color:#0F1A20}a:hover{color:#3E4B53}
+.nav:hover{background:rgba(255,255,255,0.7)}
+.row:hover{background:#F6F8F9}
+.ghost:hover{background:#F6F8F9}
+.solid:hover{background:#26333A}
+</style></head>
+<body><div id="root">
+
+
+<div style="display: flex; flex-wrap: wrap; min-height: 900px; background: #EDF1F3; color: #0F1A20; font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased">
+
+  <aside style="flex: 1 1 200px; max-width: 216px; box-sizing: border-box; padding: 14px 10px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px">
+      <span style="width: 26px; height: 26px; border-radius: 7px; background: #13557A; display: grid; place-items: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle></svg></span>
+      <span style="display: flex; flex-direction: column; line-height: 1.2"><span style="font-size: 13px; font-weight: 600">Northwind Shellfish</span><span style="font-size: 12px; color: #66737B">Hatchery Autopilot</span></span>
+    </div>
+    <nav aria-label="Main" style="display: flex; flex-direction: column; gap: 2px">
+      
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: #3E4B53; font-weight: 400; background: transparent; box-shadow: none">Floor</a>
+      
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: #3E4B53; font-weight: 400; background: transparent; box-shadow: none">Tanks</a>
+      
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: #3E4B53; font-weight: 400; background: transparent; box-shadow: none">Checks</a>
+      
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: #3E4B53; font-weight: 400; background: transparent; box-shadow: none">Decisions</a>
+      
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: #0F1A20; font-weight: 500; background: #FFFFFF; box-shadow: 0 1px 2px rgba(15,26,32,0.06), 0 0 0 1px #E2E8EC">Photo library</a>
+      
+        <a class="nav" href="#" style="display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: #3E4B53; font-weight: 400; background: transparent; box-shadow: none">Reports</a>
+      
+    </nav>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; margin: 8px 8px 8px 0; background: #FFFFFF; border: 1px solid #E2E8EC; border-radius: 12px; box-shadow: 0 1px 2px rgba(15,26,32,0.04); display: flex; flex-direction: column">
+    <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; min-height: 52px; padding: 0 24px; border-bottom: 1px solid #EEF2F4">
+      <nav aria-label="Location" style="flex: 1 1 320px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px">
+        <a href="#" style="text-decoration: none; color: #66737B">Photo library</a><span aria-hidden="true" style="color: #B9C4CA">/</span>
+        <a href="#" style="text-decoration: none; color: #66737B">Larval room A</a><span aria-hidden="true" style="color: #B9C4CA">/</span>
+        <a href="#" style="text-decoration: none; color: #66737B; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px">T-03</a><span aria-hidden="true" style="color: #B9C4CA">/</span>
+        <span style="font-weight: 500">Today, 8:40 AM</span>
+      </nav>
+      <button class="ghost" style="height: 32px; padding: 0 12px; border: 1px solid #E2E8EC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">Filter</button>
+      <button class="solid" style="height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: #0F1A20; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer">New check</button>
+    </header>
+
+    <div style="flex: 1; overflow-x: auto">
+      <div style="min-width: 1100px; display: flex; min-height: 800px">
+
+        <section aria-label="Rooms" style="width: 196px; flex: none; border-right: 1px solid #EEF2F4; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px">
+          <h2 style="margin: 0; padding: 6px 10px 8px; font-size: 12px; font-weight: 500; color: #66737B">Rooms</h2>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: #F1F4F6">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#66737B" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              <span style="flex: 1; font-size: 13px; font-weight: 500">Larval room A</span>
+              <span style="font-size: 12px; color: #66737B">27</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#66737B" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              <span style="flex: 1; font-size: 13px; font-weight: 400">Larval room B</span>
+              <span style="font-size: 12px; color: #66737B">18</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#66737B" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              <span style="flex: 1; font-size: 13px; font-weight: 400">Setting room</span>
+              <span style="font-size: 12px; color: #66737B">9</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#66737B" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              <span style="flex: 1; font-size: 13px; font-weight: 400">Unsorted</span>
+              <span style="font-size: 12px; color: #66737B">3</span>
+            </a>
+          
+        </section>
+
+        <section aria-label="Tanks in Larval room A" style="width: 232px; flex: none; border-right: 1px solid #EEF2F4; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px">
+          <h2 style="margin: 0; padding: 6px 10px 8px; font-size: 12px; font-weight: 500; color: #66737B">Larval room A</h2>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 1.5px solid #9AA6AE; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">T-01</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Day 14 · 231 µm</span>
+              <span style="font-size: 12px; color: #8A969D">7</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #C98A0B; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">T-02</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Day 11 · size spread</span>
+              <span style="font-size: 12px; color: #8A969D">6</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: #F1F4F6">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #D93A2F; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">T-03</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Day 9 · 24% dead</span>
+              <span style="font-size: 12px; color: #8A969D">5</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #E0702A; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">T-04</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Day 6 · Ω 1.4</span>
+              <span style="font-size: 12px; color: #8A969D">4</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #E0702A; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">T-05</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Day 5 · Ω 1.4</span>
+              <span style="font-size: 12px; color: #8A969D">3</span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #C98A0B; flex: none"></span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12.5px; font-weight: 500; width: 38px">T-06</span>
+              <span style="flex: 1; min-width: 0; font-size: 12px; color: #66737B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Day 3 · line 2</span>
+              <span style="font-size: 12px; color: #8A969D">2</span>
+            </a>
+          
+        </section>
+
+        <section aria-label="Checks for T-03" style="width: 268px; flex: none; border-right: 1px solid #EEF2F4; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px">
+          <h2 style="margin: 0; padding: 6px 10px 8px; font-size: 12px; font-weight: 500; color: #66737B">T-03 · 5 checks</h2>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: #F1F4F6">
+              <img src="../source/assets/c-vibrio.jpg" alt="" style="width: 54px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8EC; flex: none">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 13px; font-weight: 500">Today, 8:40 AM</span>
+                <span style="font-size: 12px; color: #66737B">24% dead · 128 µm</span>
+              </span>
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #D93A2F; flex: none"></span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <img src="../source/assets/c-healthy.jpg" alt="" style="width: 54px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8EC; flex: none">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 13px; font-weight: 400">Oct 29, 4:20 PM</span>
+                <span style="font-size: 12px; color: #66737B">9% dead · 126 µm</span>
+              </span>
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 2px solid #C98A0B; flex: none"></span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <img src="../source/assets/c-healthy.jpg" alt="" style="width: 54px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8EC; flex: none">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 13px; font-weight: 400">Oct 27, 3:55 PM</span>
+                <span style="font-size: 12px; color: #66737B">5% dead · 119 µm</span>
+              </span>
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 1.5px solid #9AA6AE; flex: none"></span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <img src="../source/assets/c-healthy.jpg" alt="" style="width: 54px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8EC; flex: none">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 13px; font-weight: 400">Oct 25, 4:10 PM</span>
+                <span style="font-size: 12px; color: #66737B">4% dead · 101 µm</span>
+              </span>
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 1.5px solid #9AA6AE; flex: none"></span>
+            </a>
+          
+            <a href="#" class="row" style="display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; text-decoration: none; color: #0F1A20; background: transparent">
+              <img src="../source/assets/c-healthy.jpg" alt="" style="width: 54px; height: 36px; object-fit: cover; border-radius: 4px; border: 1px solid #E2E8EC; flex: none">
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+                <span style="font-size: 13px; font-weight: 400">Oct 23, 4:30 PM</span>
+                <span style="font-size: 12px; color: #66737B">3% dead · 84 µm</span>
+              </span>
+              <span style="width: 10px; height: 10px; border-radius: 999px; box-sizing: border-box; border: 1.5px solid #9AA6AE; flex: none"></span>
+            </a>
+          
+          <p style="margin: auto 0 0; padding: 10px; font-size: 12px; color: #66737B; border-top: 1px solid #EEF2F4">Spawned Oct 22 · stocked 10M D-larvae</p>
+        </section>
+
+        <section aria-label="Preview" style="flex: 1; min-width: 0; padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px">
+            <div style="flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <span style="font-size: 18px; font-weight: 600; letter-spacing: -0.015em">64 larvae counted</span>
+              <span style="font-size: 12.5px; color: #66737B">Photo 1 of 1 · 1.60 µm per pixel, read from the counting-slide grid</span>
+            </div>
+            <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; background: #FEF3F2; color: #B42318; font-size: 12px; font-weight: 500"><span style="width: 6px; height: 6px; border-radius: 999px; background: #D93A2F"></span>Critical</span>
+            <button class="ghost" style="height: 32px; padding: 0 12px; border: 1px solid #E2E8EC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 13px; color: #0F1A20; cursor: pointer">Review outlines</button>
+          </div>
+
+          <img src="../source/assets/c-vibrio.jpg" alt="Microscope photo from today's check of T-03 with each larva outlined: green live, orange abnormal, red dead" style="display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; border: 1px solid #E2E8EC; box-sizing: border-box">
+
+          <div style="display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: #3E4B53">
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #2E8B57; box-sizing: border-box"></span>Live</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #C2620E; box-sizing: border-box"></span>Abnormal</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 999px; border: 2px solid #C2362B; box-sizing: border-box"></span>Dead (empty shell)</span>
+          </div>
+
+          <dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #E2E8EC; border-radius: 10px">
+            
+              <div style="padding: 12px 14px; border-left: 0; border-top: 0; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">Live</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">44</dd>
+                <dd style="margin: 0; font-size: 12px; color: #66737B">69% of counted</dd>
+              </div>
+            
+              <div style="padding: 12px 14px; border-left: 1px solid #EEF2F4; border-top: 0; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">Abnormal</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">5</dd>
+                <dd style="margin: 0; font-size: 12px; color: #66737B">8% of counted</dd>
+              </div>
+            
+              <div style="padding: 12px 14px; border-left: 1px solid #EEF2F4; border-top: 0; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">Dead</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">15</dd>
+                <dd style="margin: 0; font-size: 12px; color: #B42318">24%, up from 9%</dd>
+              </div>
+            
+              <div style="padding: 12px 14px; border-left: 0; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">Mean shell length</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">128 µm</dd>
+                <dd style="margin: 0; font-size: 12px; color: #B42318">+2 µm in 2 days</dd>
+              </div>
+            
+              <div style="padding: 12px 14px; border-left: 1px solid #EEF2F4; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">Size spread (CV)</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">0.19</dd>
+                <dd style="margin: 0; font-size: 12px; color: #8E6206">up from 0.13</dd>
+              </div>
+            
+              <div style="padding: 12px 14px; border-left: 1px solid #EEF2F4; border-top: 1px solid #EEF2F4; display: flex; flex-direction: column; gap: 2px">
+                <dt style="font-size: 12px; color: #66737B">Gut fullness</dt>
+                <dd style="margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums">0.18</dd>
+                <dd style="margin: 0; font-size: 12px; color: #B42318">down from 0.71</dd>
+              </div>
+            
+          </dl>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+</body></html>
