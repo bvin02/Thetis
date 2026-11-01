@@ -30,3 +30,44 @@ through the Vite proxy. No console errors, no horizontal overflow at 1440 px or 
   `CLAUDE_MODEL=claude-opus-5-5`); the app will use whatever model it says.
 
 **Still open:** nothing.
+
+## Phase 1: analysis engine
+
+**Built:** `backend/app/analysis` (`engine.py`, `calibrate.py`, `summary.py`, `models.py`), pure
+functions following SPEC §5, every number in `EngineParams`. Tests in `tests/test_analysis.py` and
+`tests/test_j006.py`.
+
+**Tests:** all pass. §13 metrics table:
+
+```
+slide                    truth  count  err%   dead P/R     abn P/R     MAE µm   grid px     ms  unsure
+slide-d-stage               54     54   0.0  1.00/1.00  1.00/1.00    2.73    625.0    185      5
+slide-eyed                  22     22   0.0  1.00/1.00  1.00/1.00       -        -    152      0
+slide-healthy-umbo          44     44   0.0  1.00/1.00  1.00/1.00    2.42    625.0    139      1
+slide-low-omega             46     46   0.0  1.00/1.00  1.00/0.75       -        -    129      7
+slide-vibrio-suspect        48     47  -2.1  1.00/1.00  0.67/1.00    2.10    625.0    165      2
+t03-today                   63     62  -1.6  1.00/0.93  1.00/1.00    2.17    625.0    172      3
+pooled dead P/R 1.000/0.971  abnormal P/R 0.947/0.857  length MAE 2.35 µm over 200 larvae
+J006 exact count on 27 of 30 images
+  J006_B1_-0014.jpg        labelled 1  counted 2  ignored  17    474 ms  <-- off
+  J006_B1_-0028.jpg        labelled 1  counted 3  ignored   5    174 ms  <-- off
+  J006_B1_-0029.jpg        labelled 1  counted 2  ignored   8    167 ms  <-- off
+```
+
+Targets: count within ±5% on every slide, dead P/R ≥ 0.9, abnormal P/R ≥ 0.75, length MAE ≤ 4 µm,
+grid within 1% of 625 px, ≤ 1 s per slide, J006 exact on ≥ 20 of 30. All met.
+
+**Decisions:**
+- The first run scored 18 of 30 on the real J006 photos. No test was changed. Four small rules were
+  added, each with a parameter in `EngineParams`, and the synthetic scores did not change:
+  - `ref_min_frac_of_largest`: small round debris no longer drags the size reference down. This
+    matters most on photos with few objects, where a plain median is not robust.
+  - `bubble_bright_ratio` + `bubble_bright_frac`: dark-ringed air bubbles have a bright core. The
+    spec's "interior < −3σ" misses them because the ring dominates the median.
+  - `rim_hull_max_frac_of_median`: open-rim repair no longer fills huge hulls made by scratches.
+  - `debris_max_solidity`: rough debris below 0.90 solidity that isn't a clump is ignored.
+- `analyze()` also takes `calibration="preset"|"manual"` to name where a passed `um_per_px` came from.
+- A manual larva's length is a placeholder, so it is left out of the size statistics.
+
+**Still open:** the 3 J006 misses: one larva cut off at the image edge (the label counts whole larvae
+only) and two bubbles whose bright core is out of frame. Dead recall on `t03-today` is 14 of 15.

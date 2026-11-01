@@ -72,6 +72,7 @@ class EngineParams:
     rim_min_area_px: int = 300
     rim_hull_frac_of_median: float = 0.3
     rim_max_fill_ratio: float = 0.5
+    rim_hull_max_frac_of_median: float = 3.0  # a far bigger hull is a scratch or a grid corner, not a shell
     # Features
     contour_epsilon_px: float = 0.6
     contour_max_points: int = 48
@@ -86,9 +87,12 @@ class EngineParams:
     ref_min_area_px: int = 300
     ref_min_solidity: float = 0.9
     ref_max_aspect: float = 1.6
+    ref_min_frac_of_largest: float = 0.25  # small round debris must not drag the size reference down
     ignore_min_area_px: int = 60
     ignore_max_aspect: float = 2.6
     bubble_sigma: float = 3.0
+    bubble_bright_ratio: float = 1.12  # brighter than the image's typical gray by this factor
+    bubble_bright_frac: float = 0.03  # a dark-ringed air bubble has a bright core; tissue never does
     ignore_min_len_um: float = 45.0
     ignore_max_len_um: float = 420.0
     ignore_small_ref_frac: float = 0.35
@@ -97,6 +101,7 @@ class EngineParams:
     clump_ref_frac: float = 1.35
     clump_max_solidity: float = 0.93
     clump_min_defect: float = 0.12
+    debris_max_solidity: float = 0.90  # rougher than any malformed shell, and not a clump
     dead_max_hollowness: float = 0.6
     abnormal_max_solidity: float = 0.955
     unsure_hollow_lo: float = 0.45
