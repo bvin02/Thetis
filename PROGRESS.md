@@ -132,3 +132,37 @@ Recommended actions (about 4 px there, because computed rows differ). No horizon
   inspector moves to that room's worst tank.
 
 **Still open:** the phone sheet opens on tap; the bottom-of-page inspector stays as in `home-phone.png`.
+
+## Phase 4: New check and check detail
+
+**Built:** `POST /api/analyze`, `/api/samples` (list, image, analyze), `POST /api/analyze/{token}/scale`,
+`POST /api/summarize`, `POST /api/checks`, `GET /api/checks`, `GET /api/checks/{id}`,
+`PATCH /api/checks/{id}/photos/{pid}/detections`, `services/uploads.py`, `services/checks.py`. Screens:
+New check (drop zone, sample menu with thumbnails, "Finding larvae…", photo viewer, popover corrections,
+keys 1/2/3/0, Tab to next unsure, arrow keys through objects, Add larva, zoom/pan, filter chips, photo tabs,
+"Add a scale", live counts, size with histogram, gut, estimate with over-stocked warning, water with
+"Use these", notes, save with toast) and Check detail (read-only, Edit outlines → Save changes, risk at save
+time, Synthetic sample badge).
+
+**Tests:** `tests/test_api.py` (21 cases) passes, including every §13 API item. Demo steps 2–5 driven in a
+browser (`frontend/scripts/demo_flow.mjs`): analysis in about 300 ms, correction updates counts, toast reads
+"Check saved. T-03 is now Critical. 3 decisions waiting.", headline becomes "3 tanks need attention now",
+no console errors. No horizontal scroll at 390 px.
+
+**Decisions:**
+- Saving the same upload token twice returns the first check (`duplicate: true`), so a double click can't
+  make two checks.
+- The server keeps each upload's scale in its own metadata. `POST /checks` needs only `token` + `detections`
+  as in SPEC §10, and never trusts a scale from the browser.
+- Added `POST /api/analyze/{token}/scale` for "Add a scale"; the spec's endpoint list doesn't name one.
+  Corrections survive it because object ids don't change.
+- Added `tank_id` to `POST /summarize` so the estimate can say "of 10.0M stocked".
+- Correcting a saved check scales its `live_est` by the change in count. Seeded estimates stand for a full
+  count (SPEC §12), so recomputing them from the photo would make them jump. For a real check the result
+  equals the formula.
+- Setting a class on an object clears its unsure flag, even if the class didn't change: a person looked.
+- "Save" needs a tank and an analysed photo; unsure objects may remain and count under their class.
+- The correction popover docks under the photo when the photo is narrower than 520 px.
+
+**Still open:** the engine misses one faint dead shell on a grid line in `t03-today.jpg` (14 of 15 dead found).
+DEMO.md uses it: Add larva on that shell, press 3, and Dead goes 14 → 15.

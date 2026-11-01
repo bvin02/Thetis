@@ -205,6 +205,7 @@ def build_shell(world: World, decisions: Iterable[models.Decision]) -> dict:
         "is_example": world.is_example,
         "rooms": rooms,
         "decisions_waiting": pending_count(decisions),
+        "settings": {"bucket_l": world.cfg["bucket_l"], "concentration": world.cfg["concentration"]},
     }
 
 
@@ -442,6 +443,7 @@ def build_tank(tank_id: str, session: Session) -> dict | None:
             "n_counted": check.n_live + check.n_abnormal + check.n_dead,
             "photo": photo_view(photos[0], session) if photos else None,
             "n_photos": len(photos),
+            "hist": check.hist,
         }
 
     actions = [decision_view(d, world.now) for d in actions_for_tank(state, world, decisions)]

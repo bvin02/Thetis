@@ -18,7 +18,7 @@ function clockText(d: Date) {
   return `${day} · ${time}`
 }
 
-export function TopBar({ crumbs, newCheckHref = '/checks/new' }: { crumbs: string[]; newCheckHref?: string }) {
+export function TopBar({ crumbs, newCheckHref = '/checks/new', hideNewCheck = false }: { crumbs: string[]; newCheckHref?: string; hideNewCheck?: boolean }) {
   const now = useNow()
   const { data } = useFloor()
   return (
@@ -34,10 +34,12 @@ export function TopBar({ crumbs, newCheckHref = '/checks/new' }: { crumbs: strin
         {data?.is_example && <span className="tag ml-1">Example data</span>}
       </nav>
       <span className="tnum text-[13px] text-ink-4">{clockText(now)}</span>
-      <Link to={newCheckHref} className="solid no-underline">
-        <Plus size={14} strokeWidth={2} aria-hidden="true" />
-        New check
-      </Link>
+      {!hideNewCheck && (
+        <Link to={newCheckHref} className="solid no-underline">
+          <Plus size={14} strokeWidth={2} aria-hidden="true" />
+          New check
+        </Link>
+      )}
     </header>
   )
 }

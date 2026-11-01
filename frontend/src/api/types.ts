@@ -20,6 +20,7 @@ export interface Shell {
   is_example: boolean
   rooms: RoomNav[]
   decisions_waiting: number
+  settings: { bucket_l: number; concentration: number }
 }
 
 export interface TankSummary {
@@ -278,6 +279,7 @@ export interface TankDetail extends TankSummary {
     n_counted: number
     photo: PhotoView | null
     n_photos: number
+    hist: number[] | null
   } | null
   condition: ConditionRow[]
   signals: { key: string; severity: Severity; value: number; prev: number | null; kind: string }[]
@@ -292,4 +294,101 @@ export interface TankDetail extends TankSummary {
   decision_history: DecisionView[]
   past_batches: { id: number; code: string; spawn_date: string; stocked: number; status: string; outcome: string | null; closed_on: string | null }[]
   line_water: LineWater | null
+}
+
+export interface Summary {
+  n_live: number
+  n_abnormal: number
+  n_dead: number
+  n_unsure: number
+  n_ignored: number
+  pct_dead: number
+  pct_abnormal: number
+  mean_len_um: number | null
+  sd_len_um: number | null
+  cv: number | null
+  hist: number[] | null
+  stage: string | null
+  gut: number | null
+  count_for_estimate: number
+}
+
+export interface Estimate {
+  live_est: number | null
+  survival: number | null
+  stocked: number | null
+  over_stocked: boolean
+}
+
+export interface AnalysisResult {
+  token: string
+  url: string
+  filename: string | null
+  synthetic: boolean
+  source_name: string | null
+  width: number
+  height: number
+  um_per_px: number | null
+  calibration: PhotoView['calibration']
+  grid_spacing_px: number | null
+  photo_volume_ml: number | null
+  detections: Detection[]
+  engine_version: string
+  ms: number
+}
+
+export interface SampleSlide {
+  name: string
+  label: string
+  note: string
+  url: string
+}
+
+export interface SaveResult {
+  check_id: number
+  tank_id: string
+  level: Level
+  pattern: string | null
+  new_decisions: { id: number; action: string; scope: string; tank_id: string | null; line_id: string | null }[]
+  message: string
+  duplicate: boolean
+}
+
+export interface WaterReadings {
+  temp_c: number | null
+  salinity_ppt: number | null
+  ph: number | null
+  omega_arag: number | null
+  do_mgl: number | null
+}
+
+export interface CheckDetail extends CheckRow {
+  room_name: string
+  line_id: string | null
+  line_name: string | null
+  stocked: number
+  stocked_text: string
+  bucket_l: number | null
+  concentration: number | null
+  photo_volume_ml: number | null
+  water: WaterReadings
+  notes: string | null
+  created_by: string | null
+  engine_version: string | null
+  rules_version: string | null
+  summary: Summary
+  previous_hist: number[] | null
+  snapshot: {
+    level: Level
+    level_label: string
+    pattern: string | null
+    title: string
+    forecast: string
+    condition: ConditionRow[]
+    growth_um_day: number | null
+    loss_per_day: number | null
+    survival: number | null
+  }
+  photos: PhotoView[]
+  created_text: string
 }

@@ -8,12 +8,14 @@ from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import config, db
-from app.api import decisions, floor, tanks
+from app.api import checks, decisions, floor, tanks
+from app.services.uploads import clean_old_uploads
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     db.init_db()
+    clean_old_uploads()
     yield
 
 
@@ -31,6 +33,7 @@ app.include_router(health)
 app.include_router(floor.router)
 app.include_router(tanks.router)
 app.include_router(decisions.router)
+app.include_router(checks.router)
 
 # Only photo folders are public. The database in the same data folder is not.
 config.photos_dir().mkdir(parents=True, exist_ok=True)

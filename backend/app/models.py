@@ -127,6 +127,7 @@ class Photo(SQLModel, table=True):
     engine_version: str | None = None
     synthetic: bool = False
     source_name: str | None = None
+    upload_token: str | None = Field(default=None, index=True)  # saving the same upload twice must not duplicate
 
 
 class Detection(SQLModel, table=True):
