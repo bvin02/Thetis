@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getJSON, postJSON } from '../api/client'
 import { useInvalidateAll } from '../api/hooks'
@@ -8,12 +8,16 @@ import { CheckActions, OpinionList } from '../components/review/ClaudeReview'
 import { PhotoViewer, type PhotoViewerHandle } from '../components/review/PhotoViewer'
 import { CountsPanel, EstimateText, GutPanel, PanelSection, SizePanel, WaterReadOnly } from '../components/review/Panels'
 import { TopBar } from '../components/shell/TopBar'
-import { useToast } from '../components/Toast'
+import { useToast } from '../components/toastContext'
 import { ErrorState, LoadingState, Spinner, StatusPill } from '../components/ui'
 import { SEVERITY_DOT, severityText } from '../lib/levels'
 
 export default function CheckDetailPage() {
   const { id } = useParams()
+  return <CheckDetailView key={id} id={id} />
+}
+
+function CheckDetailView({ id }: { id: string | undefined }) {
   const query = useQuery({ queryKey: ['check', id], queryFn: () => getJSON<CheckDetail>(`/api/checks/${id}`) })
   const check = query.data
   const [active, setActive] = useState(0)
@@ -22,12 +26,6 @@ export default function CheckDetailPage() {
   const viewer = useRef<PhotoViewerHandle | null>(null)
   const invalidate = useInvalidateAll()
   const toast = useToast()
-
-  useEffect(() => {
-    setActive(0)
-    setEditing(false)
-    setDraft({})
-  }, [id])
 
   const save = useMutation({
     mutationFn: async () => {
@@ -81,6 +79,7 @@ export default function CheckDetailPage() {
             {photo ? (
               <>
                 <PhotoViewer
+                  key={photo.url}
                   ref={viewer}
                   url={photo.url} width={photo.width} height={photo.height} detections={detections} editable={editing}
                   onChange={(next) => setDraft((current) => ({ ...current, [photo.id]: next }))}

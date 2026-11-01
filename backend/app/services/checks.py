@@ -266,6 +266,17 @@ def update_detections(session: Session, check: models.Check, photo: models.Photo
     """Save corrections on a saved photo, then recompute the summary and re-assess forward (SPEC §10)."""
     hatchery = session.get(models.Hatchery, 1)
     cfg = settings_for(hatchery)
+    all_photos = list(session.exec(select(models.Photo).where(models.Photo.check_id == check.id)))
+    um_per_px = next((p.um_per_px for p in all_photos if p.um_per_px), None)
+
+    def detections_of_check() -> list[Det]:
+        found: list[Det] = []
+        for each in all_photos:
+            rows = session.exec(select(models.Detection).where(models.Detection.photo_id == each.id))
+            found.extend(det_from_row(row) for row in rows)
+        return found
+
+    old_count = summarize(detections_of_check(), um_per_px, cfg).count_for_estimate
     for row in session.exec(select(models.Detection).where(models.Detection.photo_id == photo.id)):
         session.delete(row)
     session.flush()
@@ -273,15 +284,7 @@ def update_detections(session: Session, check: models.Check, photo: models.Photo
         session.add(_detection_row(photo.id, det))
     session.flush()
 
-    all_photos = list(session.exec(select(models.Photo).where(models.Photo.check_id == check.id)))
-    every: list[Det] = []
-    for each in all_photos:
-        rows = session.exec(select(models.Detection).where(models.Detection.photo_id == each.id))
-        every.extend(det_from_row(row) for row in rows)
-
-    old_count = (check.n_live or 0) + (check.n_abnormal or 0)
-    um_per_px = next((p.um_per_px for p in all_photos if p.um_per_px), None)
-    new_count = _apply_summary(check, every, um_per_px, cfg)
+    new_count = _apply_summary(check, detections_of_check(), um_per_px, cfg)
     if check.live_est is not None and old_count > 0:
         # Scale, so a seeded check (whose estimate stands for a full count) keeps its meaning
         check.live_est = check.live_est * new_count / old_count

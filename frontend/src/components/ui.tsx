@@ -51,14 +51,14 @@ export function Segmented<T extends string>({ value, options, onChange, label, s
   style?: CSSProperties
 }) {
   return (
-    <div role="group" aria-label={label} className="inline-flex rounded-control bg-muted-bg p-0.5" style={style}>
+    <div role="group" aria-label={label} className="inline-flex max-w-full rounded-control bg-muted-bg p-0.5" style={style}>
       {options.map((option) => {
         const active = option.value === value
         return (
           <button
             key={option.value}
             type="button"
-            className="seg h-7 cursor-pointer rounded-small border-0 px-3 text-xs font-medium whitespace-nowrap"
+            className="seg h-7 cursor-pointer rounded-small border-0 px-3 text-xs font-medium whitespace-nowrap max-[660px]:h-11 max-[660px]:px-2"
             aria-pressed={active}
             onClick={() => onChange(option.value)}
             style={{

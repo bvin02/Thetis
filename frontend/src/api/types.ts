@@ -292,7 +292,7 @@ export interface TankDetail extends TankSummary {
   actions_left: number
   checks: CheckRow[]
   decision_history: DecisionView[]
-  past_batches: { id: number; code: string; spawn_date: string; stocked: number; status: string; outcome: string | null; closed_on: string | null }[]
+  past_batches: { id: number; code: string; spawn_date: string; stocked: number; status: string; outcome: string | null; closed_on: string | null; closed_text: string | null }[]
   line_water: LineWater | null
 }
 

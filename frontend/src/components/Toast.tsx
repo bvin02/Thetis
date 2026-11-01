@@ -1,19 +1,14 @@
 import { X } from 'lucide-react'
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Level } from '../api/types'
 import { LEVEL } from '../lib/levels'
+import { ToastContext } from './toastContext'
 
 interface ToastMessage {
   id: number
   text: string
   level: Level
-}
-
-const ToastContext = createContext<(text: string, level?: Level) => void>(() => {})
-
-export function useToast() {
-  return useContext(ToastContext)
 }
 
 const AUTO_HIDE_MS = 6000

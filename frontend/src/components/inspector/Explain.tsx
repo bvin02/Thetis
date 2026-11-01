@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { postJSON } from '../../api/client'
-import { useClaudeStatus } from '../review/ClaudeReview'
+import { useClaudeStatus } from '../../api/hooks'
 import { Spinner } from '../ui'
 
 /** "Explain" under the risk forecast. Only asks Claude when clicked; hidden when Claude is off. */

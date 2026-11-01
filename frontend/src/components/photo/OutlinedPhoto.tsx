@@ -1,7 +1,7 @@
 import type { Detection } from '../../api/types'
 import { LARVA_COLOR } from '../../lib/levels'
 
-export function contourPoints(detection: Detection): string {
+function contourPoints(detection: Detection): string {
   return detection.contour.map(([x, y]) => `${x},${y}`).join(' ')
 }
 

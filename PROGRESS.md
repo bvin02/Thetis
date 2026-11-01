@@ -199,3 +199,26 @@ reports; I did not open the file. Explain was only tested against the fake clien
 - A failed call is logged but never cached, so a retry reaches the API.
 
 **Still open:** Explain has not been run against the real API.
+
+## Phase 6: Tank page, Decisions, Photo library, Tanks, Checks
+
+**Built:** `GET /api/photos/tree`. Tank page (header, Close batch and Start batch dialogs, Trends with Survival,
+Shell length, Dead & abnormal and Water in Recharts, Checks table with severity colours, inspector blocks, Explain,
+Decision history, Past batches). Decisions (Waiting, Decided, All, grouped by target). Photo library (four columns,
+preview, stats). Tanks and Checks pages with room filters. Friendly 404 page.
+
+**Tests:** new API tests for the tree, check filters, an empty tank, an empty database, and re-saving a check. All
+pages screenshotted at 1440 and 390 px with no console errors and no horizontal scroll. `oxlint` is clean, and
+`npm --prefix frontend run build` passes.
+
+**Decisions:**
+- Explain sits directly under Risk forecast on the tank page (§8.2 is more specific than §4.4).
+- The Water chart gives pH its own right-hand axis so its real values are readable next to Ω.
+- A batch with no checks yet says "No checks yet" instead of "at the last check".
+- An empty tank's page shows one "Start batch" card instead of two blank cards.
+- Fixed a bug found in review: correcting a saved check compared the new weighted count against an unweighted old
+  count, which skewed the estimate when larvae touched the photo edge. Covered by a test.
+- On phones, Photo library's columns stack, and all buttons and chips are 44 px.
+- Scripts in `frontend/scripts/` are the browser checks used in this build.
+
+**Still open:** nothing.

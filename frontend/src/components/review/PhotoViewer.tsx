@@ -112,19 +112,12 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
   const [scaleLine, setScaleLine] = useState<[number, number, number, number] | null>(null)
   const [scaleUm, setScaleUm] = useState('')
   const [panning, setPanning] = useState(false)
+  const [drawingScale, setDrawingScale] = useState(false)
   const svgRef = useRef<SVGSVGElement | null>(null)
   const boxRef = useRef<HTMLDivElement | null>(null)
   const [boxWidth, setBoxWidth] = useState(800)
   const drag = useRef<{ startX: number; startY: number; view: View; moved: boolean; pointerId: number } | null>(null)
   const justDragged = useRef(false)
-
-  // A new photo starts fitted, with nothing selected
-  useEffect(() => {
-    setView({ x: 0, y: 0, w: width, h: height })
-    setSelectedId(null)
-    setMode('select')
-    setScaleLine(null)
-  }, [url, width, height])
 
   useLayoutEffect(() => {
     const box = boxRef.current
@@ -299,6 +292,7 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
       const { x, y } = toImage(event.clientX, event.clientY)
       setScaleLine([x, y, x, y])
       setScaleUm('')
+      setDrawingScale(true)
       drag.current = { startX: event.clientX, startY: event.clientY, view, moved: false, pointerId: event.pointerId }
       svgRef.current?.setPointerCapture(event.pointerId)
       return
@@ -334,6 +328,7 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
     }
     drag.current = null
     setPanning(false)
+    setDrawingScale(false)
   }
 
   const onBackgroundClick = (event: React.MouseEvent<SVGElement>) => {
@@ -584,7 +579,7 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
         )}
         {mode === 'scale' && (
           <div className="absolute top-2 left-1/2 flex -translate-x-1/2 flex-wrap items-center gap-2 rounded-control border border-line bg-white px-3 py-2 text-xs shadow-pop">
-            {scaleLengthPx > 2 && !drag.current ? (
+            {scaleLengthPx > 2 && !drawingScale ? (
               <>
                 <label htmlFor="scale-um" className="text-ink-2">This line is</label>
                 <input

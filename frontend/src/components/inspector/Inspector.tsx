@@ -168,17 +168,15 @@ export function SurvivalChart({ tank }: { tank: TankDetail }) {
 export function RecommendedActions({ tank }: { tank: TankDetail }) {
   if (tank.actions.length === 0) return null
   const left = tank.actions_left
-  let number = 0
   return (
     <section aria-label="Recommended actions" className="flex flex-col border-t border-divider px-4 pt-4 pb-2">
       <div className="flex items-baseline justify-between gap-2 pb-1">
         <h3 className="text-[13px] font-semibold">Recommended actions</h3>
         <span className="text-xs text-ink-4">{left === 0 ? 'All decided' : `${left} to decide`}</span>
       </div>
-      {tank.actions.map((action, index) => {
-        number += 1
-        return <ActionRow key={action.id} action={action} number={number} divider={index > 0} />
-      })}
+      {tank.actions.map((action, index) => (
+        <ActionRow key={action.id} action={action} number={index + 1} divider={index > 0} />
+      ))}
     </section>
   )
 }

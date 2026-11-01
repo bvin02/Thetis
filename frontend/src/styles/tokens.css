@@ -160,6 +160,13 @@
   .hc:hover { box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--color-ink) !important; z-index: 2; }
   .hc:hover .tip { opacity: 1; visibility: visible; }
 
+  /* Phones: every control is at least a 44 px target */
+  @media (max-width: 660px) {
+    .solid, .ghost { min-height: 44px; min-width: 44px; }
+    .chip { min-height: 44px; }
+    .lnk { display: inline-flex; align-items: center; min-height: 44px; }
+  }
+
   .plancard { container-type: inline-size; }
   .planwrap { display: block; }
   .planlist { display: none; }

@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { useState } from 'react'
 import type { Estimate, LineWater, Summary, WaterReadings } from '../../api/types'
 import { LARVA_COLOR } from '../../lib/levels'
+import { EMPTY_WATER, type WaterForm } from '../../lib/water'
 
 const fmtCount = (n: number | null | undefined) => {
   if (n === null || n === undefined) return '—'
@@ -173,9 +173,6 @@ export function EstimatePanel({ bucket, concentration, onBucket, onConcentration
   )
 }
 
-export type WaterForm = Record<keyof WaterReadings, string>
-export const EMPTY_WATER: WaterForm = { temp_c: '', salinity_ppt: '', ph: '', omega_arag: '', do_mgl: '' }
-
 const WATER_FIELDS: { key: keyof WaterReadings; label: string; id: string }[] = [
   { key: 'temp_c', label: 'Temperature °C', id: 'w-temp' },
   { key: 'salinity_ppt', label: 'Salinity ppt', id: 'w-sal' },
@@ -265,9 +262,4 @@ export function WaterReadOnly({ water, severities }: { water: WaterReadings; sev
       )}
     </PanelSection>
   )
-}
-
-export function useDisclosure(initial = false) {
-  const [open, setOpen] = useState(initial)
-  return { open, toggle: () => setOpen((v) => !v), setOpen }
 }

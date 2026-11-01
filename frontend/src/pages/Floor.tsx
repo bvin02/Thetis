@@ -23,8 +23,9 @@ export default function FloorPage() {
   const floorQuery = useFloor()
   const [params, setParams] = useSearchParams()
   const [view, setView] = useState<PlanView>('plan')
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [sheetWanted, setSheetOpen] = useState(false)
   const isPhone = useMedia('(max-width: 660px)')
+  const sheetOpen = sheetWanted && isPhone
 
   const floor = floorQuery.data
   const roomId = params.get('room')
@@ -46,11 +47,6 @@ export default function FloorPage() {
     setParams(next, { replace: true })
     if (isPhone) setSheetOpen(true)
   }
-
-  // Close the phone sheet if the window grows past phone width
-  useEffect(() => {
-    if (!isPhone) setSheetOpen(false)
-  }, [isPhone])
 
   useEffect(() => {
     if (!sheetOpen) return

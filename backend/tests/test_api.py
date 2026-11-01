@@ -338,3 +338,81 @@ def test_old_uploads_are_deleted(client):
     assert path.exists()
     removed = clean_old_uploads(now=time.time() + 25 * 3600)
     assert removed >= 2 and not path.exists()
+
+
+def test_photo_tree(client):
+    tree = client.get("/api/photos/tree").json()
+    assert [room["name"] for room in tree["rooms"]] == ["Larval room A", "Larval room B", "Setting room"]
+    room_a = tree["rooms"][0]
+    t03 = next(t for t in room_a["tanks"] if t["id"] == "T-03")
+    assert t03["n_checks"] == 4 and t03["n_photos"] == 4
+    assert t03["footer"].startswith("Spawned ") and t03["footer"].endswith("stocked 10.0M larvae")
+    newest = t03["checks"][0]
+    assert newest["summary"] == "9% dead · 126 µm"
+    assert newest["level"] == "watch"
+    assert newest["thumb_url"].startswith("/api/files/photos/")
+    assert client.get(newest["thumb_url"]).status_code == 200
+    assert room_a["n_photos"] == sum(t["n_photos"] for t in room_a["tanks"])
+    notes = {t["id"]: t["note"] for room in tree["rooms"] for t in room["tanks"]}
+    assert notes["T-04"] == "Day 6 · Ω 1.4"
+    assert notes["T-06"] == "Day 3 · line 2"
+    assert notes["T-02"] == "Day 11 · size spread"
+    assert notes["T-10"] == "Day 8 · slow growth"
+    assert notes["T-01"] == "Day 14 · 231 µm"
+    assert notes["T-09"] == "Cleaning"
+
+
+def test_checks_list_filters(client):
+    everything = client.get("/api/checks").json()["checks"]
+    assert len(everything) == 49
+    assert everything[0]["sampled_at"] >= everything[-1]["sampled_at"]
+    t03 = client.get("/api/checks", params={"tank": "T-03"}).json()["checks"]
+    assert len(t03) == 4 and all(row["tank_id"] == "T-03" for row in t03)
+    room_b = client.get("/api/checks", params={"room": "B"}).json()["checks"]
+    assert room_b and all(row["room_id"] == "B" for row in room_b)
+
+
+def test_tank_detail_of_an_empty_tank(client):
+    tank = client.get("/api/tanks/T-09").json()
+    assert tank["level"] == "empty"
+    assert tank["reason"] == "Empty. Being cleaned."
+    assert tank["forecast"] == "No batch in this tank."
+    assert tank["batch"] is None and tank["latest_check"] is None and tank["condition"] == []
+    assert tank["past_batches"][0]["outcome"] == "moved_to_setting"
+    assert client.get("/api/tanks/T-99").status_code == 404
+
+
+def test_correcting_a_saved_check_keeps_the_estimate_formula(client):
+    """Edge objects count 0.5, so an untouched re-save must leave the estimate exactly as it was."""
+    analysis = client.post("/api/samples/slide-healthy-umbo/analyze").json()
+    payload = _save_payload(analysis, {})
+    # Force some edge objects, so count_for_estimate differs from live + abnormal
+    alive = [d for d in analysis["detections"] if d["cls"] in ("live", "abnormal")]
+    for det in alive[:3]:
+        det["touches_edge"] = True
+    saved = client.post("/api/checks", json=payload).json()
+    detail = client.get(f"/api/checks/{saved['check_id']}").json()
+    photo = detail["photos"][0]
+    before = detail["live_est"]
+    patched = client.patch(f"/api/checks/{saved['check_id']}/photos/{photo['id']}/detections", json={"detections": photo["detections"]})
+    assert patched.status_code == 200
+    assert patched.json()["live_est"] == pytest.approx(before)
+
+    expected = sum(0.5 if d["touches_edge"] else d["clump_n"] for d in photo["detections"] if d["cls"] in ("live", "abnormal"))
+    volume, bucket, concentration = detail["photo_volume_ml"], detail["bucket_l"], detail["concentration"]
+    assert before == pytest.approx(expected / (volume * concentration) * bucket * 1000)
+
+
+def test_floor_on_an_empty_database_does_not_crash():
+    db.init_db()
+    db.drop_hatchery_tables()
+    db.init_db()
+    with TestClient(app) as test_client:
+        floor = test_client.get("/api/floor")
+        assert floor.status_code == 200, floor.text
+        body = floor.json()
+        assert body["seeded"] is False and body["tanks"] == [] and body["default_tank"] is None
+        assert body["headline"] == "All tanks tracking normally"
+        assert test_client.get("/api/checks").json() == {"checks": []}
+        assert test_client.get("/api/decisions").json()["counts"]["all"] == 0
+        assert test_client.get("/api/photos/tree").json() == {"rooms": []}

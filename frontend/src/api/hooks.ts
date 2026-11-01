@@ -40,3 +40,14 @@ export function useDecide() {
     onSettled: () => invalidate(),
   })
 }
+
+export interface ClaudeStatus {
+  enabled: boolean
+  model: string
+  used_today: number
+  limit: number
+}
+
+export function useClaudeStatus() {
+  return useQuery({ queryKey: ['claude-status'], queryFn: () => getJSON<ClaudeStatus>('/api/claude/status'), staleTime: 30_000 })
+}

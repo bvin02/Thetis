@@ -23,14 +23,17 @@ export function TopBar({ crumbs, newCheckHref = '/checks/new', hideNewCheck = fa
   const { data } = useFloor()
   return (
     <header className="flex min-h-[52px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-divider px-7 py-2 max-[660px]:px-4">
-      <nav aria-label="Location" className="flex flex-[1_1_240px] items-center gap-2 text-[13px]">
-        <span className="text-ink-4 max-[480px]:hidden">{data?.hatchery.name ?? 'Thetis'}</span>
-        {crumbs.map((c, i) => (
-          <span key={c} className="flex items-center gap-2">
-            <span aria-hidden="true" className="text-faint max-[480px]:first:hidden">/</span>
-            <span className={i === crumbs.length - 1 ? 'font-medium' : 'text-ink-4'}>{c}</span>
-          </span>
-        ))}
+      <nav aria-label="Location" className="flex min-w-0 flex-[1_1_240px] flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
+        <span className="whitespace-nowrap text-ink-4 max-[660px]:hidden">{data?.hatchery.name ?? 'Thetis'}</span>
+        {crumbs.map((c, i) => {
+          const last = i === crumbs.length - 1
+          return (
+            <span key={c} className={`flex items-center gap-2 ${last ? '' : 'max-[660px]:hidden'}`}>
+              <span aria-hidden="true" className="text-faint max-[660px]:hidden">/</span>
+              <span className={`whitespace-nowrap ${last ? 'font-medium' : 'text-ink-4'}`}>{c}</span>
+            </span>
+          )
+        })}
         {data?.is_example && <span className="tag ml-1">Example data</span>}
       </nav>
       <span className="tnum text-[13px] text-ink-4">{clockText(now)}</span>

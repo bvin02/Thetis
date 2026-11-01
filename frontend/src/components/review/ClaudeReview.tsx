@@ -1,21 +1,11 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { getJSON, postJSON } from '../../api/client'
+import { useMutation } from '@tanstack/react-query'
+import { postJSON } from '../../api/client'
+import { useClaudeStatus } from '../../api/hooks'
 import type { ClaudeOpinion, Detection } from '../../api/types'
 import { OPINION_NAME, decideOpinion, pendingOpinions } from '../../lib/opinions'
 import { Spinner } from '../ui'
 
 const MAX_OBJECTS = 12
-
-export interface ClaudeStatus {
-  enabled: boolean
-  model: string
-  used_today: number
-  limit: number
-}
-
-export function useClaudeStatus() {
-  return useQuery({ queryKey: ['claude-status'], queryFn: () => getJSON<ClaudeStatus>('/api/claude/status'), staleTime: 30_000 })
-}
 
 /** Review plus Ask Claude, under the counts. Ask Claude is absent when there is no API key. */
 export function CheckActions({ photoRef, detections, totalUnsure, onChange, onReview }: {

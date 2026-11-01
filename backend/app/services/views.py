@@ -19,6 +19,7 @@ from app.rules.text import (
     empty_reason,
     empty_title,
     fmt_count,
+    fmt_day_month,
     fmt_len,
     fmt_pct,
     fmt_since,
@@ -89,7 +90,7 @@ def tank_summary(state: TankState, world: World) -> dict:
     stage = _stage_text(state)
     return base | {
         "pattern": a.pattern,
-        "title": title_for(a),
+        "title": title_for(a) if latest else "No checks yet",
         "chip": chip_for(a.pattern, tank.line_id, state.alert is not None),
         "reason": reason_for(a, tank.line_id, state.alert is not None, len(state.checks), world.cfg),
         "batch_id": state.batch.id,
@@ -105,7 +106,7 @@ def tank_summary(state: TankState, world: World) -> dict:
         "last_check_at": latest.sampled_at.isoformat() if latest else None,
         "last_check_text": fmt_when(latest.sampled_at if latest else None, world.now),
         "latest_check_id": latest.id if latest else None,
-        "forecast": FORECAST[state.level],
+        "forecast": FORECAST[state.level] if latest else "Save a first check to start tracking this batch.",
     }
 
 
@@ -474,6 +475,7 @@ def build_tank(tank_id: str, session: Session) -> dict | None:
         {
             "id": b.id, "code": b.code, "spawn_date": b.spawn_date.isoformat(), "stocked": b.stocked, "status": b.status,
             "outcome": b.outcome, "closed_on": b.closed_on.isoformat() if b.closed_on else None,
+            "closed_text": fmt_day_month(b.closed_on) if b.closed_on else None,
         }
         for b in state.all_batches if b.status != "active"
     ]

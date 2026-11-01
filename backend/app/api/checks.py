@@ -217,6 +217,11 @@ def build_check_detail(check: models.Check, session: Session) -> dict:
             "stage": check.stage, "gut": check.gut, "count_for_estimate": 0,
         },
         "previous_hist": previous.hist if previous else None,
+        "previous": {
+            "pct_dead": previous.pct_dead, "pct_abnormal": previous.pct_abnormal, "mean_len_um": previous.mean_len_um,
+            "cv": previous.cv, "gut": previous.gut,
+            "days_ago": round((check.sampled_at - previous.sampled_at).total_seconds() / 86400.0, 2),
+        } if previous else None,
         "snapshot": {
             "level": check.level or "ok",
             "level_label": LEVEL_LABEL.get(check.level or "ok", "Normal"),

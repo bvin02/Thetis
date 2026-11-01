@@ -7,10 +7,11 @@ import { useFloor, useInvalidateAll, useTank } from '../api/hooks'
 import type { AnalysisResult, Detection, Estimate, SampleSlide, SaveResult, Summary } from '../api/types'
 import { CheckActions, OpinionList } from '../components/review/ClaudeReview'
 import { PhotoViewer, type PhotoViewerHandle } from '../components/review/PhotoViewer'
-import { CountsPanel, EMPTY_WATER, EstimatePanel, GutPanel, PanelSection, SizePanel, WaterPanel, type WaterForm, useDisclosure } from '../components/review/Panels'
+import { CountsPanel, EstimatePanel, GutPanel, PanelSection, SizePanel, WaterPanel } from '../components/review/Panels'
 import { TopBar } from '../components/shell/TopBar'
-import { useToast } from '../components/Toast'
+import { useToast } from '../components/toastContext'
 import { ErrorState, LoadingState, Spinner } from '../components/ui'
+import { EMPTY_WATER, type WaterForm } from '../lib/water'
 
 function localDateTimeValue(date = new Date()) {
   const pad = (n: number) => String(n).padStart(2, '0')
@@ -144,7 +145,7 @@ export default function NewCheckPage() {
   const [bucket, setBucket] = useState<string | null>(null)
   const [concentration, setConcentration] = useState<string | null>(null)
   const [water, setWater] = useState<WaterForm>(EMPTY_WATER)
-  const waterDisclosure = useDisclosure(true)
+  const [waterOpen, setWaterOpen] = useState(true)
   const [notes, setNotes] = useState('')
   const [summary, setSummary] = useState<Summary | null>(null)
   const [estimate, setEstimate] = useState<Estimate | null>(null)
@@ -169,11 +170,7 @@ export default function NewCheckPage() {
 
   // Live summary and estimate while correcting (debounced 100 ms)
   useEffect(() => {
-    if (photos.length === 0) {
-      setSummary(null)
-      setEstimate(null)
-      return
-    }
+    if (photos.length === 0) return
     const controller = new AbortController()
     const timer = window.setTimeout(async () => {
       try {
@@ -285,6 +282,7 @@ export default function NewCheckPage() {
 
   const current = photos[active] ?? null
   const hasPhoto = photos.length > 0
+  const shownSummary = hasPhoto ? summary : null
   const canSave = !!tank && hasPhoto && !analysing && !save.isPending
   const removePhoto = (index: number) => {
     setPhotos((list) => list.filter((_, i) => i !== index))
@@ -329,6 +327,7 @@ export default function NewCheckPage() {
             <div className="flex flex-col gap-2">
               <PhotoViewer
                 ref={viewer}
+                key={current.url}
                 url={current.url} width={current.width} height={current.height}
                 detections={current.detections} editable onChange={updateActive} onScale={applyScale} tabs={tabs}
               />
@@ -375,9 +374,9 @@ export default function NewCheckPage() {
                 />
                 <OpinionList detections={current?.detections ?? []} onChange={updateActive} onSelect={(id) => viewer.current?.select(id)} />
               </CountsPanel>
-              <SizePanel summary={summary ?? { mean_len_um: null, sd_len_um: null, cv: null, stage: null, hist: null }} previousHist={tankQuery.data?.latest_check?.hist ?? null} calibrated={scale !== null} />
-              <GutPanel gut={summary?.gut ?? null} />
-              <EstimatePanel bucket={bucketValue} concentration={concentrationValue} onBucket={setBucket} onConcentration={setConcentration} estimate={estimate} />
+              <SizePanel summary={shownSummary ?? { mean_len_um: null, sd_len_um: null, cv: null, stage: null, hist: null }} previousHist={tankQuery.data?.latest_check?.hist ?? null} calibrated={scale !== null} />
+              <GutPanel gut={shownSummary?.gut ?? null} />
+              <EstimatePanel bucket={bucketValue} concentration={concentrationValue} onBucket={setBucket} onConcentration={setConcentration} estimate={hasPhoto ? estimate : null} />
             </>
           ) : (
             <PanelSection label="What comes next">
@@ -387,7 +386,7 @@ export default function NewCheckPage() {
 
           <WaterPanel
             value={water} onChange={setWater} lineName={line?.name ?? null} lineWater={line?.water ?? null}
-            open={waterDisclosure.open} onToggle={waterDisclosure.toggle}
+            open={waterOpen} onToggle={() => setWaterOpen((v) => !v)}
           />
 
           <PanelSection title="Notes" label="Notes">
