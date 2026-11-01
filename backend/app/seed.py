@@ -101,7 +101,7 @@ def _detections_from_truth(truth: dict) -> list[Det]:
 
 def _clear_everything() -> None:
     db.init_db()
-    db.drop_all()
+    db.drop_hatchery_tables()
     db.init_db()
     for folder in (config.photos_dir(), config.uploads_dir()):
         shutil.rmtree(folder, ignore_errors=True)

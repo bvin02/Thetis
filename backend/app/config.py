@@ -197,3 +197,14 @@ CLAUDE_CROP_MAX_PX = 256
 CLAUDE_CROP_JPEG_QUALITY = 85
 CLAUDE_OPINION_MAX_TOKENS = 1500
 CLAUDE_EXPLAIN_MAX_TOKENS = 400
+# Models that always think spend part of max_tokens on thinking. This keeps the visible answer whole.
+CLAUDE_THINKING_HEADROOM_TOKENS = 1500
+CLAUDE_TIMEOUT_S = 60.0
+CLAUDE_MAX_RETRIES = 1
+# Outline colours on crops, BGR (the same colours as the UI's larva outlines)
+CLAUDE_OUTLINE_BGR = {
+    "live": (87, 139, 46),
+    "abnormal": (14, 98, 194),
+    "dead": (43, 54, 194),
+    "ignore": (192, 185, 174),
+}

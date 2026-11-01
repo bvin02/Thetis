@@ -8,7 +8,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import config, db
-from app.api import checks, decisions, floor, tanks
+from app.api import checks, claude, decisions, floor, tanks
 from app.services.uploads import clean_old_uploads
 
 
@@ -34,6 +34,7 @@ app.include_router(floor.router)
 app.include_router(tanks.router)
 app.include_router(decisions.router)
 app.include_router(checks.router)
+app.include_router(claude.router)
 
 # Only photo folders are public. The database in the same data folder is not.
 config.photos_dir().mkdir(parents=True, exist_ok=True)

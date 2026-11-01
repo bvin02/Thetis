@@ -97,6 +97,7 @@ def _scale_meta(result: AnalysisResult) -> dict:
         "calibration": result.calibration,
         "grid_spacing_px": result.grid_spacing_px,
         "photo_volume_ml": result.photo_volume_ml,
+        "detections": [d.model_dump() for d in result.detections],
     }
 
 

@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getJSON, postFile, postJSON } from '../api/client'
 import { useFloor, useInvalidateAll, useTank } from '../api/hooks'
 import type { AnalysisResult, Detection, Estimate, SampleSlide, SaveResult, Summary } from '../api/types'
+import { CheckActions, OpinionList } from '../components/review/ClaudeReview'
 import { PhotoViewer, type PhotoViewerHandle } from '../components/review/PhotoViewer'
 import { CountsPanel, EMPTY_WATER, EstimatePanel, GutPanel, PanelSection, SizePanel, WaterPanel, type WaterForm, useDisclosure } from '../components/review/Panels'
 import { TopBar } from '../components/shell/TopBar'
@@ -368,14 +369,11 @@ export default function NewCheckPage() {
           {hasPhoto ? (
             <>
               <CountsPanel summary={quick}>
-                {quick.n_unsure > 0 ? (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="tnum flex-1 text-[13px] text-ink-2">{quick.n_unsure} to check</span>
-                    <button type="button" className="ghost" onClick={() => viewer.current?.nextUnsure()}>Review</button>
-                  </div>
-                ) : (
-                  <span className="text-[13px] text-ink-3">Nothing left to check.</span>
-                )}
+                <CheckActions
+                  photoRef={current?.token ?? null} detections={current?.detections ?? []} totalUnsure={quick.n_unsure}
+                  onChange={updateActive} onReview={() => viewer.current?.nextUnsure()}
+                />
+                <OpinionList detections={current?.detections ?? []} onChange={updateActive} onSelect={(id) => viewer.current?.select(id)} />
               </CountsPanel>
               <SizePanel summary={summary ?? { mean_len_um: null, sd_len_um: null, cv: null, stage: null, hist: null }} previousHist={tankQuery.data?.latest_check?.hist ?? null} calibrated={scale !== null} />
               <GutPanel gut={summary?.gut ?? null} />

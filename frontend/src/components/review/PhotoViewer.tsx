@@ -3,6 +3,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffec
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import type { Detection, LarvaClass } from '../../api/types'
 import { LARVA_COLOR } from '../../lib/levels'
+import { OPINION_NAME, decideOpinion } from '../../lib/opinions'
 import { Segmented } from '../ui'
 
 export type FilterKey = 'live' | 'abnormal' | 'dead' | 'unsure' | 'ignore'
@@ -18,13 +19,14 @@ const CLASS_OPTIONS: { cls: LarvaClass; label: string; key: string }[] = [
 ]
 
 const CLASS_NAME: Record<LarvaClass, string> = { live: 'Live', abnormal: 'Abnormal', dead: 'Dead', ignore: 'Not a larva' }
-const OPINION_NAME: Record<string, string> = { live: 'Live', abnormal: 'Abnormal', dead: 'Dead', not_larva: 'Not a larva' }
 
 export interface PhotoViewerHandle {
   /** Select the next unsure object and zoom to it. Returns false when there are none. */
   nextUnsure: () => boolean
   /** Start drawing a line to set the scale by hand. */
   startScale: () => void
+  /** Select one object and zoom to it. */
+  select: (id: number) => void
 }
 
 function contourString(d: Detection) {
@@ -96,12 +98,10 @@ export interface PhotoViewerProps {
   /** Called with µm/px after the user draws a scale line. */
   onScale?: (umPerPx: number) => void
   tabs?: ReactNode
-  /** Claude's opinion for an object: accept or keep. */
-  onOpinion?: (id: number, decision: 'accepted' | 'kept') => void
 }
 
 export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(function PhotoViewer(
-  { url, width, height, detections, editable, onChange, onScale, tabs, onOpinion },
+  { url, width, height, detections, editable, onChange, onScale, tabs },
   ref,
 ) {
   const [view, setView] = useState<View>({ x: 0, y: 0, w: width, h: height })
@@ -227,7 +227,13 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
       setScaleLine(null)
       setSelectedId(null)
     },
-  }), [nextUnsure])
+    select: (id: number) => {
+      const target = detections.find((d) => d.id === id)
+      if (!target) return
+      setSelectedId(id)
+      focusOn(target)
+    },
+  }), [nextUnsure, detections, focusOn])
 
   // Keyboard: 1/2/3/0 set the class, Tab moves to the next unsure object, Esc clears
   useEffect(() => {
@@ -411,10 +417,10 @@ export const PhotoViewer = forwardRef<PhotoViewerHandle, PhotoViewerProps>(funct
                 <span className="leading-[1.4] text-ink-2">
                   <span className="font-medium text-ink">Claude: {OPINION_NAME[selected.claude.cls]}</span> · {selected.claude.reason}
                 </span>
-                {editable && onOpinion && (
+                {editable && (
                   <span className="flex gap-1">
-                    <button type="button" className="solid !h-6 !px-2 !text-xs" onClick={() => onOpinion(selected.id, 'accepted')}>Accept</button>
-                    <button type="button" className="ghost !h-6 !px-2 !text-xs" onClick={() => onOpinion(selected.id, 'kept')}>Keep</button>
+                    <button type="button" className="solid !h-6 !px-2 !text-xs" onClick={() => update(selected.id, (d) => decideOpinion(d, 'accepted'))}>Accept</button>
+                    <button type="button" className="ghost !h-6 !px-2 !text-xs" onClick={() => update(selected.id, (d) => decideOpinion(d, 'kept'))}>Keep</button>
                   </span>
                 )}
               </div>

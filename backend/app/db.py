@@ -29,10 +29,14 @@ def init_db() -> None:
     SQLModel.metadata.create_all(get_engine())
 
 
-def drop_all() -> None:
-    from app import models  # noqa: F401
+def drop_hatchery_tables() -> None:
+    """Drop everything except the Claude call log, which protects the credits: re-seeding must not forget
+    what was already asked (a rehearsal gets the cached answer) or how many calls today has used."""
+    from app import models
 
-    SQLModel.metadata.drop_all(get_engine())
+    keep = models.ClaudeCall.__table__
+    tables = [t for t in SQLModel.metadata.sorted_tables if t is not keep]
+    SQLModel.metadata.drop_all(get_engine(), tables=tables)
 
 
 def get_session() -> Iterator[Session]:

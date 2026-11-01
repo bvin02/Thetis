@@ -166,3 +166,36 @@ no console errors. No horizontal scroll at 390 px.
 
 **Still open:** the engine misses one faint dead shell on a grid line in `t03-today.jpg` (14 of 15 dead found).
 DEMO.md uses it: Add larva on that shell, press 3, and Dead goes 14 → 15.
+
+## Phase 5: Claude
+
+**Built:** `services/claude.py` (the only module that reads the key, as a `SecretStr`), `GET /api/claude/status`,
+`POST /api/claude/second-opinion`, `POST /api/claude/explain`, the cache by input hash, the daily cap (429 "Daily
+Claude limit reached"), and the `claude_call` log. UI: Ask Claude with "Sends {n} small crops to Claude.", opinion
+list with Accept, Keep, Accept all, the same choices in the object popover, and Explain on the tank page.
+Everything hides with no key.
+
+**Tests:** `tests/test_claude.py` (23 cases, fake client, no real calls): off without a key, request shape, crops,
+12-object limit, cache, cap, logging, no key or prompt in logs, safe error messages, refusals, per-model options.
+
+**Live test (one call through the app, on `t03-today.jpg`):**
+
+| Call | Model | Objects | Input tokens | Output tokens | Cost at list price | Time |
+|---|---|---|---|---|---|---|
+| Second opinion | `claude-opus-5-5` | 3 | 881 | 352 | about $0.01 | a few seconds |
+
+Claude agreed with all 3 automatic calls (Abnormal). `.env` selects `claude-opus-5-5`, which the status endpoint
+reports; I did not open the file. Explain was only tested against the fake client, because you allowed one live call.
+
+**Decisions:**
+- Your `.env` uses Opus 5.5 ($4/$20 per MTok). SPEC's default is Sonnet 5.5 ($2/$10). The code honours `.env`.
+- Thinking uses up `max_tokens`, and the SPEC's budgets (1500, 400) are tight. So: Sonnet 5.5 sends
+  `thinking: between_tools` (off), other current models send `disabled`, and models that always think (Opus 5.5,
+  Fable) get 1500 tokens of headroom on top of the budget.
+- Re-seeding keeps the `claude_call` table, against the letter of "--reset deletes all rows". Otherwise every demo
+  rehearsal would pay again and the daily cap would reset. The saved answer for `t03-today.jpg` makes the demo free.
+- Effort: `medium` for opinions, `low` for explanations.
+- No server-side refusal fallback: the model is configurable and not all models accept it. A refusal shows a message.
+- A failed call is logged but never cached, so a retry reaches the API.
+
+**Still open:** Explain has not been run against the real API.

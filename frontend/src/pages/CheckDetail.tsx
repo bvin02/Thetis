@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { getJSON, postJSON } from '../api/client'
 import { useInvalidateAll } from '../api/hooks'
 import type { CheckDetail, Detection } from '../api/types'
+import { CheckActions, OpinionList } from '../components/review/ClaudeReview'
 import { PhotoViewer, type PhotoViewerHandle } from '../components/review/PhotoViewer'
 import { CountsPanel, EstimateText, GutPanel, PanelSection, SizePanel, WaterReadOnly } from '../components/review/Panels'
 import { TopBar } from '../components/shell/TopBar'
@@ -109,7 +110,23 @@ export default function CheckDetailPage() {
         </div>
 
         <aside aria-label="Check details" className="box-border flex w-[380px] flex-none flex-col border-l border-divider max-[1099px]:w-full max-[1099px]:border-t max-[1099px]:border-l-0">
-          <CountsPanel summary={check.summary} />
+          <CountsPanel summary={check.summary}>
+            {editing && photo && (
+              <>
+                <CheckActions
+                  photoRef={photo.id} detections={detections}
+                  totalUnsure={detections.filter((d) => d.unsure && d.cls !== 'ignore').length}
+                  onChange={(next) => setDraft((current) => ({ ...current, [photo.id]: next }))}
+                  onReview={() => viewer.current?.nextUnsure()}
+                />
+                <OpinionList
+                  detections={detections}
+                  onChange={(next) => setDraft((current) => ({ ...current, [photo.id]: next }))}
+                  onSelect={(id) => viewer.current?.select(id)}
+                />
+              </>
+            )}
+          </CountsPanel>
           <SizePanel summary={check.summary} previousHist={check.previous_hist} calibrated={!!photo?.um_per_px} />
           <GutPanel gut={check.summary.gut} />
           <PanelSection title="Estimate for the tank" label="Estimate for the tank">
