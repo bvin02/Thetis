@@ -1,0 +1,352 @@
+{
+  "source": "https://github.com/epigeneticstoocean/oyster_larvae_photo_analysis (folder J006_B1)",
+  "what": "Bright-field microscope photos of oyster larvae, high magnification, 1-2 larvae per image. Species and scale not stated.",
+  "license": "No license file in the repo, so all rights are reserved by default. Use for local testing only; ask the authors before showing in a demo or video.",
+  "resized": "Originals are 4912x3684 PNG; these copies are 2400 px wide JPEG (scale factor 0.4886).",
+  "counted_by": "Claude, by eye from thumbnails. Verify before using as ground truth.",
+  "totals": {
+    "images": 30,
+    "larvae_whole": 34,
+    "cut_off": 1
+  },
+  "images": [
+    {
+      "file": "J006_B1_-0001.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "debris band along top edge",
+        "faint scratches"
+      ]
+    },
+    {
+      "file": "J006_B1_-0002.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "dark exposure"
+      ]
+    },
+    {
+      "file": "J006_B1_-0004.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "dark band along top edge"
+      ]
+    },
+    {
+      "file": "J006_B1_-0005.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "dark wedge on left edge"
+      ]
+    },
+    {
+      "file": "J006_B1_-0006.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0007.jpg",
+      "larvae_whole": 2,
+      "larvae_cut_off_at_edge": 0,
+      "live": 2,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": []
+    },
+    {
+      "file": "J006_B1_-0008.jpg",
+      "larvae_whole": 2,
+      "larvae_cut_off_at_edge": 0,
+      "live": 2,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines"
+      ]
+    },
+    {
+      "file": "J006_B1_-0010.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines"
+      ]
+    },
+    {
+      "file": "J006_B1_-0011.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "dark exposure",
+        "grid lines"
+      ]
+    },
+    {
+      "file": "J006_B1_-0012.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines",
+        "small debris"
+      ]
+    },
+    {
+      "file": "J006_B1_-0013.jpg",
+      "larvae_whole": 2,
+      "larvae_cut_off_at_edge": 0,
+      "live": 2,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "debris clump",
+        "grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0014.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 1,
+      "live": 2,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines",
+        "second larva cut off at right edge"
+      ]
+    },
+    {
+      "file": "J006_B1_-0015.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines",
+        "edge of an air bubble in corner"
+      ]
+    },
+    {
+      "file": "J006_B1_-0016.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "air bubble at bottom edge",
+        "grid lines",
+        "debris"
+      ]
+    },
+    {
+      "file": "J006_B1_-0017.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines"
+      ]
+    },
+    {
+      "file": "J006_B1_-0018.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid line",
+        "debris at right edge"
+      ]
+    },
+    {
+      "file": "J006_B1_-0019.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0020.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0021.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "long scratch or fiber"
+      ]
+    },
+    {
+      "file": "J006_B1_-0022.jpg",
+      "larvae_whole": 2,
+      "larvae_cut_off_at_edge": 0,
+      "live": 2,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "long scratch or fiber"
+      ]
+    },
+    {
+      "file": "J006_B1_-0023.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "two large air bubbles",
+        "grid lines",
+        "small debris clusters"
+      ]
+    },
+    {
+      "file": "J006_B1_-0024.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "faint grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0025.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines"
+      ]
+    },
+    {
+      "file": "J006_B1_-0026.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "grid lines",
+        "debris"
+      ]
+    },
+    {
+      "file": "J006_B1_-0027.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": []
+    },
+    {
+      "file": "J006_B1_-0028.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "air bubble at bottom-right",
+        "grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0029.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "air bubble at left edge",
+        "grid lines"
+      ]
+    },
+    {
+      "file": "J006_B1_-0030.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "faint grid line"
+      ]
+    },
+    {
+      "file": "J006_B1_-0031.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": [
+        "debris"
+      ]
+    },
+    {
+      "file": "J006_B1_-0032.jpg",
+      "larvae_whole": 1,
+      "larvae_cut_off_at_edge": 0,
+      "live": 1,
+      "dead": 0,
+      "abnormal": 0,
+      "distractors": []
+    }
+  ]
+}

@@ -38,7 +38,8 @@ another day, stop it and run `npm run seed`**, because "Today" and "Day 9" are r
 
 **Good to know**
 - Everything is on branch `build/mvp`, pushed to the public repo https://github.com/bvin02/Thetis along with a snapshot of
-  `data/`. Local `main` holds only the starter pack and wasn't pushed. `fixtures/real/` and `.env` were not pushed.
+  `data/` and, at your request, the unlicensed photos in `fixtures/real/`. Local `main` holds only the starter pack and
+  wasn't pushed. `.env` was not pushed.
 - The engine misses one faint dead shell in the demo slide (14 of 15 found). The demo uses that as its "fix a wrong
   call" moment.
 - I went beyond or against the SPEC in a few places, on purpose: four extra engine rules (needed to pass the J006

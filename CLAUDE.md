@@ -51,7 +51,8 @@ phase with a short summary and how to verify it.
 - **Honesty**:
   - Example rows have `is_example = true` and the UI shows the "Example data" badge.
   - Photos from `fixtures/` show "Synthetic sample".
-  - `fixtures/real/` (no license) is for tests only: never shown in the UI and never committed.
+  - `fixtures/real/` (no license) is for tests only: never shown in the UI. The owner chose to commit a
+    copy to the repo.
   - Write debug images and overlays only under `data/` (gitignored).
 - **Claude API**: optional, hidden without a key, cached by input hash, capped by
   `CLAUDE_DAILY_LIMIT`, every call logged with token counts (SPEC §8).
@@ -71,7 +72,7 @@ phase with a short summary and how to verify it.
 - Check 390 px wide: no horizontal page scroll.
 
 ## Git
-Commit at the end of each phase with a clear message. `.env` and `fixtures/real/` are gitignored:
-keep it that way. A snapshot of `data/` is committed because the owner asked for it, while new files
-in it stay ignored. Running or seeding the app shows that snapshot as changed: don't commit the
+Commit at the end of each phase with a clear message. `.env` is gitignored: keep it that way. Snapshots
+of `data/` and `fixtures/real/` are committed because the owner asked for them, while new files in
+those folders stay ignored. Running or seeding the app shows that snapshot as changed: don't commit the
 churn unless asked. The GitHub repo is public, so check before pushing anything new.
