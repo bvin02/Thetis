@@ -38,7 +38,9 @@ def uploads_dir() -> Path:
 
 
 def seed_cache_dir() -> Path:
-    return data_dir() / "cache" / "seed-photos"
+    """Rendered seed photos. Shared between data folders so tests never re-render them."""
+    configured = os.environ.get("THETIS_SEED_CACHE")
+    return Path(configured) if configured else REPO_ROOT / "data" / "cache" / "seed-photos"
 
 
 UPLOAD_MAX_AGE_H = 24

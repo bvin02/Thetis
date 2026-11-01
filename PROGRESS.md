@@ -71,3 +71,34 @@ grid within 1% of 625 px, ≤ 1 s per slide, J006 exact on ≥ 20 of 30. All met
 
 **Still open:** the 3 J006 misses: one larva cut off at the image edge (the label counts whole larvae
 only) and two bubbles whose bright core is out of frame. Dead recall on `t03-today` is 14 of 15.
+
+## Phase 2: data model, rules, seed
+
+**Built:** SQLModel tables (`models.py`, `db.py`), pure rules (`rules/series.py`, `signals.py`,
+`assess.py` with the ladder, patterns and line alerts, `text.py` with every sentence and format,
+`actions.py`, `history.py`), `services/world.py` (loads and assesses every tank),
+`services/decisions.py`, and `seed.py` (`npm run seed`, `npm run seed:full`).
+
+**Tests:** `test_rules.py` (179 cases: every signal at, under and over each threshold, every ladder
+rung, every pattern, every text, line alerts, history grid, `upto` replay, exact seed reasons) and
+`test_seed_story.py` (levels, patterns, decisions, headline, "135.6M", 65%, the exact summary
+sentence, T-03's photo byte-identical to the fixture). All pass.
+
+**Decisions:**
+- `Detection.cls` is stored in a column called `cls`, but the Python attribute is `larva_cls`
+  because SQLModel's constructor reserves `cls`. The API still says `cls`.
+- Datetime fields are annotated `NaiveDatetime`: the installed SQLModel rejects naive datetimes
+  otherwise, and the spec requires naive local time.
+- Computed rates are rounded to 9 decimals before comparing to a threshold, so a value exactly on a
+  threshold counts as on it instead of landing on either side from floating-point noise.
+- Seed photos render in parallel (6 workers, about 12 s) into `data/cache/seed-photos`.
+  `THETIS_SEED_CACHE` overrides the folder. The cache survives `--reset`, so re-seeding takes seconds.
+- Inspector's Recommended actions: for each action the tank's current pattern recommends, show its
+  latest decision (pending or decided), then anything else still pending for that tank. That is why
+  T-03's old approved feed check disappears once T-03 turns Critical, leaving "3 to decide".
+- If a tank has both a pH and an Ω signal, only one water sentence appears in its reason (SPEC says pH
+  only if Ω wasn't used). A pH-only sentence reads "(pH 7.60)".
+- Line alert "since": walk the line's checks newest first, skip those with no water reading, and
+  stop at the first non-corrosive one.
+
+**Still open:** nothing.
