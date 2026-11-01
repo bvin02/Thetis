@@ -1,4 +1,4 @@
-# Hatchery Autopilot: MVP Build Spec (localhost)
+# Thetis: MVP Build Spec (localhost)
 
 Hand this file to Claude Code together with `CLAUDE.md`. Build one phase at a time (§14) and stop
 at the end of each phase. Section numbers (§) are referenced by the phase prompts.
@@ -68,7 +68,7 @@ a mobile app, a trained ML model, seed (spat) counting, a backtest screen, a set
 |---|---|
 | Backend | Python 3.12 managed by **uv**. FastAPI + Uvicorn, OpenCV (`opencv-python-headless`), NumPy, Pillow, SQLModel on **SQLite**, `python-multipart`, `python-dotenv`, `anthropic`. Tests: pytest + httpx. Lint: ruff |
 | Frontend | **Vite + React + TypeScript (strict)**, **Tailwind CSS v4** (`@tailwindcss/vite`), React Router, TanStack Query, Recharts (tank charts only), `@fontsource-variable/geist` and `@fontsource-variable/geist-mono`, `lucide-react` icons (stroke 1.75). No UI kit: hand-build the components so they match the design |
-| Storage | `data/hatchery.db` (SQLite) and `data/photos/…` (JPEG files). Both are gitignored |
+| Storage | `data/thetis.db` (SQLite) and `data/photos/…` (JPEG files). Both are gitignored |
 | Dev | Root `package.json` runs both servers with `concurrently`. Vite (port 5173) proxies `/api` to FastAPI (port 8000) |
 
 ```
@@ -120,7 +120,7 @@ Dev dependencies:
 
 `npm run setup` installs everything on a fresh clone.
 
-The data folder defaults to `<repo>/data`. `HATCHERY_DATA_DIR` overrides it, and tests always use
+The data folder defaults to `<repo>/data`. `THETIS_DATA_DIR` overrides it, and tests always use
 a temp folder.
 
 The backend loads the root `.env` with `load_dotenv(<repo root>/.env)`. Paths are relative to the
@@ -158,8 +158,7 @@ exact CSS). `design/README.md` has the tokens and component rules. **Floor** and
 are designed pixel-for-pixel. The other screens below reuse the same shell and components.
 
 ### 4.0 App shell (design: every screen)
-- **Sidebar** (216 px, on the tinted canvas): workspace button ("Northwind Shellfish / Hatchery
-  Autopilot"; it has no menu in the MVP).
+- **Sidebar** (216 px, on the tinted canvas): workspace button ("Northwind Shellfish / Thetis"; it has no menu in the MVP).
   - Nav: Floor, Tanks, Checks, Decisions (with a black count badge of pending decisions) and
     Photo library. **Hide Reports** for the MVP.
   - "Rooms": only rooms that have tanks. Each has a swatch for its worst tank level and its tank
@@ -880,7 +879,7 @@ verified against §7, and every row is `is_example = true`.
 4. **Speed.** Rendering about 50 photos takes about 40 s.
    - Cache rendered photos in `data/cache/seed-photos/`, keyed by the photo parameters, so
      re-seeding takes seconds.
-   - Tests seed once per session into a temp data folder (`HATCHERY_DATA_DIR`) and reuse a shared
+   - Tests seed once per session into a temp data folder (`THETIS_DATA_DIR`) and reuse a shared
      cache.
 
 T-03's demo-live check uses seed 2031, which is byte-identical to `fixtures/demo/t03-today.jpg`.
@@ -989,7 +988,7 @@ as found when its (x, y) is inside a detection's contour (`pointPolygonTest ≥ 
 > placeholder content. Add `concurrently` (root) and `@playwright/test` (frontend) as dev
 > dependencies, run `npx playwright install chromium`, and make `npm run setup` work on a fresh
 > clone. Add backend/tests/conftest.py that blanks ANTHROPIC_API_KEY and points
-> HATCHERY_DATA_DIR at a temp folder. Stop when `npm run dev` shows the shell at localhost:5173
+> THETIS_DATA_DIR at a temp folder. Stop when `npm run dev` shows the shell at localhost:5173
 > and `/api/health` returns ok. Commit.
 
 **Phase 1**

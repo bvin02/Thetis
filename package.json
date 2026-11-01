@@ -1,0 +1,19 @@
+{
+  "name": "thetis",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Thetis: larvae photo analysis and tank risk rules for shellfish hatcheries (localhost MVP)",
+  "scripts": {
+    "setup": "npm install && npm --prefix frontend install && cd backend && uv sync",
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "cd backend && uv run uvicorn app.main:app --reload --port 8000",
+    "dev:web": "npm --prefix frontend run dev",
+    "test": "cd backend && uv run pytest -q",
+    "seed": "cd backend && uv run python -m app.seed --reset",
+    "seed:full": "cd backend && uv run python -m app.seed --reset --full",
+    "slides": "uv run --project backend python tools/gen_slides.py fixtures/slides"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

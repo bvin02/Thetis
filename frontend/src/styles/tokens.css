@@ -1,0 +1,161 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@theme {
+  --font-sans: "Geist Variable", "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
+
+  --color-canvas: #EDF1F3;      /* page background behind the panel */
+  --color-panel: #FFFFFF;
+  --color-line: #E2E8EC;        /* panel and card borders */
+  --color-divider: #EEF2F4;     /* rows and sections inside a card */
+  --color-subtle: #F6F8F9;      /* hover and selected rows */
+  --color-muted-bg: #F1F4F6;    /* segmented control track, neutral pills */
+  --color-ink: #0F1A20;
+  --color-ink-hover: #26333A;
+  --color-ink-2: #3E4B53;
+  --color-ink-3: #5F6C74;
+  --color-ink-4: #66737B;
+  --color-faint: #AEB9C0;       /* separators "/", disabled */
+  --color-border-strong: #CCD5DB;
+  --color-brand: #13557A;       /* logo, active nav icon, focus ring, links */
+
+  --color-critical: #D93A2F;  --color-critical-text: #B42318;  --color-critical-bg: #FEF3F2;  --color-critical-border: #F2C4BF;
+  --color-risk: #E0702A;      --color-risk-text: #B54708;      --color-risk-bg: #FFF6ED;      --color-risk-border: #F3D0B4;
+  --color-watch: #C98A0B;     --color-watch-text: #8E6206;     --color-watch-bg: #FEF9EC;
+  --color-normal-ring: #A7B3BA; --color-normal-swatch: #DCE3E7;
+  --color-empty: #C7CFD4;       /* dashed */
+  --color-approved: #2E7D57;  --color-approved-bg: #EEF7F1;   --color-approved-border: #A9D3B8;
+
+  --color-larva-live: #2E8B57;
+  --color-larva-abnormal: #C2620E;
+  --color-larva-dead: #C2362B;
+
+  --radius-panel: 12px;   /* main panel */
+  --radius-card: 10px;    /* cards, tooltips */
+  --radius-control: 8px;  /* buttons, nav items, chips, inputs */
+  --radius-small: 6px;    /* badges, segmented buttons */
+
+  --shadow-panel: 0 1px 2px rgba(15, 26, 32, 0.04);
+  --shadow-nav-active: 0 1px 2px rgba(15, 26, 32, 0.06), 0 0 0 1px #E2E8EC;
+  --shadow-seg-active: 0 1px 2px rgba(15, 26, 32, 0.08);
+  --shadow-pop: 0 8px 24px rgba(15, 26, 32, 0.10);   /* tooltips, popovers, toasts */
+}
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv11";
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  input, select, textarea { font: inherit; color: inherit; }
+  a { color: inherit; }
+  *:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  h1, h2, h3 { margin: 0; }
+  dl, dd { margin: 0; }
+}
+
+/* Interaction states and utilities from the design source (Main.dc.html). */
+@layer components {
+  .tnum { font-variant-numeric: tabular-nums; }
+  .mono { font-family: var(--font-mono); }
+
+  .nav, .ghost, .solid, .chip, .seg, .rowbtn, .lnk {
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .nav:hover { background: rgba(255, 255, 255, 0.72); }
+  .nav[aria-current="page"], .nav[aria-current="page"]:hover { background: #fff; box-shadow: var(--shadow-nav-active); }
+
+  .solid {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 32px; padding: 0 12px; border: 0; border-radius: var(--radius-control);
+    background: var(--color-ink); color: #fff; font-size: 13px; font-weight: 500; white-space: nowrap;
+  }
+  .solid:hover { background: var(--color-ink-hover); }
+  .solid:disabled { background: var(--color-muted-bg); color: var(--color-faint); }
+
+  .ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 32px; padding: 0 12px; border: 1px solid var(--color-line); border-radius: var(--radius-control);
+    background: #fff; color: var(--color-ink); font-size: 13px; white-space: nowrap;
+  }
+  .ghost:hover { background: var(--color-subtle); border-color: var(--color-border-strong); }
+  .ghost:disabled { color: var(--color-faint); background: #fff; border-color: var(--color-line); }
+
+  .chip:hover { border-color: var(--color-faint); }
+  .seg:hover { color: var(--color-ink); }
+  .rowbtn:hover { background: var(--color-subtle); }
+
+  .lnk {
+    border: 0; background: transparent; padding: 0; font: inherit; color: var(--color-brand);
+    cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .lnk:hover { color: var(--color-ink); }
+
+  .field {
+    display: block; width: 100%; height: 32px; padding: 0 10px; box-sizing: border-box;
+    border: 1px solid var(--color-line); border-radius: var(--radius-control); background: #fff;
+    font-size: 13px; color: var(--color-ink);
+    transition: border-color .15s ease;
+  }
+  .field:hover { border-color: var(--color-border-strong); }
+  .field::placeholder { color: var(--color-faint); }
+  textarea.field { height: auto; padding: 8px 10px; line-height: 1.45; resize: vertical; }
+
+  .tag {
+    display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; color: var(--color-ink-4);
+    border: 1px solid var(--color-line); border-radius: var(--radius-small); padding: 2px 6px; white-space: nowrap;
+  }
+
+  .spin {
+    display: inline-block; width: 12px; height: 12px; box-sizing: border-box; border-radius: 999px;
+    border: 2px solid var(--color-border-strong); border-top-color: var(--color-ink);
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .appear { animation: appear .18s ease-out; }
+  @keyframes appear { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+  /* Hover tooltips on the floor plan and the 14-day grid */
+  .tip { position: absolute; opacity: 0; visibility: hidden; transition: opacity .15s ease, visibility .15s ease; pointer-events: none; z-index: 30; }
+  .tip.below { top: calc(100% + 6px); }
+  .tip.above { bottom: calc(100% + 6px); }
+  .tip.c { left: 50%; transform: translateX(-50%); }
+  .tip.l { left: 0; }
+  .tip.r { right: 0; }
+
+  .ov { position: absolute; border: 0; padding: 0; background: transparent; cursor: pointer; transition: background-color .15s ease, box-shadow .15s ease; }
+  .ov:hover { background: rgba(15, 26, 32, 0.035); box-shadow: inset 0 0 0 1px var(--color-border-strong); }
+  .ov:hover .tip, .ov:focus-visible .tip { opacity: 1; visibility: visible; }
+
+  .tk-body, .tk-sel { transition: fill .18s ease, stroke .18s ease, stroke-width .18s ease; }
+  .pipe1, .pipe2 { transition: stroke .18s ease, stroke-width .18s ease; }
+  .planbox:has(.ov.l1:hover) .pipe1, .planbox:has(.ov.l1:focus-visible) .pipe1 { stroke: var(--color-ink-3); stroke-width: 3; }
+  .planbox:has(.ov.l2:hover) .pipe2, .planbox:has(.ov.l2:focus-visible) .pipe2 { stroke-width: 3.5; }
+
+  .hc { position: relative; flex: 1; height: 16px; border-radius: 3px; box-sizing: border-box; transition: box-shadow .15s ease; }
+  .hc:hover { box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--color-ink) !important; z-index: 2; }
+  .hc:hover .tip { opacity: 1; visibility: visible; }
+
+  .plancard { container-type: inline-size; }
+  .planwrap { display: block; }
+  .planlist { display: none; }
+  @container (max-width: 660px) {
+    .planwrap { display: none; }
+    .planlist { display: flex; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

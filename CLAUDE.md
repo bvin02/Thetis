@@ -1,4 +1,4 @@
-# Hatchery Autopilot
+# Thetis
 
 A localhost web app for shellfish hatcheries:
 - analyze microscope photos of oyster larvae (OpenCV)

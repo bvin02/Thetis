@@ -1,4 +1,4 @@
-# Design: final UI for Hatchery Autopilot
+# Design: final UI for Thetis
 
 The UI is approved. Build it to match these files. Screens that aren't drawn here (New check, Tank
 page, Decisions, Tanks, Checks) reuse the same tokens and components.
