@@ -100,7 +100,7 @@ def load_world(session: Session, now: datetime | None = None) -> World:
     cfg = settings_for(hatchery)
     rooms = {r.id: r for r in session.exec(select(models.Room))}
     lines = {x.id: x for x in session.exec(select(models.Line))}
-    tanks = list(session.exec(select(models.Tank).order_by(models.Tank.id)))
+    tanks = sorted(session.exec(select(models.Tank)), key=lambda t: (rooms[t.room_id].kind == "setting", t.id))
     batches = list(session.exec(select(models.Batch).order_by(models.Batch.spawn_date)))
 
     checks_by_batch: dict[int, list[models.Check]] = defaultdict(list)

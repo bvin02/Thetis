@@ -102,3 +102,33 @@ sentence, T-03's photo byte-identical to the fixture). All pass.
   stop at the first non-corrosive one.
 
 **Still open:** nothing.
+
+## Phase 3: Floor
+
+**Built:** `GET /api/floor`, `GET /api/tanks`, `GET /api/tanks/{id}`, batch start/close, decisions API
+(list, approve, dismiss, undo), static photos at `/api/files`. Floor screen from live data: headline,
+summary, Act now and Monitor chips, metrics, SVG floor plan with tooltips and pipe highlighting, Plan |
+Table toggle, phone list (container query), Last 14 days grid, inspector (photo with outlines drawn
+from detections, risk meter, condition table, survival chart, recommended actions), toast provider,
+room filter from the sidebar, full-screen sheet on phones.
+
+**Tests:** all backend tests pass. Driven with Playwright at 1440 px: selecting tanks, table view,
+tooltips, approve, dismiss and undo (badge goes 7 → 5 → 7), no console errors. Compared with
+`home.png`: section positions measured against `design/html/home.html` are within about 1 px down to
+Recommended actions (about 4 px there, because computed rows differ). No horizontal overflow at 390,
+800, 1100 or 1440 px.
+
+**Decisions:**
+- Only `data/photos` and `data/uploads` are served at `/api/files`. The database in the same folder
+  is not public.
+- Design differences that come from computed values (allowed by SPEC §4.1): next check is S-01 (the
+  oldest last check), T-03 shows 43 live (the seed's number), some history cells differ.
+- The "Synthetic sample" badge on inspector photos is not in the mockup. It is there because the honesty
+  rule requires it.
+- The inspector shows a close crop of the photo, as the mockup does; "Review outlines" shows all of it.
+- Reports, ⌘K and the Algae room are hidden, as SPEC §4.0 says.
+- Closing a batch dismisses its open tank-level decisions with a note, so the badge isn't left stale.
+- In a room filter, chips, table and grid show that room, other tanks dim on the plan, and the
+  inspector moves to that room's worst tank.
+
+**Still open:** the phone sheet opens on tap; the bottom-of-page inspector stays as in `home-phone.png`.

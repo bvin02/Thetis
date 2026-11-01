@@ -6,6 +6,11 @@
   --font-sans: "Geist Variable", "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
 
+  /* The design has no explicit line heights: match its "normal" so spacing lines up. */
+  --text-xs: 12px;   --text-xs--line-height: 1.23;
+  --text-sm: 14px;   --text-sm--line-height: 1.23;
+  --text-xl: 20px;   --text-xl--line-height: 1.23;
+
   --color-canvas: #EDF1F3;      /* page background behind the panel */
   --color-panel: #FFFFFF;
   --color-line: #E2E8EC;        /* panel and card borders */
@@ -45,16 +50,16 @@
 
 @layer base {
   html, body, #root { height: 100%; }
+  html { line-height: 1.23; }
   body {
     margin: 0;
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.23;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "cv11";
   }
   button { font: inherit; color: inherit; cursor: pointer; }
   button:disabled { cursor: not-allowed; }

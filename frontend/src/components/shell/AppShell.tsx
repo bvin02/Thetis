@@ -1,11 +1,13 @@
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { ToastProvider } from '../Toast'
 import { Sidebar } from './Sidebar'
 
 export default function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false)
   return (
+    <ToastProvider>
     <div className="flex min-h-full bg-canvas">
       <aside className="sticky top-0 hidden h-screen w-[216px] flex-none min-[900px]:block">
         <Sidebar />
@@ -41,5 +43,6 @@ export default function AppShell() {
         </main>
       </div>
     </div>
+    </ToastProvider>
   )
 }

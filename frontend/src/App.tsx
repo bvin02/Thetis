@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import AppShell from './components/shell/AppShell'
 import { TopBar } from './components/shell/TopBar'
+import FloorPage from './pages/Floor'
 
 function Placeholder({ title }: { title: string }) {
   return (
@@ -17,7 +18,7 @@ export default function App() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Placeholder title="Floor" />} />
+        <Route index element={<FloorPage />} />
         <Route path="tanks" element={<Placeholder title="Tanks" />} />
         <Route path="checks" element={<Placeholder title="Checks" />} />
         <Route path="decisions" element={<Placeholder title="Decisions" />} />

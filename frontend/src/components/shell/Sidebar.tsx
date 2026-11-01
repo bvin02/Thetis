@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useFloor } from '../../api/hooks'
+import { LevelSwatch } from '../ui'
 
 const ICON = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.75, 'aria-hidden': true } as const
 
@@ -27,6 +29,11 @@ const NAV: { to: string; label: string; end?: boolean; icon: ReactNode }[] = [
 ]
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const { data } = useFloor()
+  const location = useLocation()
+  const activeRoom = location.pathname === '/' ? new URLSearchParams(location.search).get('room') : null
+  const waiting = data?.decisions_waiting ?? 0
+  const user = data?.user
   return (
     <div className="flex h-full flex-col gap-5 px-3 py-4">
       <div className="flex items-center gap-2.5 rounded-control px-2 py-1.5">
@@ -36,7 +43,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </svg>
         </span>
         <span className="flex min-w-0 flex-1 flex-col leading-[1.25]">
-          <span className="truncate text-[13px] font-semibold">Northwind Shellfish</span>
+          <span className="truncate text-[13px] font-semibold">{data?.hatchery.name ?? 'Thetis'}</span>
           <span className="truncate text-xs text-ink-4">Thetis</span>
         </span>
       </div>
@@ -49,26 +56,58 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             end={item.end}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `nav group flex h-8 items-center gap-2.5 rounded-control px-2.5 text-sm no-underline ${isActive ? 'font-medium text-ink' : 'text-ink-2'}`
+              `nav flex h-8 items-center gap-2.5 rounded-control px-2.5 text-sm no-underline max-[899px]:h-11 ${isActive ? 'font-medium text-ink' : 'text-ink-2'}`
             }
           >
             {({ isActive }) => (
               <>
                 <span className={isActive ? 'text-brand' : ''}>{item.icon}</span>
                 <span className="flex-1">{item.label}</span>
+                {item.to === '/decisions' && waiting > 0 && (
+                  <span
+                    aria-label={`${waiting} ${waiting === 1 ? 'decision' : 'decisions'} waiting`}
+                    className="tnum box-border grid h-5 min-w-5 place-items-center rounded-full bg-ink px-1.5 text-[11px] font-semibold text-white"
+                  >
+                    {waiting}
+                  </span>
+                )}
               </>
             )}
           </NavLink>
         ))}
       </nav>
 
-      <div className="mt-auto flex items-center gap-2.5 px-2.5 py-2">
-        <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-[#D9E1E6] text-[11px] font-semibold text-ink-2">DO</span>
-        <span className="flex flex-col leading-[1.25]">
-          <span className="text-[13px] font-medium">Dana Ortiz</span>
-          <span className="text-xs text-ink-4">Hatchery manager</span>
-        </span>
-      </div>
+      {data && data.rooms.length > 0 && (
+        <div className="flex flex-col gap-0.5">
+          <span className="px-2.5 pb-2 text-xs font-medium text-ink-4">Rooms</span>
+          {data.rooms.map((room) => {
+            const isActive = activeRoom === room.id
+            return (
+              <Link
+                key={room.id}
+                to={isActive ? '/' : `/?room=${room.id}`}
+                onClick={onNavigate}
+                aria-current={isActive ? 'page' : undefined}
+                className={`nav flex h-8 items-center gap-2.5 rounded-control px-2.5 text-[13px] no-underline max-[899px]:h-11 ${isActive ? 'font-medium text-ink' : 'text-ink-2'}`}
+              >
+                <LevelSwatch level={room.worst_level} size={8} />
+                <span className="flex-1">{room.name}</span>
+                <span className="tnum text-xs text-ink-4">{room.tank_count}</span>
+              </Link>
+            )
+          })}
+        </div>
+      )}
+
+      {user && user.name && (
+        <div className="mt-auto flex items-center gap-2.5 px-2.5 py-2">
+          <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-[#D9E1E6] text-[11px] font-semibold text-ink-2">{user.initials}</span>
+          <span className="flex flex-col leading-[1.25]">
+            <span className="text-[13px] font-medium">{user.name}</span>
+            <span className="text-xs text-ink-4">{user.role}</span>
+          </span>
+        </div>
+      )}
     </div>
   )
 }

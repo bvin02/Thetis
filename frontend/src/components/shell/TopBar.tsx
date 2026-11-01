@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useFloor } from '../../api/hooks'
 
 function useNow(intervalMs = 20_000) {
   const [now, setNow] = useState(() => new Date())
@@ -19,17 +20,18 @@ function clockText(d: Date) {
 
 export function TopBar({ crumbs, newCheckHref = '/checks/new' }: { crumbs: string[]; newCheckHref?: string }) {
   const now = useNow()
+  const { data } = useFloor()
   return (
     <header className="flex min-h-[52px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-divider px-7 py-2 max-[660px]:px-4">
       <nav aria-label="Location" className="flex flex-[1_1_240px] items-center gap-2 text-[13px]">
-        <span className="text-ink-4">Northwind Shellfish</span>
+        <span className="text-ink-4 max-[480px]:hidden">{data?.hatchery.name ?? 'Thetis'}</span>
         {crumbs.map((c, i) => (
           <span key={c} className="flex items-center gap-2">
-            <span aria-hidden="true" className="text-faint">/</span>
+            <span aria-hidden="true" className="text-faint max-[480px]:first:hidden">/</span>
             <span className={i === crumbs.length - 1 ? 'font-medium' : 'text-ink-4'}>{c}</span>
           </span>
         ))}
-        <span className="tag ml-1">Example data</span>
+        {data?.is_example && <span className="tag ml-1">Example data</span>}
       </nav>
       <span className="tnum text-[13px] text-ink-4">{clockText(now)}</span>
       <Link to={newCheckHref} className="solid no-underline">
