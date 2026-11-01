@@ -24,12 +24,12 @@ export function TopBar({ crumbs, newCheckHref = '/checks/new', hideNewCheck = fa
   return (
     <header className="flex min-h-[52px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-divider px-7 py-2 max-[660px]:px-4">
       <nav aria-label="Location" className="flex min-w-0 flex-[1_1_240px] flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
-        <span className="whitespace-nowrap text-ink-4 max-[660px]:hidden">{data?.hatchery.name ?? 'Thetis'}</span>
+        {data && <span className="whitespace-nowrap text-ink-4 max-[660px]:hidden">{data.hatchery.name}</span>}
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1
           return (
             <span key={c} className={`flex items-center gap-2 ${last ? '' : 'max-[660px]:hidden'}`}>
-              <span aria-hidden="true" className="text-faint max-[660px]:hidden">/</span>
+              {(data || i > 0) && <span aria-hidden="true" className="text-faint max-[660px]:hidden">/</span>}
               <span className={`whitespace-nowrap ${last ? 'font-medium' : 'text-ink-4'}`}>{c}</span>
             </span>
           )

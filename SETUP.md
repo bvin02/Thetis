@@ -1,7 +1,7 @@
 # Setup: exact steps
 
-You need **no new logins and no more photos**. Everything the build needs is in this pack. The
-only secret is the Anthropic API key you already have.
+You need **no new logins and no more photos**. The only secret is the Anthropic API key you already
+have, and the app works without it (Claude features hide).
 
 ## 1. Install the tools (once, about 5 minutes)
 | Tool | Mac | Windows (PowerShell) | Check |
@@ -12,19 +12,12 @@ only secret is the Anthropic API key you already have.
 
 Open a new terminal after installing, so the commands are found.
 
-## 2. Put the pack in your repo
-Unzip `hatchery-starter.zip`, then copy everything **including hidden files** (`.gitignore`,
-`.env.example`, `.claude/`) into the root of your repo:
-```bash
-cd ~/Downloads && unzip hatchery-starter.zip          # creates ~/Downloads/hatchery-starter/
-cp -R ~/Downloads/hatchery-starter/. ~/path/to/your-repo/
-cd ~/path/to/your-repo
-```
-On Windows: right-click the zip, choose **Extract All**, then copy everything inside
-`hatchery-starter` into your repo folder. Files starting with a dot show normally on Windows.
+## 2. Get the code
 
-If your repo already had a `.gitignore`, this replaces it. The new one covers `.env`, Python,
-Node, `data/` and the unlicensed photos.
+The repo already has everything: the app, the example data, the test photos. On a fresh clone, run:
+```bash
+npm run setup
+```
 
 ## 3. Check your API key is safe (2 minutes)
 1. Open `.env` in your editor. The line must be named exactly `ANTHROPIC_API_KEY=sk-ant-...`.
@@ -39,49 +32,28 @@ Node, `data/` and the unlicensed photos.
 5. Don't `export` or `source` the key in the terminal where you run `claude`. If Claude Code ever
    asks whether to use an API key, answer **No**, so it keeps using your Max plan.
 
-## 4. Commit the starter files
+## 4. Run it
+
 ```bash
-git add -A
-git status        # .env and fixtures/real/ must NOT be in the list
-git commit -m "Add spec, design, seed data and test fixtures"
+npm run seed    # loads the example hatchery (first run renders photos, about 15 s)
+npm run dev     # then open http://localhost:5173
 ```
 
-## 5. Build with Claude Code, one phase at a time
-```bash
-claude
-```
-1. Paste the **Phase 0** prompt from `SPEC.md` §14.
-2. When it stops, run `npm run dev` and open http://localhost:5173 to look.
-3. Then paste the next phase's prompt.
+| Command | What it does |
+|---|---|
+| `npm run seed` | Demo state: T-03 at Watch, ready for the live upload. Stop `npm run dev` first |
+| `npm run seed:full` | The designed state: T-03 already Critical |
+| `npm test` | Backend tests |
 
-After each phase:
-- run `npm test`
-- look at the app
-- ask Claude Code to commit
+`DEMO.md` is the click-by-click demo script.
 
-If a phase runs over its time box, use the cut list in §14.
-
-Suggested schedule (the YC deadline is Mon 8 pm PT = 11 pm ET; code freeze Mon 2 pm PT = 5 pm ET):
-- **Tonight:** phases 0 and 1 (scaffold and photo analysis)
-- **Sunday:** phases 2–5 (rules and seed, Floor, New check, Claude)
-- **Monday morning:** phases 6–7, then record the demo
-- **Monday afternoon:** write the application
-
-## 6. Record the demo
-Stop `npm run dev` first (Ctrl+C), then:
-```bash
-npm run seed       # T-03 starts at Watch; your upload in the video makes it Critical
-npm run dev
-```
-Follow the demo script in `SPEC.md` §1.
-- Upload `fixtures/demo/t03-today.jpg`, or use **Use a sample slide**. It is a labelled synthetic
-  slide; say so in the video.
-- `npm run seed:full` instead shows the finished designed state (T-03 already Critical).
-
-## What's in the pack
+## What's in the repo
 | Path | What |
 |---|---|
-| `SPEC.md` | What to build, phase by phase, with the prompts to paste |
+| `backend/`, `frontend/` | The app |
+| `PROGRESS.md` | What was built, test results and decisions |
+| `DEMO.md` | Click-by-click demo script |
+| `SPEC.md` | The build spec |
 | `CLAUDE.md` | Rules Claude Code follows in every session |
 | `design/` | Final UI: screenshots, static HTML with exact CSS, design source, tokens |
 | `seed/example_hatchery.json` | The example hatchery (12 tanks, 50 checks), already checked against the rules |
@@ -93,7 +65,7 @@ Follow the demo script in `SPEC.md` §1.
 
 ## If something goes wrong
 - **`uv` or `node` not found**: open a new terminal window, then check again.
-- **Fresh clone on another computer**: run `npm run setup` once (it exists after phase 0).
+- **Fresh clone on another computer**: run `npm run setup` once.
 - **Port 5173 or 8000 busy**: close the old `npm run dev` (Ctrl+C), or restart the terminal.
 - **Claude features don't show**: check the key name in `.env` and restart `npm run dev`.
 - **Want more real photos** (optional): `bash fixtures/sources/fetch_sources.sh`. The ZooCAMNet

@@ -8,13 +8,6 @@ import { ActionRow } from './ActionRows'
 
 const METER: Level[] = ['ok', 'watch', 'risk', 'critical']
 
-/** The design shows a close crop of the photo so outlines read at this size; the review screen shows all of it. */
-function closeCrop(width: number, height: number): [number, number, number, number] {
-  const w = width * 0.62
-  const h = Math.min(height, (w * 2) / 3)
-  return [(width - w) / 2, (height - h) / 2, w, h]
-}
-
 function CountChip({ cls, count, label }: { cls: string; count: number; label: string }) {
   return (
     <span className="flex items-center gap-[5px]">
@@ -38,7 +31,6 @@ export function LatestCheck({ tank }: { tank: TankDetail }) {
         <div className="relative box-border aspect-[3/2] w-full overflow-hidden rounded-control border border-line bg-muted-bg">
           <OutlinedPhoto
             url={photo.url} width={photo.width} height={photo.height} detections={photo.detections}
-            view={closeCrop(photo.width, photo.height)}
             alt={`Microscope photo from the latest check of ${tank.id}, with each larva outlined: green live, orange abnormal, red dead`}
           >
             {photo.synthetic && (

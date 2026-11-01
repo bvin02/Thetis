@@ -44,7 +44,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </span>
         <span className="flex min-w-0 flex-1 flex-col leading-[1.25]">
           <span className="truncate text-[13px] font-semibold">{data?.hatchery.name ?? 'Thetis'}</span>
-          <span className="truncate text-xs text-ink-4">Thetis</span>
+          {data && <span className="truncate text-xs text-ink-4">Thetis</span>}
         </span>
       </div>
 
