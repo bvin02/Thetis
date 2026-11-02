@@ -23,6 +23,9 @@ fixtures/real/
 fixtures/sources/downloads/
 **/J006*
 
+# The website zip is built from website/ for upload
+thetis-website.zip
+
 # Test output
 playwright-report/
 test-results/

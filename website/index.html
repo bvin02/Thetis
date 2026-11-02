@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thetis: see the crash coming</title>
+<meta name="description" content="Thetis counts oyster larvae from your microscope photos, flags what could turn into a crash, and tells you how to head it off, with doses in the chemicals you already keep on site.">
+<link rel="canonical" href="https://thetis.tech/">
+<meta name="theme-color" content="#EDF1F3">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Thetis">
+<meta property="og:title" content="Thetis: see the crash coming">
+<meta property="og:description" content="Counts larvae from microscope photos, flags what could turn into a crash, and tells you how to head it off.">
+<meta property="og:url" content="https://thetis.tech/">
+<meta property="og:image" content="https://thetis.tech/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://thetis.tech/assets/og.png">
+<link rel="preload" href="assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-row">
+    <a class="logo" href="#top" aria-label="Thetis, back to top">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#13557A"/><g fill="none" stroke="#fff" stroke-width="2.33"><circle cx="14" cy="14" r="9.33"/><circle cx="14" cy="14" r="3.5"/></g></svg>
+      <span>Thetis</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#count">Photo to count</a>
+      <a href="#risks">Crash risks</a>
+      <a href="#yield">Yield</a>
+      <a href="#claude">AI</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-solid btn-small" href="#demo">Book a demo</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- Hero -->
+<section class="hero" id="top">
+  <div class="wrap hero-text">
+    <div class="hero-title">
+      <p class="eyebrow">For shellfish hatcheries</p>
+      <h1>See the crash coming.<br>Know what to do about it.</h1>
+    </div>
+    <div class="hero-side">
+      <p class="lead">Thetis counts larvae from your microscope photos, flags what could turn into a crash, and tells you how to head it off, with doses in the chemicals you already keep on site.</p>
+      <div class="actions">
+        <a class="btn btn-solid" href="#demo">Book a demo</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+    </div>
+  </div>
+  <figure class="wrap hero-shot">
+    <picture>
+      <source media="(max-width: 640px)" srcset="assets/shots/floor-phone.webp" width="780" height="1273">
+      <img src="assets/shots/floor.webp" srcset="assets/shots/floor-1280.webp 1280w, assets/shots/floor.webp 2560w" sizes="(min-width: 1400px) 1280px, 92vw" width="2560" height="1742" fetchpriority="high" decoding="async"
+        alt="The Thetis Floor screen, with example data. The headline says 3 tanks need attention now. T-03 is Critical with a bacterial pattern, T-04 and T-05 are At risk from corrosive water on line 2, and a floor plan shows every tank by status.">
+    </picture>
+    <figcaption class="sr-only">The Floor, the screen a manager opens first. Example data.</figcaption>
+  </figure>
+</section>
+
+<!-- How it works -->
+<section class="band how" id="how">
+  <div class="wrap">
+    <p class="kicker">How it works</p>
+    <h2 class="how-title">Four steps at every drain-down.</h2>
+    <ol class="how-steps">
+      <li>
+        <span class="num" aria-hidden="true">1</span>
+        <h3>Photograph a sample</h3>
+        <p>Use the microscope you already own. There’s no new hardware to buy or install.</p>
+      </li>
+      <li>
+        <span class="num" aria-hidden="true">2</span>
+        <h3>Check the calls</h3>
+        <p>Thetis outlines every larva as live, abnormal or dead, and marks the ones it isn’t sure about. Fix any call with a click.</p>
+      </li>
+      <li>
+        <span class="num" aria-hidden="true">3</span>
+        <h3>See what’s at risk</h3>
+        <p>The check joins the tank’s record. Thetis reads it against the tank’s history and the water on its line.</p>
+      </li>
+      <li>
+        <span class="num" aria-hidden="true">4</span>
+        <h3>Approve the next step</h3>
+        <p>You get what could crash, what to do about it and where to raise yield. A person decides. Nothing acts on equipment.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- Job 1: photo to count -->
+<section class="band band-top" id="count">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker"><span class="num" aria-hidden="true">1</span>Photo to count</p>
+      <h2>A photo goes in.<br>Every larva comes back counted, measured and classified.</h2>
+      <p class="lead">In about a second, every larva has an outline: green for live, orange for abnormal, red for dead. The ones Thetis isn’t sure about get a question mark, so your tech looks there first.</p>
+    </div>
+
+    <figure class="lab" id="lab">
+      <div class="lab-photo">
+        <div class="lab-bar">
+          <p class="lab-hint"><strong>Try it.</strong> <span class="only-mouse">Click</span><span class="only-touch">Tap</span> any outline to correct the call.</p>
+          <button type="button" class="btn-s ghost" data-lab-replay>Run again</button>
+        </div>
+        <div class="slide">
+          <img src="assets/slide.webp" width="1600" height="1200" loading="lazy" decoding="async" alt="">
+          <svg viewBox="0 0 1600 1200" role="group" aria-label="Synthetic microscope slide of oyster larvae on a counting grid, with an outline around each of 62 larvae. Use the arrow keys to move between larvae, and Enter to change a call.">
+            <path pathLength="1" data-c="live" data-um="113" d="M1080 19l-9 8-5 11 0 13 1 1 0 3 2 3 0 2 2 4 4 5 0 4 2 3 0 2 2 0 3 2 11 0 1 1 4 0 1 1 9 0 1-1 7-1 8-4 7-8 4-9 0-15-1-1 0-3-7-12-8-7-8-4-6-1-1-1-13 0-1 1-4 0z"/>
+            <path pathLength="1" data-c="live" data-um="148" d="M607 9l-5 0-1-1-12 0-1 1-4 0-13 5-8 6-6 7-6 14 0 14 1 1 1 7 3 6 4 6 7 7 4 3 5 2 3 4 1 3 3 1 4 3 9-1 5-4 10-1 16-7 8-7 5-7 1-4 2-3 0-4 1-1 0-14-1-1-1-6-6-11-12-11-10-5-3 0z"/>
+            <path pathLength="1" data-c="dead" data-um="156" d="M212 14l-3 0-2 4-4 0-3-2-2 0-4-2-16 0-1 1-6 1-13 8-10 14 0 2-3 7-1 7-5 6-1 8 3 6 7 6 6 11 8 8 12 7 8 1 1 1 10 0 1-1 7-1 12-7 9-10 4-8 0-2 2-4 0-4 1-1 0-17-1-1-1-7-5-10-5-7-7-6 0-4 2-1z"/>
+            <path pathLength="1" data-c="live" data-um="92" d="M1417 61l-7 3-4 3-4 5-4 10 0 7-2 3 0 7 3 4 3 1 1 2 11 10 2 0 4 2 13 0 9-5 5-6 2-4 0-2 2-4 0-11-1-1 0-3-5-10-7-7-10-4z"/>
+            <path pathLength="1" data-c="abnormal" data-um="143" data-u d="M61 86l-4 5-4 8 0 3 3 3 0 4-5 3-9 10 0 9 4 6 0 4-2 2 0 3 15 8 11 10 8 3 23-1 11-4 4-4 2-4 0-13-7-17 0-6 2-2 3-8 0-6-2-4-3-2-2 0-1-2-7-7-1 0-3-4-7 1-1-1-7 0-1-1-10 0z"/>
+            <path pathLength="1" data-c="abnormal" data-um="138" data-u d="M507 136l-4-3-14-6-12-13-4-2-13 0-1 1-2 0-2 2 0 6-3 3-5 2-2 2-6 1-3 3 0 8 3 4 0 5-4 3 0 9-1 1-1 9-1 1 0 6 3 8 6 5 10 1 1-1 5 0 1-1 10-1 11-4 6-5 4-6 7-7 3-1 5-5 1 0 6-9 0-9-1-1 0-2z"/>
+            <path pathLength="1" data-c="dead" data-um="150" d="M643 142l-1 1-8 1-8 4-4 3-8 9-6 13-2 15-4 5 0 9 6 7 3 1 2 2 4 7 13 12 10 4 13 2 1-1 5 0 1-1 3 0 1-1 5-1 10-7 4-5 6-10 0-2 2-4 0-3 1-1 0-19-1-1-1-7-3-5 0-2-6-9-1 0-5-6-9-6-2 0-3-2-3 0-5-2z"/>
+            <path pathLength="1" data-c="live" data-um="109" d="M1024 173l-7 6-4 7 0 2-2 4 0 12 1 1 1 6 7 11 6 5 12 6 13 1 1-1 5 0 8-4 8-8 4-10 0-13-1-1-1-5-2-3 0-2-2-2 0-5-2-4-3-3-2 0-1-1-8 0-8-3-13 0z"/>
+            <path pathLength="1" data-c="live" data-um="89" d="M63 199l-6-1-1-1-8 0-8 3-7 0-4 3-1 2 0 4-5 9-1 13 1 1 1 5 3 5 7 6 2 0 3 2 15 0 1-1 3 0 2-2 6-3 7-8 4-11-1-12-4-7-4-4z"/>
+            <path pathLength="1" data-c="live" data-um="148" d="M749 201l-1 1-6 0-10 4-6 4-6 6-7 11-3 12-2 1-3 4 0 2-1 1 0 7 2 5 6 5 2 4 0 2 5 8 9 9 6 4 2 0 3 2 3 0 5 2 10 0 1-1 3 0 1-1 3 0 5-2 6-4 9-9 5-9 0-2 2-4 2-18-1-1-1-10-2-3-1-5-6-9-7-7-8-5-2 0-7-3-7 0-1-1z"/>
+            <path pathLength="1" data-c="live" data-um="104" d="M153 221l-1 1-4 0-8 4-7 6-4 6 0 2-3 6 0 7-1 1 0 3 1 1 0 6 1 1 0 2 5 9 5 5 10 5 14 0 9-4 4-3 0-1 2-1 3-4 1-3 6-5 2-3 0-12 2-3 0-2-6 0-1-1-1-6-2-2-1-3-7-7-8-4z"/>
+            <path pathLength="1" data-c="dead" data-um="134" d="M983 219l-15-2-1 1-7 0-1 1-3 0-3 2-2 0-6 3-9 9-5 9-1 8-1 1 0 5 1 1 1 9 5 10 10 10 6 4 0 2 2 3 5 3 9 0 4-3 12-1 13-5 9-8 3-4 4-9 0-4 1-1 0-11-1-1-1-6-3-6-8-10-7-5z"/>
+            <path pathLength="1" data-c="live" data-um="137" d="M267 215l-7 0-5 2-2 2-8 0-1 1-4 0-10 4-8 6-1 2-1 0-3 4-5 11 0 5-1 1 1 12 6 13 4 4 0 1 1 0 1 2 1 0 4 4 12 6 3 0 5 2 15 0 1-1 3 0 1-1 3 0 3-2 2 0 6-4 8-8 5-10 0-3 1-1 0-14-1-1-1-6-3-6-3-4-8-8-4-2-3-3-1-3z"/>
+            <path pathLength="1" data-c="live" data-um="134" d="M1348 221l-1 1-7 1-6 3-8 7-4 6-4 10 0 4-1 1 0 12-3 6 0 5 2 4 4 4 3 0 8 9 8 6 10 4 4 0 1 1 9 0 1-1 7-1 9-5 9-10 2-4 0-2 2-3 1-9 1-1-1-13-6-15-11-12-6-3-2-2-2 0-4-2-3 0-1-1z"/>
+            <path pathLength="1" data-c="abnormal" data-um="124" d="M430 250l-9 0-4 2-5 6-3 6-3 10-2 2-8 4-4 5 0 18 1 1 0 2 5 7 9 8 0 2 2 4 3 0 3-3 5 0 2 3 2 0 1-9 1-2 3-2 2 0 1-1 12 1 1-1 5-1 3-2 1-2 10 0-1-10-6-12-1-10-1-1 0-4-2-5-7-7-6-3-3-3z"/>
+            <path pathLength="1" data-c="live" data-um="126" d="M1153 254l-1 1-3 0-8 3-11 9-6 12-6 6-2 5 0 3 1 1 0 3 2 3 2 1 2 8 7 12 1 6 3 0 3-4 4 0 1 1 1 7 2 0 4 2 14 0 1-1 5-1 1-7 1-1 5 0 3 4 2 0 1-1 1-6 4-5 4-9 2-14-1-1 0-6-1-1-1-6-4-8-7-8-10-6-8-1-1-1z"/>
+            <path pathLength="1" data-c="live" data-um="137" d="M1555 264l-5 0-1-1-11 0-6 2-10-1-14 6 0 3 5 6 0 4-2 3-7 0-5 15 0 10 3 9 0 4 1 3 4 2 0 4 1 1 6 1 13 6 10 1 1-1 8 0 11-4 6-4 4-6 6 0 1-6 4-6 3-10 0-13-4-11-6-8-7-5z"/>
+            <path pathLength="1" data-c="live" data-um="142" d="M587 289l-1 1-10 1-10 5-9 8-3 4-5 12 0 16 1 1 1 6 3 6 11 12 8 4 3 3 2 4 3 1 2 2 9 0 7-5 9-1 10-4 6-4 7-7 5-9 1-6 1-1 0-13-1-1-1-7-3-6-11-12-10-6-2 0-3-2-10-1-1-1z"/>
+            <path pathLength="1" data-c="live" data-um="120" d="M423 361l-15 0-1 1-4 0-3 2-9 0-6 3-3 5 0 3-1 1-5 1 0 3 1 1 0 7-2 4 0 16 1 1 1 5 5 8 3 3 8 5 6 1 1 1 6 0 1 1 2 0 1-1 5 0 1-1 4 0 3-2 2 0 2-2 3-1 8-7 7-11 0-2 2-4 0-3 1-1 0-8-1-1 0-5-1-1 0-2-5-9-4-4-6-4z"/>
+            <path pathLength="1" data-c="dead" data-um="147" d="M1195 352l-13 7-6 6-5 8-4 11 0 7-1 1 1 13 3 9 6 11 13 12 6 3 11 3 15-1 10-4 13-13 5-11 1-8 1-1 0-8 4-6 0-8-4-6-6-2-2-2-1-3-7-8-10-7-12-4z"/>
+            <path pathLength="1" data-c="dead" data-um="115" d="M278 378l-6 7-4 10 0 13 1 1 0 4 2 3 0 2 5 7 0 5 2 3 5 4 11 0 4 2 6 0 1 1 10-1 1-1 5-1 2-2 3-1 9-10 0-2 2-3 0-3 1-1 0-13-1-1 0-3-8-14-1 0-9-8-10-4-5 0-1-1-9 0-1 1-3 0z"/>
+            <path pathLength="1" data-c="dead" data-um="164" d="M83 377l-8 3-8 5-9 10-4 8-3 11 0 13-2 2-2 0 0 3 3 0 3 4-1 13 2 7 6 5 7 1 13 9 13 5 15 1 15-4 8-5 7-7 7-13 2-6 1-13-1-1 0-7-3-10-7-13-4-5-14-11-18-6z"/>
+            <path pathLength="1" data-c="live" data-um="132" d="M666 399l-3 0-1-1-14 0-1 1-7 1-12 7-5 0-6 4 0 2-2 3 0 11-2 5-1 1-5 0-1 1 0 2 2 2 3 0 1 1 1 12 1 1 0 3 3 4 0 2 8 9 9 5 7 1 1 1 10 0 1-1 8-1 11-6 9-9 5-8 0-2 3-7 0-4 1-1 0-9-1-1-1-8-5-9-8-8z"/>
+            <path pathLength="1" data-c="live" data-um="131" d="M1307 409l-5 3-1 2-7 1-11 5-8 7-6 9 0 2-2 4-1 10 1 1 0 5 4 10 5 7 7 6 5 2 2 2 10 2 1 1 16 0 1-1 7-1 6-3 6-4 7-8 5-11 0-6 1-1 0-2-1-1 0-7-2-3 0-2-2-4-8-10-9-6-4-1-5-6-4-2z"/>
+            <path pathLength="1" data-c="live" data-um="113" d="M1019 443l-12 5-7 6-5 7-4 10 0 3-1 1 0 12 6 14 7 7 8 4 4 0 1 1 10 0 1-1 6-1 6-3 4-4 1 0 4-5 2 0 6-4 1-2 0-8-1-1 0-14-1-1 0-3-4-10-8-8-7-4-3 0-1-1z"/>
+            <path pathLength="1" data-c="dead" data-um="144" d="M749 443l-5 5-1 4-12 12-5 10-2 6 0 12 4 12 10 11 11 6 8 1 1 1 9 0 1-1 10-1 3-2 5 0 1 1 0 4 4 1 1-4-3-2 0-4 6-4 10-13 3-10 0-15-5-11-9-10-7-4-12-3-13 0-5-3z"/>
+            <path pathLength="1" data-c="live" data-um="147" d="M900 449l-1 1-8 1-4 2-4 0-1 1 0 3-1 1-2 0-6 6-4 6-5 12 0 3-1 1 0 18 1 1 0 4 2 4 0 9 3 0 10 11 2 0 2 5 7 1 8 3 14 0 1-1 8-2 2-2 3-1 11-10 6-11 2-7 6-7 0-2 1-1 0-6-2-5-6-6 0-2-4-7 0-2-9-11-7-5-10-4-4 0-1-1z"/>
+            <path pathLength="1" data-c="live" data-um="155" d="M533 451l-20 1-16 7-11 11-6 13-1 15 3 11 7 12 8 8 4 2 9 11 4 2 9 0 6-4 13-1 15-6 13-12 6-14 0-4 1-1-1-13-2-7-7-12-14-12-9-4z"/>
+            <path pathLength="1" data-c="live" data-um="131" d="M261 480l-13 0-1 1-4 0-11 5-5 5-1 0-6 7-5 9 0 2-2 4 0 4-1 1 0 11 1 1 0 4 4 10 10 11 5 3 2 0 4 2 4 0 1 1 16-1 2-1 1-2 3 0 2-2 3-1 8-7 3 0 5-3 2-2 0-2 1-1 0-8-1-1 0-5 1-1 0-14-1-1-1-7-5-9-6-6-6-4-2 0-3-2-3 0z"/>
+            <path pathLength="1" data-c="live" data-um="143" d="M1133 490l-11 0-3 2-16 0-1 1-6 1-3 2-4 1-7 5-4 4-3 6-2 2 0 2-2 4 0 4-1 1 0 10 1 1 0 3 1 1 0 3 2 3 0 2 2 2 3 6 8 8 12 7 10 2 1 1 15 0 1-1 4 0 1-1 5-1 11-7 7-8 3-6 0-3 2-5 0-12-1-1-1-7-6-11-11-11 0-2-2-4-1 0z"/>
+            <path pathLength="1" data-c="live" data-um="115" d="M1450 526l-5 3-8 8-4 9 0 4-1 1 0 9 1 1 0 4 4 10 7 8 0 1 4 2 3 3 9 4 3 0 1 1 12 0 1-1 3 0 8-4 8-8 3-6 1-7 1-1 0-10-3-8 0-9-2-5-6-4-3 0-2-3-6 0-3-2-6-1-1-1-11 0-1 1z"/>
+            <path pathLength="1" data-c="live" data-um="104" d="M79 549l-4 4-1 0 0 1-4 4-5 11 0 15 2 3 0 2 4 6 6 5 11 4 12 0 1-1 12 0 2-1 3-3 1-5 7-10 0-2 2-4 0-4 1-1-1-10-5-10-7-6-10-4-12 0-1 1-6 1z"/>
+            <path pathLength="1" data-c="live" data-um="156" d="M335 565l-16 0-1 1-3 0-13 5-6 4-7 7-3 4-5 12 0 5-1 1 1 13 1 1 0 3 5 10 11 12 4 3 2 0 6 5 2 4 7 4 7 0 1-1 3 0 6-5 10-1 12-5 8-6 0-1 5-5 5-9 0-2 2-4 0-7 1-1-1-10-1-1 0-3-2-3 0-2-2-2-2-5-12-12-14-7-9-1z"/>
+            <path pathLength="1" data-c="dead" data-um="137" d="M1212 610l-9 8-7 14-1 13 1 1 0 6 3 7 0 6-1 1 0 2 2 5 4 4 4 2 5 0 10 6 2 0 4 2 3 0 1 1 15 0 11-4 12-11 4-8 0-3 2-5 0-13-1-1 0-4-6-13-11-12-4-3-11-5-3 0-1-1-15 0z"/>
+            <path pathLength="1" data-c="live" data-um="140" d="M637 628l-12-1-1 1-9 1-6 3-10 0-5 2-4 6 0 7-6 10-2 7 0 5-1 1 1 13 6 13 8 8 5 3 14 4 7 0 1-1 6 0 7-2 12-7 9-9 5-8 4-14 0-11-3-10-4-7-7-7z"/>
+            <path pathLength="1" data-c="live" data-um="147" d="M854 628l-9 0-4 3-11 0-1 1-4 0-1 1-5 1-8 4-4 4-1 0-6 8 0 2-3 4 0 3-1 1 0 17 1 1 0 3 4 8 13 14 10 5 6 1 1 1 4 0 1 1 12 0 1-1 4 0 1-1 5-1 9-5 7-7 2-4 3-3 3 0 3-3 0-8-1-1 1-16-1-2-3-2-3 0-8-12-9-7-1-4z"/>
+            <path pathLength="1" data-c="live" data-um="107" d="M504 673l-7 6 0 3-6 6-5 10 0 3-1 1 0 11 1 1 1 5 3 5 7 7 6 3 2 0 1 1 5 0 1 1 8 0 1-1 7-1 8-4 9-8 6-13 0-14-1-1 0-2-3-6-10-9-2 0-6-3-18 0-1-1z"/>
+            <path pathLength="1" data-c="live" data-um="162" d="M1411 670l-18 1-7 2-11 6-15 15-7 15-1 8-1 1 0 11 3 13 6 10 10 9 14 6 6 0 1 1 14-1 7-2 12-7 8 0 8-5 3-8-1-8 4-9 1-9 1-1-1-14-2-7-6-11-6-6-9-6z"/>
+            <path pathLength="1" data-c="live" data-um="139" d="M1092 679l-13 0-1 1-5 0-4 2-11 0-5 2-5 6 0 6-7 12 0 2-2 4 0 4-1 1 0 10 1 1 0 5 6 12 7 7 9 5 2 0 4 2 6 0 1 1 3 0 1-1 8 0 1-1 5-1 10-5 4-3 10-11 5-10 0-3 2-5 0-11-1-1 0-4-3-6 0-2-4-6-9-8-10-4-3 0z"/>
+            <path pathLength="1" data-c="live" data-um="113" d="M217 720l-8-1-1-1-6 0-1 1-5 0-1 1-6 1-2 2-3 1-7 7-4 7 0 3-1 1 0 13 1 1 1 6 6 9 7 6 1 4 5 4 6 1 4-2 9 0 1-1 5 0 1-1 5-1 7-4 6-6 4-8 0-3 1-1 0-12-1-1 0-3-4-8-4-4 0-1-1 0-5-5z"/>
+            <path pathLength="1" data-c="live" data-um="130" d="M1517 748l-3 2-5 0 0 7-1 1-5 0-6 4-7 7-6 12 0 4-1 1 0 11 1 1 0 3 2 3 0 2 2 2 1 3 5 5 0 1 4 3 3 1 2 2 3 0 1 2 2 0 1 1 19 1 1-1 8-1 7-3 6-4 7-7 7-14 0-15-1-1 0-3-2-3 0-2-4-6-9-8-11-5-8-1-4-4z"/>
+            <path pathLength="1" data-c="dead" data-um="162" d="M422 754l-4 0-1-1-12 0-1 1-8 1-12 6-4 4-1 0-8 9-3 6-2 2 0 2-2 3 0 2-2 4-2 16 1 1 0 7 1 1 0 3 5 12 5 7 5 5 6 4 10 4 4 0 1 1 13 0 1-1 7-1 13-7 4-4 1 0 0-1 2-1 0-1 7-7 6-2 5-7 0-10-3-5 0-15-1-1-2-10-4-8-10-11-4-3z"/>
+            <path pathLength="1" data-c="live" data-um="100" d="M699 776l-13 0-10 4-8 7-7 12 0 4-1 1 0 11 1 1 1 6 6 9 10 6 4 0 1 1 9 0 1-1 3 0 3-2 2 0 10-8 3 0 3-2 2-3 0-24-1-1 0-3-4-8-5-5z"/>
+            <path pathLength="1" data-c="dead" data-um="118" d="M808 807l-6 7-4 8 0 5-1 1 1 14 4 10 5 7 8 7 6 3 2 0 4 2 4 0 1 1 9 0 1-1 3 0 1-1 5-1 6-4 0-1 2-1 0-1 4-4 2-4 0-2 2-4 0-5 1-1-1-11-1-1 0-3-2-3 0-9-1-1 0-2-6-4-5 0-6-4-2 0-3-2-6-1-1-1-10 0-1 1-4 0z"/>
+            <path pathLength="1" data-c="live" data-um="155" d="M170 822l-6 0-9-5-3 0-1-1-18 0-1 1-4 0-13 6-14 13-8 16-2 15 1 1 0 7 6 14 10 10 13 6 4 0 1 1 12 0 1-1 4 0 1-1 6-1 5-3 9 0 3-2 2 0 3-3 3-6 0-8 2-2 4-10 2-14-1-1 0-7-1-1-1-6-3-6-7-8z"/>
+            <path pathLength="1" data-c="dead" data-um="167" d="M1398 842l-8 4-8 6-7 9-4 8-2 8 0 7-1 1 1 12 2 8 5 9 0 2 5 7 13 12 10 5 12 3 13 0 8-2 10-5 8-7 4-5 6-13 1-9 1-1 0-7-1-1 0-7-1-1 0-9 1-1-1-11-6-6-9-2-11-9-14-6-19-1z"/>
+            <path pathLength="1" data-c="live" data-um="62" d="M451 872l-4 0-4 2-7 0-7 4-4 6 0 2-1 1 0 6 1 1 1 5 5 6 7 4 13 0 1-1 2 0 7-6 2-4 0-11-2-4z"/>
+            <path pathLength="1" data-c="live" data-um="116" d="M305 867l-5-3-2 0-4-2-10-1-1 1-6 0-1 1-5 1-7 4-6 1 0 2 2 2 0 4-1 1-5 0-2 2-3 6 0 3-2 5 0 9 1 1 0 4 2 3 0 2 4 6 3 0 1 1 0 5 1 1 5 0 8 3 14 0 5-2 10 0 1-1 2 0 5-6 0-5 3-4 4-9 0-3 1-1 0-13-5-11z"/>
+            <path pathLength="1" data-c="live" data-um="156" d="M1050 866l-10 8-5 7-4 10 0 4-1 1 0 13 1 1 2 10 3 6 8 11 12 9 0 2 3 5 7-1 5-4 4 0 1-1 9 0 7 5 6 1 3-4 0-3 2-1 10-11 1-3 2-2 0-2 2-4 0-4 1-1 0-13-1-1 0-5-3-6 0-11-1-1-1-5-7-5-8 0-7-5-2 0-6-3-9-1-1-1-12 1z"/>
+            <path pathLength="1" data-c="dead" data-um="146" d="M962 865l-2 0-4-2-3 0-1-1-9 0-1 1-5 0-1 1-5 1-10 6-20 20-1 2 0 11 1 1 0 3 1 1 0 3 1 1 0 3 1 1 0 3 1 1 1 5 7 12 13 13 34-1 15-15 6-10 0-2 3-7 0-5 1-1 0-12-1-1 0-4-6-14-11-11z"/>
+            <path pathLength="1" data-c="live" data-um="139" d="M583 949l-2 4 0 3-2 2-6 13-1 12 1 1 0 5 3 8 4 6 6 6 10 6 2 0 4 2 8 1 4 4 10 1 6-3 4-6 3-1 9-6 7-8 6-14 0-15-2-3 0-3-3-6-2-2 0-4-2-3-2 0-1 1-5 0-1-1 0-3-2-3-5 0-8-3-17 0-1 1-4 0-1 1-5 1-5 3 0 5-1 1-4 0-1-2z"/>
+            <path pathLength="1" data-c="live" data-um="160" d="M1248 970l-2 0-4-2-4 0-1-1-16 0-1 1-3 0-5 2-11-1-1 1-5 1-6 7-1 8-6 8-4 9 0 3-2 5 0 15 1 1 0 3 4 10 4 6 9 8 3 1 2 2 2 0 7 3 4 0 1 1 14 0 1-1 8-1 13-6 8-6 10-13 4-8 0-3 2-4 0-6 1-1 0-5-1-1-1-10-6-12-9-9z"/>
+            <path pathLength="1" data-c="abnormal" data-um="121" d="M791 984l-2 2-1 4 4 7 0 8-11 12-1 5-1 1 0 3-4 4-1 0-1 2 1 4 8 6 16 7 9 0 1-1 2 0 7-3 3 0 1-1 12 0 1-1 4 0 7-4 3-4 0-2 1-1 0-7-5-11-4-6 0-2-1-1 0-9-3-7-3-3-8-4-2 0-4-2-4 0-1-1-9 0-8 4z"/>
+            <path pathLength="1" data-c="abnormal" data-um="130" data-u d="M61 992l-12 8-9 9-2 4 0 8 2 5 3 4 12 8 6 6 1 2 0 6 1 1 1 5 6 5 4 0 1-1 9 1 1-1 9-1 16-9 4-5 1-5 1-1 0-5-1-1 0-13-4-2 0-7 1-1 0-3-1-1-1-5-3-3-5-2-10 0-1-1 0-4-3-2-22-1-3 2z"/>
+            <path pathLength="1" data-c="live" data-um="137" d="M1561 993l-3-1-13 0-6-2-15 0-4 1-6 3-6 1 0 5-4 1-2 2-5 9-2 7 0 13 2 8 5 9 2 2 4 1 0 7 7 2 7 4 2 2 0 5 1 1 2 0 0-4 1-1 17 1 11-3 7-4 8-8 3-5 3-10-1-17-5-11-5-6-1-7z"/>
+            <path pathLength="1" data-c="live" data-um="122" d="M207 1011l-5 4-4 0-1 1-8 2-12 8-6 9 0 2-2 4-1 8 1 1 0 6 3 6 0 2 4 6 6 6 14 7 4 0 1 1 14 0 1-1 7-1 6-3 11-10 5-11 0-14-4-10-5-7-1 0-5-5-6-3-5-6-4-2z"/>
+            <path pathLength="1" data-c="live" data-um="146" d="M332 1008l-8 4-9 9-5 9-1 6-1 1-1 14 1 1 0 5 1 1 0 3 1 1 1 5 3 6 6 8 8 7 9 5 2 0 4 2 4 0 1 1 11 0 1-1 5 0 1-1 2 0 9-5 8-8 5-9 2-10 1-1 0-12-1-1 0-8 2-3 0-2-1-1 0-5-6-6-7-2-6-6-10-6-2 0-4-2-3 0-1-1-16 0-1 1z"/>
+            <path pathLength="1" data-c="dead" data-um="121" d="M1443 1027l-5 0-1-1-2 0-1 1-7 0-1 1-5 1-7 4-9 9-4 1-5 5-1 7 2 3 0 14 1 1 1 7 7 12 6 5 8 4 4 0 1 1 9 0 1-1 7-1 9-5 9-9 1-3 3-4 0-2 3-6 0-19-5-11-2-3-9-8-2 0z"/>
+            <path pathLength="1" data-c="live" data-um="107" d="M600 1075l-7 4-6 6-4 8 0 3-1 1 0 13 1 1 1 6 5 9 6 6 11 6 2 0 1 1 15 0 1-1 2 0 6-3 7-7 4-8 0-3 1-1 0-13-1-1 0-12-1-1 0-2-5-4-4 0-5-4-11-5-14 0-1 1z"/>
+            <path pathLength="1" data-c="live" data-um="134" d="M483 1072l-10 1-4 4-9 1-12 6-4 3-6 7-1 3-2 2 0 2-2 4 0 4-1 1 0 8 1 1 0 4 3 6 0 2 4 6 6 6 7 5 7 3 6 1 1 1 18 0 1-1 3 0 1-1 5-1 6-3 4-3 6-7 3-5 0-2 2-3 0-3 1-1 0-14-1-1 0-3-5-10-9-9-9-5-4-6z"/>
+            <path pathLength="1" data-c="dead" data-um="123" d="M84 1110l-11 4-9 7-3 6-2 2 0 2-2 4 0 15 1 1 0 3 2 3 0 2 3 5 0 7 3 5 2 0 3 2 8 0 5 3 6 1 1 1 0 4 1 1 3 0 0-4 1-1 7 0 1-1 6-1 7-4 8-8 3-6 0-3 2-4 0-12-6-15-3-4-10-9-6-3-2 0-4-2-3 0-1-1z"/>
+            <path pathLength="1" data-c="live" data-um="104" d="M297 1127l-3 2-2 3-13 12-2 5-2 2 0 3-1 1 0 14 4 8 7 7 5 3 2 0 3 2 3 0 1 1 10 0 1-1 8-1 11-7 6-7 4-10 0-11-1-1 0-3-3-6-10-9-4-2-3 0-5-2-5 0-6-3z"/>
+          </svg>
+          <div class="tip" hidden></div>
+        </div>
+        <p class="lab-foot"><span class="tag">Synthetic sample</span> 62 larvae · 1.60 µm/px · grid calibration · 0.0049 mL in view</p>
+      </div>
+
+      <div class="lab-panel">
+        <div class="lab-block lab-tank">
+          <h3>Tank</h3>
+          <p class="tnum"><span class="mono">T-03</span> · Day 9 · Early umbo</p>
+        </div>
+        <div class="lab-block">
+          <div class="lab-head"><h3>Counts</h3><span class="muted">62 counted</span></div>
+          <div class="counts">
+            <div class="count"><span class="count-label"><i class="ring ring-live"></i>Live</span><b class="tnum" data-n="live">43</b><span class="count-pct" data-p="live">69% of counted</span></div>
+            <div class="count"><span class="count-label"><i class="ring ring-abnormal"></i>Abnormal</span><b class="tnum" data-n="abnormal">5</b><span class="count-pct" data-p="abnormal">8% of counted</span></div>
+            <div class="count"><span class="count-label"><i class="ring ring-dead"></i>Dead</span><b class="tnum" data-n="dead">14</b><span class="count-pct" data-p="dead">23% of counted</span></div>
+          </div>
+          <p class="tocheck" data-unsure>3 to check</p>
+          <p class="sr-only" role="status" data-lab-status></p>
+        </div>
+        <div class="lab-block">
+          <div class="lab-head"><h3>Size</h3><span class="tag">Early umbo</span></div>
+          <p class="metric"><b class="tnum">128 ± 21</b> <span class="muted">µm</span> <span class="metric-side">CV 0.16</span></p>
+          <div class="hist">
+            <svg viewBox="0 0 340 64" width="100%" role="img" aria-label="Shell lengths from 50 to 180 µm, most of them between 120 and 150 µm."><line x1="0" y1="63.5" x2="340" y2="63.5" stroke="#E2E8EC"/><rect x="27.2" y="59.7" width="24.2" height="4.3" rx="1" fill="#A7B3BA"/><rect x="79.5" y="59.7" width="24.2" height="4.3" rx="1" fill="#A7B3BA"/><rect x="105.6" y="59.7" width="24.2" height="4.3" rx="1" fill="#A7B3BA"/><rect x="131.8" y="34.0" width="24.2" height="30.0" rx="1" fill="#A7B3BA"/><rect x="157.9" y="42.6" width="24.2" height="21.4" rx="1" fill="#A7B3BA"/><rect x="184.1" y="42.6" width="24.2" height="21.4" rx="1" fill="#A7B3BA"/><rect x="210.2" y="4.0" width="24.2" height="60.0" rx="1" fill="#A7B3BA"/><rect x="236.4" y="29.7" width="24.2" height="34.3" rx="1" fill="#A7B3BA"/><rect x="262.5" y="46.9" width="24.2" height="17.1" rx="1" fill="#A7B3BA"/><rect x="288.7" y="55.4" width="24.2" height="8.6" rx="1" fill="#A7B3BA"/></svg>
+            <div class="hist-scale"><span>50 µm</span><span>180 µm</span></div>
+          </div>
+        </div>
+        <div class="lab-block">
+          <h3>Gut fullness <span class="muted lab-beta">beta</span></h3>
+          <p class="metric"><b class="tnum">0.19</b></p>
+        </div>
+        <div class="lab-block">
+          <h3>Estimate for the tank</h3>
+          <p class="estimate">≈ <b class="tnum" data-est>3.9M</b> live larvae (<span class="tnum" data-est-pct>39%</span> of 10.0M stocked)</p>
+        </div>
+        <div class="lab-block">
+          <h3>Water readings</h3>
+          <p class="estimate">Line 1 · last reading Ω 2.9 · pH 7.96</p>
+        </div>
+      </div>
+
+      <figcaption class="lab-after" data-save>
+        <p data-when="ready" hidden>Happy with the calls? Save the check to the tank.</p>
+        <p data-when="saved">Check saved. <span class="nb">T-03</span> is now Critical. 3 decisions waiting.</p>
+        <div class="lab-change">
+          <span class="chip chip-watch"><i class="dot dot-watch"></i><span class="mono">T-03</span> <span class="t-watch">Watch</span> <span class="chip-why">Slow growth</span></span>
+          <span class="lab-became" data-when="saved">
+            <svg class="lab-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span class="sr-only">becomes</span>
+            <span class="chip chip-critical"><i class="dot dot-critical"></i><span class="mono">T-03</span> <span class="t-critical">Critical</span> <span class="chip-why">Bacterial pattern</span></span>
+          </span>
+          <button type="button" class="btn-s solid" data-when="ready" data-save-btn hidden>Save check</button>
+          <a class="btn-s ghost" data-when="saved" data-save-link href="#risk-t03">See what to do</a>
+        </div>
+      </figcaption>
+    </figure>
+
+    <div class="features">
+      <figure class="feature feature-narrow">
+        <figcaption>
+          <h3>The hard ones get a second opinion.</h3>
+          <p>Send the larvae Thetis isn’t sure about to Claude. It looks at a small crop of each and gives an opinion with a reason. You accept it or keep your own call.</p>
+        </figcaption>
+        <img src="assets/shots/second-opinion.webp" width="694" height="592" loading="lazy" decoding="async"
+          alt="Claude's second opinion on three unsure larvae. Each has a one-line reason, such as an irregular lobed shell outline, and buttons to accept or keep.">
+      </figure>
+      <figure class="feature">
+        <figcaption>
+          <h3>Every check builds the tank’s record.</h3>
+          <p>Survival, shell length, dead and abnormal larvae, gut fullness and water chemistry, tank by tank and check by check. Nobody has to retype a thing.</p>
+        </figcaption>
+        <picture>
+          <source media="(max-width: 640px)" srcset="assets/shots/tank-record-phone.webp" width="680" height="754">
+          <img src="assets/shots/tank-record.webp" width="1526" height="1165" loading="lazy" decoding="async"
+            alt="Tank T-03's page. A survival chart falls from 100% to 41% over nine days, above a table of its five checks with larvae, survival, length, growth, dead, abnormal, gut and water readings.">
+        </picture>
+      </figure>
+    </div>
+    <p class="note">Screens show example data and a synthetic slide.</p>
+  </div>
+</section>
+
+<!-- Why it matters -->
+<section class="band band-ink story" id="why">
+  <div class="wrap story-grid">
+    <div class="story-title">
+      <p class="kicker">Why it matters</p>
+      <h2>One hatchery spent a year chasing bacteria. It was the water.</h2>
+      <p class="story-close">The first answer isn’t always the right one. Thetis reads the larvae and the water together at every check, and says which pattern they match.</p>
+      <div class="chips">
+        <span class="chip chip-critical"><i class="dot dot-critical"></i><span class="mono">T-03</span> <span class="t-critical">Critical</span> <span class="chip-why">Bacterial pattern</span></span>
+        <span class="chip chip-risk"><i class="dot dot-risk"></i><span class="mono">T-04</span> <span class="t-risk">At risk</span> <span class="chip-why">Corrosive water</span></span>
+      </div>
+    </div>
+    <div class="story-right">
+      <ol class="timeline">
+        <li>
+          <time>July 2007</time>
+          <p>Larvae start dying at Whiskey Creek Shellfish Hatchery in Oregon, at a scale unseen in its 30 years. Managers put it down to a bloom of Vibrio bacteria and eliminate it. The larvae keep dying.</p>
+        </li>
+        <li>
+          <time>Summer 2008</time>
+          <p>Staff investigate seawater chemistry for the first time and record pH as low as 7.6 near the intakes. Adding sodium carbonate brings a marked improvement in survival and growth, too late to save the season.</p>
+        </li>
+        <li class="timeline-stat">
+          <time>2008 total</time>
+          <p><span class="stat-about">About</span> <b class="tnum">25%</b> <span>of a normal season’s production.</span></p>
+        </li>
+        <li>
+          <time>Since then</time>
+          <p>Monitoring and treating incoming water has meant billions more oyster larvae for Pacific Northwest growers.</p>
+        </li>
+      </ol>
+      <p class="source">Source: <a href="https://doi.org/10.5670/oceanog.2015.38">Barton et al. 2015, Oceanography 28(2)</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- Job 2: what to do about it -->
+<section class="band band-canvas" id="risks">
+  <div class="wrap">
+    <div class="split">
+      <div class="split-text sticky">
+        <p class="kicker"><span class="num" aria-hidden="true">2</span>What to do about it</p>
+        <h2>Every risk comes with the fix.</h2>
+        <p class="lead">Thetis reads every check and water reading, names the pattern it matches and shows the readings behind it. Then it lays out what to do, step by step.</p>
+        <h3 class="split-sub">Doses in the chemicals you actually use.</h3>
+        <p>Tell Thetis what’s on your shelf. It works out the dose from your pH, Ω, temperature and salinity, per 1,000 L and for the whole line. Try switching the chemical on this card.</p>
+      </div>
+
+      <article class="card" aria-label="Example crash risk: line 2 water is corrosive">
+        <div class="card-top">
+          <div class="card-title">
+            <div class="tags">
+              <span class="pill pill-risk"><i class="dot dot-risk"></i>At risk</span>
+              <span class="tag">Rules-based</span>
+            </div>
+            <h3>Line 2 water is corrosive</h3>
+            <div class="tags">
+              <span class="tank">T-04</span><span class="tank">T-05</span><span class="tank">T-06</span>
+            </div>
+          </div>
+          <div class="stake"><b class="tnum">56.9M</b><span>larvae at stake</span></div>
+        </div>
+
+        <div class="tiles">
+          <div class="tile">
+            <span class="tile-head"><span>pH</span><span class="mono">T-04</span></span>
+            <svg viewBox="0 0 160 34" width="100%" role="img" aria-label="pH on T-04 at each check: 7.92, 7.92, 7.74, 7.62. Target at least 7.8."><line x1="0" x2="160" y1="14.6" y2="14.6" stroke="#C7CFD4" stroke-dasharray="3 3"/><polyline points="5.0,5.0 69.4,5.0 122.8,19.4 155.0,29.0" fill="none" stroke="#0F1A20" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="155.0" cy="29.0" r="3.5" fill="#E0702A" stroke="#fff" stroke-width="2"/></svg>
+            <span><b class="tnum t-risk">7.62</b><span class="tile-sub">target ≥ 7.8</span></span>
+          </div>
+          <div class="tile">
+            <span class="tile-head"><span>Ω aragonite</span><span class="mono">T-04</span></span>
+            <svg viewBox="0 0 160 34" width="100%" role="img" aria-label="Ω aragonite on T-04 at each check: 2.7, 2.7, 1.8, 1.4. Target at least 2."><line x1="0" x2="160" y1="17.9" y2="17.9" stroke="#C7CFD4" stroke-dasharray="3 3"/><polyline points="5.0,5.0 69.4,5.0 122.8,21.6 155.0,29.0" fill="none" stroke="#0F1A20" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="155.0" cy="29.0" r="3.5" fill="#E0702A" stroke="#fff" stroke-width="2"/></svg>
+            <span><b class="tnum t-risk">1.4</b><span class="tile-sub">target ≥ 2</span></span>
+          </div>
+          <div class="tile">
+            <span class="tile-head"><span>Abnormal shells</span><span class="mono">T-04</span></span>
+            <svg viewBox="0 0 160 34" width="100%" role="img" aria-label="Abnormal shells on T-04 at each check: 3%, 5%, 6%, 19%. Target under 12%."><line x1="0" x2="160" y1="15.4" y2="15.4" stroke="#C7CFD4" stroke-dasharray="3 3"/><polyline points="5.0,29.0 69.4,26.7 122.8,24.3 155.0,5.0" fill="none" stroke="#0F1A20" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="155.0" cy="5.0" r="3.5" fill="#C98A0B" stroke="#fff" stroke-width="2"/></svg>
+            <span><b class="tnum t-watch">19%</b><span class="tile-sub">under 12%</span></span>
+          </div>
+        </div>
+
+        <div class="card-copy">
+          <p><strong>Elevated chance of a crash in the next 1–3 days.</strong> At today’s rates, none of these tanks reach the eyed stage within 21 days. If they recover and track <span class="nb">T-01</span>, about 34.6M could.</p>
+          <p class="soft">Larvae build their shells from carbonate in the water, and low Ω makes that hard. Abnormal shells rise first, then losses follow. Research at Whiskey Creek Hatchery put the minimum for a viable batch at Ω 1.7.</p>
+          <p class="fine">Source: Barton et al. 2015, Oceanography 28(2)</p>
+        </div>
+
+        <div class="card-steps">
+          <div class="lab-head"><h4>What to do</h4><span class="muted">2 to decide</span></div>
+          <ol class="steps">
+            <li class="step" data-done="Buffering approved">
+              <span class="step-num" aria-hidden="true"><span>1</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="i-yes"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="i-no"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+              <div class="step-body">
+                <p class="step-title">Buffer line 2 water to bring Ω aragonite to 3 or higher</p>
+                <p class="step-how">Use <span data-chem>sodium carbonate</span> on line 2. Buffering buys time: also find out why the water changed.</p>
+                <div class="dose" id="dose">
+                  <div class="dose-choose">
+                    <span class="dose-label" id="plant-uses">Your plant uses</span>
+                    <div class="dose-pick" role="radiogroup" aria-labelledby="plant-uses">
+                    <label><input type="radio" name="buffer" value="carbonate" data-name="sodium carbonate" checked><span>Sodium carbonate</span></label>
+                    <label><input type="radio" name="buffer" value="hydroxide" data-name="sodium hydroxide"><span>Sodium hydroxide</span></label>
+                    <label><input type="radio" name="buffer" value="bicarbonate" data-name="sodium bicarbonate"><span>Sodium bicarbonate</span></label>
+                    </div>
+                  </div>
+                  <div aria-live="polite">
+                    <div class="dose-out" data-k="carbonate">
+                      <p class="dose-main tnum">16 g per 1,000 L</p>
+                      <p>96 g across <span class="nb">T-04</span>, <span class="nb">T-05</span> and <span class="nb">T-06</span> (6,000 L)</p>
+                      <p>Ω 1.4 to 3.0, pH 7.62 to 7.94</p>
+                      <p class="dose-note">Estimated from pH, Ω, temperature and salinity. Try it in a jar first, then re-measure 30 minutes after dosing. Dissolve it fully in a bucket of line water first, and add it upstream of the tanks.</p>
+                    </div>
+                    <div class="dose-out" data-k="hydroxide" hidden>
+                      <p class="dose-main tnum">6 g per 1,000 L</p>
+                      <p>38 g across <span class="nb">T-04</span>, <span class="nb">T-05</span> and <span class="nb">T-06</span> (6,000 L)</p>
+                      <p>Ω 1.4 to 3.0, pH 7.62 to 7.97</p>
+                      <p class="dose-note">Estimated from pH, Ω, temperature and salinity. Try it in a jar first, then re-measure 30 minutes after dosing. Caustic. Dilute it first and dose slowly upstream of the tanks: a local pH spike can kill larvae.</p>
+                    </div>
+                    <div class="dose-out" data-k="bicarbonate" hidden>
+                      <p class="dose-main tnum">330 g per 1,000 L</p>
+                      <p>2.0 kg across <span class="nb">T-04</span>, <span class="nb">T-05</span> and <span class="nb">T-06</span> (6,000 L)</p>
+                      <p>Ω 1.4 to 3.0, pH 7.62 to 7.52</p>
+                      <p class="dose-note">Estimated from pH, Ω, temperature and salinity. Try it in a jar first, then re-measure 30 minutes after dosing. Takes far more product than carbonate, because it adds carbon as well as alkalinity.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="step-actions">
+                  <button type="button" class="btn-s solid" data-act="approve">Approve buffering</button>
+                  <button type="button" class="btn-s ghost" data-act="dismiss" aria-label="Dismiss: buffer line 2 water">Dismiss</button>
+                </div>
+                <p class="step-state" role="status" hidden><span class="state-text"></span> <span class="state-by">You, just now</span> <button type="button" class="lnk" data-act="undo">Undo</button></p>
+              </div>
+            </li>
+            <li class="step" data-done="Next spawn on hold">
+              <span class="step-num" aria-hidden="true"><span>2</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="i-yes"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="i-no"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+              <div class="step-body">
+                <p class="step-title">Hold the next spawn until line 2 water recovers</p>
+                <p class="step-how">If you must spawn, use a tank on a healthy line and afternoon water, when pH and oxygen usually peak.</p>
+                <div class="step-actions">
+                  <button type="button" class="btn-s solid" data-act="approve">Hold next spawn</button>
+                  <button type="button" class="btn-s ghost" data-act="dismiss" aria-label="Dismiss: hold the next spawn">Dismiss</button>
+                </div>
+                <p class="step-state" role="status" hidden><span class="state-text"></span> <span class="state-by">You, just now</span> <button type="button" class="lnk" data-act="undo">Undo</button></p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </article>
+    </div>
+
+    <div class="split split-flip" id="risk-t03">
+      <figure class="split-shot">
+        <picture>
+          <source media="(max-width: 640px)" srcset="assets/shots/risk-t03-phone.webp" width="680" height="2890">
+          <img src="assets/shots/risk-t03.webp" width="1520" height="1450" loading="lazy" decoding="async"
+            alt="Crash risk card for T-03, Critical: pattern matches a bacterial outbreak, with 4.1M larvae at stake. Charts show dead larvae at 24%, growth at 1.2 µm a day and gut fullness at 0.18. Three steps wait for approval: isolate the tank, plate a sample for Vibrio, then drain, clean and restock.">
+        </picture>
+      </figure>
+      <div class="split-text">
+        <h3 class="split-head">A different pattern gets different steps.</h3>
+        <p><span class="nb">T-03</span>’s water is fine, but dead larvae jumped, guts emptied and growth stalled. That pattern matches a bacterial outbreak, so the steps are to isolate the tank, plate a sample for Vibrio, then drain, clean and restock with your disinfectant.</p>
+        <p>Thetis says “pattern matches”, never “diagnosis”. Plating the sample is how you find out.</p>
+        <p class="note">Example data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Yield -->
+<section class="band" id="yield">
+  <div class="wrap split split-yield">
+    <div class="split-text">
+      <p class="kicker">Raise yield</p>
+      <h2>Find the yield still sitting in your tanks.</h2>
+      <p class="lead">The same records show where more larvae can reach the eyed stage: tanks ready to move, batches falling behind your best one, tanks stocked too densely.</p>
+      <ul class="moves">
+        <li>
+          <span class="tank">T-07</span>
+          <div class="move-text"><b>Move the largest larvae to setting</b><span>Past the 260 µm eyed stage, and <span class="nb">S-02</span> is empty.</span></div>
+          <div class="move-stat"><b class="tnum">344k</b><span>lost per day while waiting</span></div>
+        </li>
+        <li>
+          <span class="tank">T-02</span>
+          <div class="move-text"><b>Screen and cull the slowest growers</b><span>Losing larvae 2.1× as fast as <span class="nb">T-01</span>.</span></div>
+          <div class="move-stat"><b class="tnum">+1.8M</b><span>eyed larvae at <span class="nb">T-01</span>’s pace</span></div>
+        </li>
+        <li>
+          <span class="tank">T-08</span>
+          <div class="move-text"><b>Split it into a second tank</b><span>FAO’s manual gives 15,000 to 20,000 per L for oyster D-larvae.</span></div>
+          <div class="move-stat"><b class="tnum">31,000</b><span>larvae per L, against 20,000</span></div>
+        </li>
+      </ul>
+    </div>
+    <figure class="split-shot">
+      <picture>
+        <source media="(max-width: 640px)" srcset="assets/shots/forecast-phone.webp" width="680" height="1210">
+        <img src="assets/shots/forecast.webp" width="1520" height="1068" loading="lazy" decoding="async"
+          alt="Forecast to the eyed stage, labelled Rules-based. At today's rates about 36.7M larvae reach the eyed stage. If every tank kept T-01's pace, about 90.7M could. A table breaks this down by tank.">
+      </picture>
+      <figcaption class="note">A rules-based estimate on example data, not a promise and not a real hatchery’s results.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- Claude -->
+<section class="band band-ink" id="claude">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker">AI, with Claude</p>
+      <h2>Claude reads the whole hatchery. Your records check its work.</h2>
+      <p class="lead">Rules catch what they were written to catch. Claude, Anthropic’s AI model, reads every check across every tank, writes what matters today, and looks for what no rule was written for.</p>
+    </div>
+    <div class="claude-grid">
+      <div class="claude-main">
+        <figure>
+          <picture>
+            <source media="(max-width: 640px)" srcset="assets/shots/brief-phone.webp" width="680" height="1478">
+            <img src="assets/shots/brief.webp" width="1520" height="824" loading="lazy" decoding="async"
+              alt="Today's brief, labelled Written by Claude. The headline reads: contain T-03's crash today, then buffer corrosive line 2 water. Three steps to do first follow, each with the number that makes it urgent.">
+          </picture>
+          <figcaption><b>Today’s brief.</b> What matters most, and what to do first.</figcaption>
+        </figure>
+        <figure>
+          <picture>
+            <source media="(max-width: 640px)" srcset="assets/shots/found-t10-phone.webp" width="680" height="1158">
+            <img src="assets/shots/found-t10.webp" width="1520" height="740" loading="lazy" decoding="async"
+              alt="A finding labelled Found by Claude, medium confidence: T-10 looks like T-03 just before it crashed. It lists four readings, each checked against the records, and suggests a step to approve or dismiss.">
+          </picture>
+          <figcaption><b>Found by Claude.</b> No rule was written to compare <span class="nb">T-10</span> with <span class="nb">T-03</span> before its crash.</figcaption>
+        </figure>
+      </div>
+      <figure class="claude-side">
+        <img src="assets/shots/ask.webp" width="758" height="1284" loading="lazy" decoding="async"
+          alt="Ask Thetis, labelled Claude. Asked what could crash next and why, Claude names line 2, with 56.9M larvae at stake, and lists the readings behind it. A note says it was written by Claude from your records, so check anything you act on.">
+        <figcaption><b>Ask Thetis.</b> Ask about any tank, batch or decision. Answers come from your records.</figcaption>
+      </figure>
+    </div>
+    <ul class="points">
+      <li><h3>Always labelled.</h3><p>Anything Claude wrote says so, so you always know where a sentence came from.</p></li>
+      <li><h3>Checked against your records.</h3><p>Each reading behind a finding is looked up in your records, and the page shows the record’s value. If one doesn’t check out, the finding is dropped.</p></li>
+      <li><h3>Doses don’t come from the model.</h3><p>Every dose on a card is worked out by chemistry code. Claude is told to repeat those figures and never to give its own.</p></li>
+    </ul>
+    <p class="note">Written by Claude from example data.</p>
+  </div>
+</section>
+
+<!-- Who does what -->
+<section class="band" id="trust">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker">You stay in charge</p>
+      <h2>See who did what, and how to check it.</h2>
+    </div>
+    <div class="who-scroll">
+      <table class="who">
+        <thead>
+          <tr><th scope="col">The job</th><th scope="col">Done by</th><th scope="col">How you check it</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Count, measure and classify larvae</th><td>Computer vision, on your photo</td><td>Every outline is clickable. Correct a call and the counts follow.</td></tr>
+          <tr><th scope="row">Flag crash risks and yield moves</th><td>Written rules</td><td>Each one shows the readings behind it, and risks show the target they’re measured against.</td></tr>
+          <tr><th scope="row">Work out doses</th><td>Seawater chemistry</td><td>It shows the Ω and pH it starts from and aims for, and says to try it in a jar first.</td></tr>
+          <tr><th scope="row">Write the brief, look for patterns, answer questions</th><td>Claude</td><td>It’s labelled as Claude’s, and the readings behind a finding are checked against your records.</td></tr>
+          <tr><th scope="row">Decide what happens</th><td>You</td><td>Nothing acts on equipment. Every approval and dismissal is recorded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="band band-top" id="faq">
+  <div class="wrap faq-grid">
+    <div class="faq-side">
+      <h2>Questions</h2>
+      <p>Something else? <a href="#demo">Ask us</a>.</p>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Do I need new hardware?</summary>
+        <p>No. Thetis works from photos taken through the microscope you already own. It reads the scale from the counting grid in the photo, or you can set it by hand by drawing a line of known length.</p>
+      </details>
+      <details>
+        <summary>Which species does it work with?</summary>
+        <p>Thetis is built around oyster larvae, from D-stage to eyed. If you grow something else, tell us what and we’ll tell you how well it fits.</p>
+      </details>
+      <details>
+        <summary>How accurate is the count?</summary>
+        <p>It depends on your microscope and your photos, so we’d rather test it on yours than quote a number. Thetis marks the larvae it isn’t sure about, and a tech can correct any call. The counts update straight away.</p>
+      </details>
+      <details>
+        <summary>Does Thetis dose tanks or control equipment?</summary>
+        <p>No. Thetis recommends, and a person approves or dismisses each step. Nothing acts on equipment.</p>
+      </details>
+      <details>
+        <summary>How are doses worked out?</summary>
+        <p>From your latest pH, Ω aragonite, temperature and salinity, using the published seawater constants in the DOE best-practices guide (Dickson et al. 2007). You can choose sodium carbonate, sodium hydroxide or sodium bicarbonate. Doses are estimates, so the card says to try it in a jar first and re-measure 30 minutes after dosing.</p>
+      </details>
+      <details>
+        <summary>Where does the husbandry advice come from?</summary>
+        <p>Non-obvious guidance carries its source on the card. Most of it comes from the FAO’s <a href="https://www.fao.org/4/y5720e/y5720e00.htm">Hatchery culture of bivalves</a> manual (Helm and Bourne, 2004) and <a href="https://doi.org/10.5670/oceanog.2015.38">Barton et al. 2015</a>.</p>
+      </details>
+      <details>
+        <summary>What does it do without AI?</summary>
+        <p>Counting, corrections, risk flags, doses, yield suggestions and forecasts all run without Claude. Claude adds the brief, findings across tanks, second opinions on unsure larvae and answers to your questions.</p>
+      </details>
+      <details>
+        <summary>Where does my data go?</summary>
+        <p>Thetis runs on a computer at your hatchery, and your records stay on it. When you use a Claude feature, the records or photo crops it needs go to Anthropic’s API. Leave Claude off and nothing leaves that computer.</p>
+      </details>
+      <details>
+        <summary>Are the numbers on this page real?</summary>
+        <p>No. Every screen here shows example data from a made-up hatchery, and the slide is a synthetic sample drawn by our own tools. The doses are calculated the same way the product calculates them, for that example water.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- Call to action -->
+<section class="band band-brand cta" id="demo">
+  <div class="wrap cta-inner">
+    <h2>See it before your next spawn.</h2>
+    <p class="lead">We’ll walk you through the count, the risks and the fixes, and talk about how Thetis would fit your tanks.</p>
+    <div class="actions">
+      <a class="btn btn-white" href="mailto:hello@thetis.tech?subject=Thetis%20demo">Book a demo</a>
+      <span class="cta-mail">or write to <a href="mailto:hello@thetis.tech?subject=Thetis%20demo">hello@thetis.tech</a></span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <div class="foot-brand">
+      <a class="logo" href="#top" aria-label="Thetis, back to top">
+        <svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#13557A"/><g fill="none" stroke="#fff" stroke-width="2.33"><circle cx="14" cy="14" r="9.33"/><circle cx="14" cy="14" r="3.5"/></g></svg>
+        <span>Thetis</span>
+      </a>
+      <p>Larvae counts, crash risks and what to do about them.</p>
+    </div>
+    <div class="foot-notes">
+      <p>Screens show example data and a synthetic slide, not results from a real hatchery. Claude is made by Anthropic, which isn’t affiliated with Thetis and doesn’t endorse it.</p>
+      <p>© 2026 Thetis</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
